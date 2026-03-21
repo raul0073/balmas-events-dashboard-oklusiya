@@ -7,18 +7,26 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import logo from "@/app/assets/logo_gdod_996.png";
 import { useEvents } from "@/lib/events-context";
+import { useLogs } from "@/lib/logger";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function Navbar() {
   const router = useRouter();
   const { clearAll } = useEvents();
-  const [clearOpen, setClearOpen] = useState(false);
+  const { clearLogs } = useLogs();
+  const [clearOpen, setClearOpen]     = useState(false);
+  const [deleteLogs, setDeleteLogs]   = useState(true);
 
   function openWhatsApp() {
     const width = 500, height = 700;
     const left  = window.screen.width - width - 20;
     window.open("https://web.whatsapp.com", "whatsapp",
       `width=${width},height=${height},left=${left},top=80,resizable=yes,scrollbars=yes`);
+  }
+
+  function handleConfirmClear() {
+    clearAll(); // always clears events (also clears crisis-logs via clearAll)
+    if (deleteLogs) clearLogs();
   }
 
   return (
@@ -29,13 +37,7 @@ export default function Navbar() {
 
             <button onClick={() => router.push("/")} className="flex items-center gap-3 hover:opacity-90 transition-opacity">
               <div className="bg-pikud-orange rounded-lg p-0.5 w-12 h-auto">
-                <Image
-                  src={logo}
-                  alt="logo"
-                  width={500}
-                  height={500}
-                  className="w-full h-full"
-                />
+                <Image src={logo} alt="logo" width={500} height={500} className="w-full h-full" />
               </div>
               <div className="text-right">
                 <div className="font-bold text-base leading-tight">{`חמ"ל אוכלוסייה`}</div>
@@ -49,12 +51,8 @@ export default function Navbar() {
                 <ScrollText className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm font-semibold">יומן פעולות</span>
               </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setClearOpen(true)}
-                className="flex items-center gap-1.5 text-red-400 hover:text-white hover:bg-red-600"
-              >
+              <Button variant="ghost" size="sm" onClick={() => setClearOpen(true)}
+                className="flex items-center gap-1.5 text-red-400 hover:text-white hover:bg-red-600">
                 <Trash2 className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm font-semibold">אפס הכל</span>
               </Button>
@@ -67,11 +65,16 @@ export default function Navbar() {
       <ConfirmDialog
         open={clearOpen}
         onClose={() => setClearOpen(false)}
-        onConfirm={clearAll}
+        onConfirm={handleConfirmClear}
         title="איפוס מערכת"
-        description="פעולה זו תמחק את כל האירועים, הנתונים והיומן לצמיתות. לא ניתן לשחזר. האם אתה בטוח?"
+        description="פעולה זו תמחק את כל האירועים והנתונים לצמיתות. לא ניתן לשחזר. האם אתה בטוח?"
         confirmLabel="מחק הכל"
         cancelLabel="ביטול"
+        checkbox={{
+          label: "מחק גם את יומן הפעולות",
+          checked: deleteLogs,
+          onChange: setDeleteLogs,
+        }}
       />
     </>
   );

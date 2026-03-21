@@ -4,6 +4,12 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, X } from "lucide-react";
 
+interface CheckboxOption {
+  label: string;
+  checked: boolean;
+  onChange: (val: boolean) => void;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -12,6 +18,7 @@ interface Props {
   description: string;
   confirmLabel?: string;
   cancelLabel?: string;
+  checkbox?: CheckboxOption;
 }
 
 export default function ConfirmDialog({
@@ -19,6 +26,7 @@ export default function ConfirmDialog({
   title, description,
   confirmLabel = "אישור",
   cancelLabel  = "ביטול",
+  checkbox,
 }: Props) {
   return (
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
@@ -42,10 +50,25 @@ export default function ConfirmDialog({
           </div>
 
           {/* Body */}
-          <div className="px-6 py-5">
+          <div className="px-6 py-5 space-y-4">
             <Dialog.Description className="text-pikud-navy text-sm leading-relaxed">
               {description}
             </Dialog.Description>
+
+            {/* Optional checkbox */}
+            {checkbox && (
+              <label className="flex items-center gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={checkbox.checked}
+                  onChange={(e) => checkbox.onChange(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                />
+                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 select-none">
+                  {checkbox.label}
+                </span>
+              </label>
+            )}
           </div>
 
           {/* Footer */}

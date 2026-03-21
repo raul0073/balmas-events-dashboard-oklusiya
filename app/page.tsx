@@ -6,10 +6,11 @@ import EventCard from "@/components/EventCard";
 import CreateEventDialog from "@/components/CreateEventDialog";
 import { Button } from "@/components/ui/button";
 import { formatAllEventsForWhatsApp } from "@/lib/whatsapp";
-import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter } from "lucide-react";
+import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter, X, EyeClosedIcon, EyeIcon } from "lucide-react";
 import { PLUGAH_LABELS, Plugah } from "@/types";
 import { FaUsersSlash } from "react-icons/fa6";
 import { FaPeopleRoof } from "react-icons/fa6";
+import ActivityPulse from "@/components/ActivityPulse";
 
 type SortKey = "time" | "nedarim" | "anchor" | "plugah";
 
@@ -27,6 +28,7 @@ export default function DashboardPage() {
   const [filter, setFilter]         = useState<Plugah | "all">("all");
   const [sort, setSort]             = useState<SortKey>("time");
   const [showClosed, setShowClosed] = useState(false);
+  const [showActivityChart, setShowActivityChart] = useState(true);
 
   const activeEvents  = events.filter((e) => e.status === "active");
   const closedEvents  = events.filter((e) => e.status === "closed");
@@ -258,6 +260,21 @@ export default function DashboardPage() {
       </div>
 
       <CreateEventDialog open={createOpen} onClose={() => setCreateOpen(false)} />
+
+
+
+       {events.length > 0 && showActivityChart ? (
+         <div className="fixed bottom-1 left-0 w-full p-4 bg-pikud-cream">
+          <Button variant={'destructive'} size={'icon'} className="rounded-full" onClick={()=> setShowActivityChart(false)}>
+            <EyeClosedIcon />
+          </Button>
+          <ActivityPulse  />
+        </div>
+       ):
+        <Button onClick={()=> setShowActivityChart(true)} size={'icon'} className="rounded-full ">
+           <EyeIcon />
+          </Button>
+          }
     </div>
   );
 }
