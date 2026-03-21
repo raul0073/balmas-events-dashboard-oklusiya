@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ScrollText, Trash2, MessageCircle } from "lucide-react";
+import { ScrollText, Trash2, MessageCircle, LogOutIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import logo from "@/app/assets/logo_gdod_996.png";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { useAuth } from "@/lib/auth";
 
 export default function Navbar() {
   const router = useRouter();
@@ -16,13 +17,7 @@ export default function Navbar() {
   const { clearLogs } = useLogs();
   const [clearOpen, setClearOpen]     = useState(false);
   const [deleteLogs, setDeleteLogs]   = useState(true);
-
-  function openWhatsApp() {
-    const width = 500, height = 700;
-    const left  = window.screen.width - width - 20;
-    window.open("https://web.whatsapp.com", "whatsapp",
-      `width=${width},height=${height},left=${left},top=80,resizable=yes,scrollbars=yes`);
-  }
+ const { logout } = useAuth();
 
   function handleConfirmClear() {
     clearAll(); // always clears events (also clears crisis-logs via clearAll)
@@ -52,9 +47,13 @@ export default function Navbar() {
                 <span className="hidden sm:inline text-sm font-semibold">יומן פעולות</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={() => setClearOpen(true)}
-                className="flex items-center gap-1.5 text-red-400 hover:text-white hover:bg-red-600">
+                className="flex items-center text-red-400 hover:text-white hover:bg-red-600">
                 <Trash2 className="w-4 h-4" />
                 <span className="hidden sm:inline text-sm font-semibold">אפס הכל</span>
+              </Button>
+                <Button variant="ghost" size="icon" onClick={() => logout()}
+                className="flex items-center  text-red-400 hover:text-white hover:bg-red-600">
+                <LogOutIcon className="w-4 h-4" />
               </Button>
             </div>
 

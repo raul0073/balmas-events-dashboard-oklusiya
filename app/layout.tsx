@@ -4,6 +4,8 @@ import "./globals.css";
 import { EventsProvider } from "@/lib/events-context";
 import { LogProvider } from "@/lib/logger";
 import Navbar from "@/components/Navbar";
+import { AuthProvider } from "@/lib/auth";
+import AuthGuard from "@/components/AuthGuard";
 
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
@@ -14,7 +16,7 @@ const heebo = Heebo({
 
 export const metadata: Metadata = {
   title: "מרכז פיקוד אירועים | פיקוד העורף",
-  description: "מערכת ניהול אירועי חירום - משאקי אוקלוסיה",
+  description: `גדוד 996 חמ"ל אוכלוסיה`
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,10 +24,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="he" dir="rtl" className={heebo.variable}>
       <body>
         <LogProvider>
+          <AuthProvider>
+    <AuthGuard>
+
           <EventsProvider>
             <Navbar />
             <main>{children}</main>
           </EventsProvider>
+    </AuthGuard>
+          </AuthProvider>
         </LogProvider>
       </body>
     </html>
