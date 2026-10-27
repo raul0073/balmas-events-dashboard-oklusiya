@@ -20,10 +20,12 @@ interface Props {
   username: string;
   /** unread submissions, shown as a badge on the feedback entry */
   newFeedback?: number;
+  /** new "I have it" offers, shown as a badge on the library entry */
+  newOffers?: number;
   children: React.ReactNode;
 }
 
-export default function AdminShell({ username, newFeedback = 0, children }: Props) {
+export default function AdminShell({ username, newFeedback = 0, newOffers = 0, children }: Props) {
   const pathname = usePathname();
 
   const brand = (
@@ -49,7 +51,7 @@ export default function AdminShell({ username, newFeedback = 0, children }: Prop
             </span>
           );
         }
-        const badge = item.icon === "feedback" && newFeedback > 0 ? newFeedback : 0;
+        const badge = item.icon === "feedback" ? newFeedback : item.icon === "library" ? newOffers : 0;
         return (
           <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}
             className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${

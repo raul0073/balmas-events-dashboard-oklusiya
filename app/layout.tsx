@@ -13,6 +13,8 @@ const heebo = Heebo({
 export const metadata: Metadata = {
   title: "מרכז פיקוד אירועים | פיקוד העורף",
   description: `חמ"ל אוכלוסייה — לוח אירועים לגדודי פיקוד העורף`,
+  // internal tool: never indexed
+  robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false, noimageindex: true } },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

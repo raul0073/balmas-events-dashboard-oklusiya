@@ -73,28 +73,6 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
       <Link href="/green" aria-current={pathname === "/green" ? "page" : undefined} className={`${linkCls(pathname === "/green")} justify-between`}>
         <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-idf-green-light shrink-0" aria-hidden /> ירוק</span>
       </Link>
-      <p className="px-3 pt-4 pb-1 text-[11px] font-bold text-white/40 tracking-wide">כלים · כתום</p>
-      {TOOLS.filter((t) => t.tones.includes("orange")).map((t) => {
-        const active = pathname === t.href || pathname.startsWith(`${t.href}/`);
-        const locked = t.protected && !session;
-        if (!t.ready) {
-          return (
-            <span key={t.key} aria-disabled className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm text-white/35 cursor-default">
-              <span className="flex items-center gap-3">{ICONS[t.key]} {t.name}</span>
-              <span className="text-[10px] font-semibold bg-white/10 px-1.5 py-0.5 rounded">בקרוב</span>
-            </span>
-          );
-        }
-        return (
-          <Link key={t.key} href={locked ? `/login?next=${encodeURIComponent(toolHref(t, "orange"))}` : toolHref(t, "orange")}
-            target={t.standalone ? "_blank" : undefined} rel={t.standalone ? "noopener" : undefined}
-            aria-current={active ? "page" : undefined} className={`${linkCls(active)} justify-between`}>
-            <span className="flex items-center gap-3">{ICONS[t.key]} {t.name}</span>
-            {locked && <Lock className="w-3.5 h-3.5 text-white/50" aria-label="דורש כניסה" />}
-            {t.standalone && <ExternalLink className="w-3.5 h-3.5 text-white/50" aria-label="נפתח בחלון חדש" />}
-          </Link>
-        );
-      })}
       <p className="px-3 pt-4 pb-1 text-[11px] font-bold text-white/40 tracking-wide">עזרה</p>
       <button type="button" onClick={() => setFeedbackOpen(true)} className={`${linkCls(false)} w-full`}>
         <MessageSquarePlus className="w-4 h-4" /> משוב ובקשות

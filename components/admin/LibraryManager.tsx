@@ -10,10 +10,12 @@ import type { ActionState } from "@/app/admin/actions";
 import { deleteLibraryItem, moveLibraryItem, updateLibraryItem, uploadLibraryItem } from "@/app/admin/library/actions";
 import { LIBRARY_CATEGORIES, SPACE_LABELS, categoryLabel, fileKindLabel, formatSize, previewKind, type LibraryItem } from "@/lib/library/types";
 import type { ToolTone } from "@/lib/tools";
+import WantedManager from "./WantedManager";
+import type { WantedItem, WantedOffer } from "@/lib/library/wanted";
 
 const SPACES: ToolTone[] = ["orange", "green"];
 
-export default function LibraryManager({ items }: { items: LibraryItem[] }) {
+export default function LibraryManager({ items, wanted = [], offers = [] }: { items: LibraryItem[]; wanted?: WantedItem[]; offers?: WantedOffer[] }) {
   const [space, setSpace] = useState<ToolTone>("orange");
   const visible = items.filter((i) => i.space === space);
 
@@ -42,6 +44,8 @@ export default function LibraryManager({ items }: { items: LibraryItem[] }) {
         </div>
 
         <UploadForm space={space} />
+
+        <WantedManager space={space} items={wanted} offers={offers} />
 
         {visible.length === 0 ? (
           <div className="bg-surface rounded-xl border border-line px-5 py-12 text-center text-ink-muted">אין קבצים במרחב {SPACE_LABELS[space]} עדיין.</div>

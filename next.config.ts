@@ -1,3 +1,8 @@
 import type { NextConfig } from "next";
-const nextConfig: NextConfig = {};
+const nextConfig: NextConfig = {
+  // internal tool: tell every crawler to stay out, on every response
+  async headers() {
+    return [{ source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, noimageindex" }] }];
+  },
+};
 export default nextConfig;

@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { loadLibrary } from "@/lib/library/content";
+import { loadOpenWanted } from "@/lib/library/wanted";
+import WantedList from "@/components/library/WantedList";
 import { loadSession } from "@/lib/auth/session";
 import { SPACE_LABELS } from "@/lib/library/types";
 import type { ToolTone } from "@/lib/tools";
@@ -33,7 +35,7 @@ export default async function LibraryPage({ params, searchParams }: { params: Pr
   const tone  = space as ToolTone;
   const s     = SPACES[tone];
   const session = await loadSession();
-  const { items, lockedCounts } = await loadLibrary(tone, Boolean(session));
+  const [{ items, lockedCounts }, wanted] = await Promise.all([loadLibrary(tone, Boolean(session)), loadOpenWanted(tone)]);
 
   return (
     <div className={`min-h-[calc(100vh-64px)] ${s.page}`}>
@@ -50,7 +52,8 @@ export default async function LibraryPage({ params, searchParams }: { params: Pr
         </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        <WantedList items={wanted} space={tone} />
         <LibraryGrid items={items} space={tone} lockedCounts={lockedCounts} openId={openId} loginHref={`/login?next=${encodeURIComponent(`/library/${tone}`)}`} />
       </section>
     </div>
