@@ -9,6 +9,8 @@ import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_GRO
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/primitives";
 import CounterCard from "@/components/events/CounterCard";
+import InfoSources from "@/components/events/InfoSources";
+import { sourceLabel } from "@/lib/events/sources";
 import { formatEventForWhatsApp } from "@/lib/whatsapp";
 import { accountedFor, anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { now } from "@/lib/utils";
@@ -50,6 +52,11 @@ function buildChangeSummary(prev: CrisisEvent, next: CrisisEvent): string {
       changes.push(`ערך שהשתנה: ${label}\n${translateValue(k, prev[k])} השתנה ל${translateValue(k, next[k])}`);
     }
   }
+  const prevS = prev.sourcesDone ?? [], nextS = next.sourcesDone ?? [];
+  const marked   = nextS.filter((k) => !prevS.includes(k)).map(sourceLabel);
+  const restored = prevS.filter((k) => !nextS.includes(k)).map(sourceLabel);
+  if (marked.length)   changes.push(`מקורות מידע שמוצו: ${marked.join(", ")}`);
+  if (restored.length) changes.push(`מקורות מידע שנפתחו מחדש: ${restored.join(", ")}`);
   return changes.join(" | ");
 }
 
@@ -344,6 +351,9 @@ export default function EventPage() {
             </div>
           </div>
         </div>
+
+        {/* information sources reminder */}
+        <InfoSources done={form.sourcesDone ?? []} onChange={(next) => update("sourcesDone", next)} readOnly={isClosed} />
 
         {/* counters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">

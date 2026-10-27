@@ -40,6 +40,8 @@ export interface CrisisEvent {
   meautarim: number | null;
   punu: number | null;
   hearot: string;
+  /** keys of information sources already exhausted (lib/events/sources.ts) */
+  sourcesDone: string[];
   createdAt: string;
   updatedAt: string;
   status: EventStatus;

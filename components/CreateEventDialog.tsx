@@ -81,6 +81,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
       anchor: null,
       lekudimGluyim: null, lekudimSmuim: null, hulitzu: null, meautarim: null, punu: null,
       hearot: draft.hearot.trim(),
+      sourcesDone: [],
       createdAt: ts, updatedAt: ts, status: "active",
     };
     setBusy(true);

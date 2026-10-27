@@ -62,7 +62,7 @@ export default function ImportLocalBanner({ hasEvents }: { hasEvents: boolean })
           tzapi: e.tzapi, anchor: e.resheimEogen,
           lekudim_gluyim: e.lekudimGluyim, lekudim_smuim: e.lekudimSmuim,
           hulitzu: e.hulitzu, meautarim: e.meautarim, punu: e.punu,
-          hearot: e.hearot ?? "", status: e.status ?? "active",
+          hearot: e.hearot ?? "", sources_done: [], status: e.status ?? "active",
           created_at: e.createdAt, updated_at: e.updatedAt,
         };
       });

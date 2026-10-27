@@ -20,6 +20,7 @@ export interface EventRow {
   meautarim: number | null;
   punu: number | null;
   hearot: string;
+  sources_done: string[] | null;
   status: "active" | "closed";
   created_at: string;
   updated_at: string;
@@ -42,6 +43,7 @@ export function rowToEvent(r: EventRow): CrisisEvent {
     meautarim: r.meautarim,
     punu: r.punu,
     hearot: r.hearot ?? "",
+    sourcesDone: r.sources_done ?? [],
     status: r.status,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -66,6 +68,7 @@ export function eventToRow(e: CrisisEvent, battalionId: string): EventRow {
     meautarim: e.meautarim,
     punu: e.punu,
     hearot: e.hearot ?? "",
+    sources_done: e.sourcesDone ?? [],
     status: e.status,
     created_at: e.createdAt,
     updated_at: e.updatedAt,

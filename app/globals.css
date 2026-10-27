@@ -47,6 +47,16 @@
   input, select, textarea, button {
     font-family: var(--font-heebo), 'Heebo', sans-serif;
   }
+  /* numeric fields get explicit +/− controls; the browser spinner only collides with RTL padding */
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 }
 
 @layer utilities {

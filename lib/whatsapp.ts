@@ -1,5 +1,6 @@
 import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahLabel } from "@/types";
 import { accountedFor, anchorInfo, calcMissing } from "@/lib/events/math";
+import { pendingSources } from "@/lib/events/sources";
 
 function fmt(val: number | null | undefined): string {
   return val !== null && val !== undefined ? String(val) : "—";
@@ -9,6 +10,14 @@ const LINE = "━━━━━━━━━━━━━━━━━━━━";
 
 function stamp(iso: string): string {
   return new Date(iso).toLocaleString("he-IL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+}
+
+function pendingLine(event: CrisisEvent): string {
+  const pending = pendingSources(event.sourcesDone ?? []);
+  if (pending.length === 0) return `
+✅ כל מקורות המידע מוצו`;
+  return `
+🔎 מקורות מידע שטרם מוצו (${pending.length}): ${pending.map((s) => s.label).join(", ")}`;
 }
 
 export function formatEventForWhatsApp(event: CrisisEvent, header = "פיקוד העורף"): string {
@@ -48,7 +57,7 @@ ${LINE}
 • חולצו: ${fmt(event.hulitzu)}
 • מאותרים: ${fmt(event.meautarim)}
 • פונו: ${fmt(event.punu)}
-${missingLine}${event.hearot ? `\n${LINE}\n📝 ${event.hearot}` : ""}
+${missingLine}${pendingLine(event)}${event.hearot ? `\n${LINE}\n📝 ${event.hearot}` : ""}
 ${LINE}
 עודכן: ${stamp(event.updatedAt)}`;
 }

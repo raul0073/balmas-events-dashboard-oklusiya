@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahHex, plugahLabel } from "@/types";
 import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
-import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon, UserCog } from "lucide-react";
+import { INFO_SOURCES } from "@/lib/events/sources";
+import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon, UserCog, Radar } from "lucide-react";
 
 interface Props { event: CrisisEvent; }
 
@@ -19,6 +20,8 @@ export default function EventCard({ event }: Props) {
   const hasIssue   = missing !== null && missing > 0;
   const isClosed   = event.status === "closed";
   const incompleteMeta = !isClosed && isMetaIncomplete(event);
+  const sourcesDone  = (event.sourcesDone ?? []).filter((k) => INFO_SOURCES.some((s) => s.key === k)).length;
+  const sourcesTotal = INFO_SOURCES.length;
 
   const stats = [
     event.lekudimGluyim ? { label: "גלויים",  value: event.lekudimGluyim, cls: "bg-red-100 text-red-700",       icon: <Eye className="w-3 h-3" /> } : null,
@@ -71,6 +74,12 @@ export default function EventCard({ event }: Props) {
             )}
           </div>
         </div>
+        {!isClosed && (
+          <div className="flex items-center gap-1.5 mt-1 mr-6 text-[11px]" title="מקורות מידע שמוצו">
+            <Radar className={`w-3.5 h-3.5 ${sourcesDone === sourcesTotal ? "text-green-600" : "text-amber-600"}`} />
+            <span className={sourcesDone === sourcesTotal ? "text-green-700 font-semibold" : "text-amber-700"}>מקורות {sourcesDone}/{sourcesTotal}</span>
+          </div>
+        )}
         {event.commander.trim() && (
           <div className="flex items-center gap-1.5 mt-1 mr-6 text-xs text-pikud-navy/70">
             <UserCog className="w-3.5 h-3.5 text-pikud-orange" /> {event.commander}
