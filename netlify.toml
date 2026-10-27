@@ -1,7 +1,10 @@
-# Netlify builds the hub from main. The Next.js runtime is auto-detected.
+# Netlify builds the hub from main with the Next.js runtime (server routes, proxy, server actions).
 [build]
   command = "pnpm build"
   publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [build.environment]
   # NEXT_PUBLIC_* values are public by design and get inlined into the browser bundle;
