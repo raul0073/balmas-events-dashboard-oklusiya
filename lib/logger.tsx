@@ -1,12 +1,17 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { Plugah, PLUGAH_LABELS } from "@/types";
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { Plugah, PLUGAH_LABELS, plugahLabel } from "@/types";
+import { createClient } from "@/lib/supabase/client";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { useSession } from "@/lib/session";
+import { logToRow, rowToLog, type LogRow } from "@/lib/events/db";
 
 export type LogActionType =
   | "פתיחת אירוע"
   | "עדכון נתונים"
   | "סגירת אירוע"
-  | "שינוי פלוגה";
+  | "שינוי פלוגה"
+  | "ייבוא נתונים";
 
 export interface LogEntry {
   id: string;
@@ -20,42 +25,75 @@ export interface LogEntry {
 
 interface LogContextType {
   logs: LogEntry[];
-  addLog: (entry: Omit<LogEntry, "id" | "timestamp">) => void;
-  clearLogs: () => void;
+  loaded: boolean;
+  addLog: (entry: Omit<LogEntry, "id" | "timestamp">) => Promise<void>;
+  clearLogs: () => Promise<void>;
 }
 
 const LogContext = createContext<LogContextType | null>(null);
 
-function makeId() {
-  return `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
-}
-
 export function LogProvider({ children }: { children: React.ReactNode }) {
-  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const session = useSession();
+  const battalionId = session?.battalion?.id ?? null;
+  const supabase = useMemo(() => createClient(), []);
+
+  const [logs, setLogs]     = useState<LogEntry[]>([]);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("crisis-logs");
-      if (stored) setLogs(JSON.parse(stored));
-    } catch { setLogs([]); }
-  }, []);
+    if (!battalionId) { setLoaded(true); return; }
+    let cancelled = false;
 
-  const addLog = useCallback((entry: Omit<LogEntry, "id" | "timestamp">) => {
-    const full: LogEntry = { ...entry, id: makeId(), timestamp: new Date().toISOString() };
-    setLogs((prev) => {
-      const next = [full, ...prev];
-      localStorage.setItem("crisis-logs", JSON.stringify(next));
-      return next;
-    });
-  }, []);
+    supabase
+      .from("logs")
+      .select("*")
+      .eq("battalion_id", battalionId)
+      .order("created_at", { ascending: false })
+      .limit(2000)
+      .then(({ data }) => {
+        if (cancelled) return;
+        if (data) setLogs((data as LogRow[]).map(rowToLog));
+        setLoaded(true);
+      });
 
-  const clearLogs = useCallback(() => {
+    const channel = supabase
+      .channel(`logs:${battalionId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "logs", filter: `battalion_id=eq.${battalionId}` },
+        (payload: RealtimePostgresChangesPayload<LogRow>) => {
+          if (payload.eventType === "DELETE") {
+            const id = (payload.old as Partial<LogRow>).id;
+            if (id) setLogs((prev) => prev.filter((l) => l.id !== id));
+          } else if (payload.eventType === "INSERT") {
+            const entry = rowToLog(payload.new as LogRow);
+            setLogs((prev) => (prev.some((l) => l.id === entry.id) ? prev : [entry, ...prev]));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, battalionId]);
+
+  const addLog = useCallback(async (entry: Omit<LogEntry, "id" | "timestamp">) => {
+    if (!battalionId) return;
+    const full: LogEntry = { ...entry, id: crypto.randomUUID(), timestamp: new Date().toISOString() };
+    setLogs((prev) => [full, ...prev]);
+    await supabase.from("logs").insert(logToRow(full, battalionId));
+  }, [supabase, battalionId]);
+
+  const clearLogs = useCallback(async () => {
+    if (!battalionId) return;
     setLogs([]);
-    localStorage.removeItem("crisis-logs");
-  }, []);
+    await supabase.from("logs").delete().eq("battalion_id", battalionId);
+  }, [supabase, battalionId]);
 
   return (
-    <LogContext.Provider value={{ logs, addLog, clearLogs }}>
+    <LogContext.Provider value={{ logs, loaded, addLog, clearLogs }}>
       {children}
     </LogContext.Provider>
   );
@@ -67,14 +105,9 @@ export function useLogs() {
   return ctx;
 }
 
-function plugahLabel(plugah: Plugah | null): string {
-  if (!plugah) return "ללא פלוגה";
-  return PLUGAH_LABELS[plugah as NonNullable<Plugah>];
-}
-
 function filterLabel(plugahFilter: Plugah | "all"): string {
   if (plugahFilter === "all" || plugahFilter === null) return "כל הפלוגות";
-  return PLUGAH_LABELS[plugahFilter as NonNullable<Plugah>];
+  return PLUGAH_LABELS[plugahFilter];
 }
 
 export function formatLogLine(entry: LogEntry): string {
@@ -84,36 +117,26 @@ export function formatLogLine(entry: LogEntry): string {
   return `${date} ${time} | ${entry.action} | ${entry.eventAddress} | ${plugahLabel(entry.plugah)}${detail}`;
 }
 
-export function exportLogsAsText(logs: LogEntry[], plugahFilter: Plugah | "all"): string {
-  const filtered = plugahFilter === "all"
-    ? logs
-    : logs.filter((l) => l.plugah === plugahFilter);
+function filterAndSort(logs: LogEntry[], plugahFilter: Plugah | "all"): LogEntry[] {
+  const filtered = plugahFilter === "all" ? logs : logs.filter((l) => l.plugah === plugahFilter);
+  return [...filtered].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+}
 
-  const sorted = [...filtered].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
-
+export function exportLogsAsText(logs: LogEntry[], plugahFilter: Plugah | "all", battalionName = "פיקוד העורף"): string {
+  const sorted = filterAndSort(logs, plugahFilter);
   const header = [
-    `יומן פעולות — פיקוד העורף`,
+    `יומן פעולות — ${battalionName}`,
     `סינון: ${filterLabel(plugahFilter)}`,
     `יוצא: ${new Date().toLocaleString("he-IL")}`,
     `סה"כ רשומות: ${sorted.length}`,
     `${"─".repeat(60)}`,
     "",
   ].join("\n");
-
   return header + sorted.map(formatLogLine).join("\n");
 }
 
 export function exportLogsAsJson(logs: LogEntry[], plugahFilter: Plugah | "all"): string {
-  const filtered = plugahFilter === "all"
-    ? logs
-    : logs.filter((l) => l.plugah === plugahFilter);
-
-  const sorted = [...filtered].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
-
+  const sorted = filterAndSort(logs, plugahFilter);
   return JSON.stringify({
     exportedAt: new Date().toISOString(),
     filter: plugahFilter === "all" ? "all" : plugahFilter,

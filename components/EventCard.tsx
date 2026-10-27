@@ -1,74 +1,57 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CrisisEvent, PLUGAH_LABELS, INFRASTRUCTURE_LABELS } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_LABELS, plugahHex, plugahLabel } from "@/types";
+import { calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon } from "lucide-react";
 
 interface Props { event: CrisisEvent; }
 
-const plugahBgColors: Record<string, string> = {
-  alef: "bg-plugah-alef", bet: "bg-plugah-bet", gimel: "bg-plugah-gimel",
-};
-const plugahBorderTop: Record<string, string> = {
-  alef: "border-t-4 border-t-[#1A3F7A]", bet: "border-t-4 border-t-[#2E7D32]",
-  other: "border-t-4 border-t-[#37474F]", none: "border-t-4 border-t-[#9B9890]",
-};
-
-function calcNedarim(e: CrisisEvent): number | null {
-  if (e.resheimEogen === null) return null;
-  return e.resheimEogen -
-    (e.lekudimGluyim ?? 0) - (e.lekudimSmuim ?? 0) -
-    (e.hulitzu ?? 0) - (e.meautarim ?? 0) - (e.punu ?? 0);
-}
-
 export default function EventCard({ event }: Props) {
-  const router    = useRouter();
-  const plugahKey = event.plugah ?? "none";
-  const plugahBg  = plugahBgColors[plugahKey];
-  const borderTop = plugahBorderTop[plugahKey];
+  const router = useRouter();
+  const color  = plugahHex(event.plugah);
 
-  const nedarim    = calcNedarim(event);
-  const hasAnchor  = event.resheimEogen !== null;
-  const isFinale   = nedarim === 0;
-  const isNegative = nedarim !== null && nedarim < 0;
-  const hasIssue   = nedarim !== null && nedarim > 0;
-  const hasTzfi = event.tzapi
-  const isClosed       = event.status === "closed";
-  const incompleteMeta = !isClosed && (!event.crisisType || !event.infrastructureType || !event.plugah);
+  const missing    = calcMissing(event);
+  const hasAnchor  = event.anchor !== null;
+  const isFinale   = missing === 0;
+  const isNegative = missing !== null && missing < 0;
+  const hasIssue   = missing !== null && missing > 0;
+  const isClosed   = event.status === "closed";
+  const incompleteMeta = !isClosed && isMetaIncomplete(event);
 
-  // Secondary stats — only show if have values
   const stats = [
-    event.lekudimGluyim ? { label: "גלויים",  value: event.lekudimGluyim, cls: "bg-red-100 text-red-700",    icon: <Eye className="w-3 h-3" /> } : null,
+    event.lekudimGluyim ? { label: "גלויים",  value: event.lekudimGluyim, cls: "bg-red-100 text-red-700",       icon: <Eye className="w-3 h-3" /> } : null,
     event.lekudimSmuim  ? { label: "סמויים",  value: event.lekudimSmuim,  cls: "bg-orange-100 text-orange-700", icon: <EyeOff className="w-3 h-3" /> } : null,
-    event.hulitzu       ? { label: "חולצו",   value: event.hulitzu,       cls: "bg-blue-100 text-blue-700",  icon: <Zap className="w-3 h-3" /> } : null,
-    event.meautarim     ? { label: "מאותרים", value: event.meautarim,     cls: "bg-purple-100 text-purple-700",  icon: <UserCheck className="w-3 h-3" /> }: null,
-    event.punu          ? { label: "פונו",    value: event.punu,          cls: "bg-teal-100 text-teal-700",  icon: <TruckIcon className="w-3 h-3" /> } : null,
+    event.hulitzu       ? { label: "חולצו",   value: event.hulitzu,       cls: "bg-blue-100 text-blue-700",     icon: <Zap className="w-3 h-3" /> } : null,
+    event.meautarim     ? { label: "מאותרים", value: event.meautarim,     cls: "bg-purple-100 text-purple-700", icon: <UserCheck className="w-3 h-3" /> } : null,
+    event.punu          ? { label: "פונו",    value: event.punu,          cls: "bg-teal-100 text-teal-700",     icon: <TruckIcon className="w-3 h-3" /> } : null,
   ].filter(Boolean) as { label: string; value: number; cls: string; icon?: React.ReactNode }[];
 
   return (
     <div
+      role="link"
+      tabIndex={0}
       onClick={() => router.push(`/events/${event.id}`)}
-      className={`rounded-lg shadow-sm border ${borderTop} cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col
-        ${isClosed                                  ? "bg-gray-50 border-gray-200 opacity-75"   : ""}
-        ${!isClosed && isFinale                     ? "bg-green-50 border-green-200"             : ""}
-        ${!isClosed && isNegative                   ? "bg-red-50 border-red-300"                 : ""}
-        ${!isClosed && !isFinale && !isNegative     ? "bg-white border-pikud-gray-light"         : ""}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`/events/${event.id}`); } }}
+      style={{ borderTopColor: color }}
+      className={`rounded-lg shadow-sm border border-t-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-pikud-orange
+        ${isClosed                              ? "bg-gray-50 border-gray-200 opacity-75" : ""}
+        ${!isClosed && isFinale                 ? "bg-green-50 border-green-200"          : ""}
+        ${!isClosed && isNegative               ? "bg-red-50 border-red-300"              : ""}
+        ${!isClosed && !isFinale && !isNegative ? "bg-white border-pikud-gray-light"      : ""}
       `}
     >
-      {/* Header */}
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         {event.plugah ? (
-          <span className={`${plugahBg} text-white text-xs font-semibold px-2.5 py-1 rounded-full`}>
-            {PLUGAH_LABELS[event.plugah]}
+          <span style={{ backgroundColor: color }} className="text-white text-xs font-semibold px-2.5 py-1 rounded-full">
+            {plugahLabel(event.plugah)}
           </span>
         ) : (
           <span className="bg-pikud-gray-light text-pikud-gray-mid text-xs px-2.5 py-1 rounded-full">ללא פלוגה</span>
         )}
         <div className="flex items-center gap-2">
           {isClosed && (
-            <span className="flex items-center gap-1 bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">
-              סגור
-            </span>
+            <span className="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">סגור</span>
           )}
           <div className="flex items-center gap-1 text-pikud-gray-mid">
             <Clock className="w-3 h-3" />
@@ -77,7 +60,6 @@ export default function EventCard({ event }: Props) {
         </div>
       </div>
 
-      {/* Address + type */}
       <div className="px-4 pb-2">
         <div className="flex items-start gap-2">
           <MapPin className="w-4 h-4 text-pikud-orange mt-0.5 shrink-0" />
@@ -95,19 +77,17 @@ export default function EventCard({ event }: Props) {
         )}
       </div>
 
-      {/* Main numbers */}
       <div className="px-4 py-2 flex items-center gap-3">
-        {/* עוגן */}
         {hasAnchor && (
-          <div className="flex flex-col items-center bg-pikud-navy/5 rounded-lg px-3 py-1.5 min-w-[48px] shrink-0">
-            <span className="text-[10px] text-pikud-gray-mid font-medium">עוגן</span>
-            <span className="text-xl font-bold text-pikud-navy leading-tight">{event.resheimEogen}</span>
-          </div>
+          <>
+            <div className="flex flex-col items-center bg-pikud-navy/5 rounded-lg px-3 py-1.5 min-w-[48px] shrink-0">
+              <span className="text-[10px] text-pikud-gray-mid font-medium">עוגן</span>
+              <span className="text-xl font-bold text-pikud-navy leading-tight">{event.anchor}</span>
+            </div>
+            <div className="w-px h-8 bg-pikud-gray-light shrink-0" />
+          </>
         )}
 
-        {hasAnchor && <div className="w-px h-8 bg-pikud-gray-light shrink-0" />}
-       
-        {/* נעדרים — the hero */}
         {isFinale ? (
           <div className="flex items-center gap-2">
             <CheckCircle className="w-7 h-7 text-green-500 shrink-0" />
@@ -119,24 +99,19 @@ export default function EventCard({ event }: Props) {
         ) : isNegative ? (
           <div className="flex flex-col items-center bg-red-100 border border-red-300 rounded-lg px-3 py-1.5 min-w-[48px] shrink-0">
             <span className="text-[10px] text-red-400 font-medium">שגיאה</span>
-            <span className="text-xl font-bold text-red-600 leading-tight">{nedarim}</span>
+            <span className="text-xl font-bold text-red-600 leading-tight">{missing}</span>
           </div>
         ) : hasIssue ? (
           <div className="flex flex-col items-center bg-red-50 border border-red-200 rounded-lg px-3 py-1.5 min-w-[48px] shrink-0">
             <span className="text-[10px] text-red-400 font-medium">נעדרים</span>
-            <span className="text-xl font-bold text-red-600 leading-tight">{nedarim}</span>
+            <span className="text-xl font-bold text-red-600 leading-tight">{missing}</span>
           </div>
-        
-      ): !hasAnchor && hasTzfi ? (
-          <span className="text-xs text-pikud-gray-mid italic">{hasTzfi} צפי ראשוני </span>
+        ) : !hasAnchor && event.tzapi ? (
+          <span className="text-xs text-pikud-gray-mid italic">צפי ראשוני: {event.tzapi}</span>
         ) : !hasAnchor ? (
           <span className="text-xs text-pikud-gray-mid italic">הזן עוגן לחישוב</span>
-        )  :null
-        
-        }
-        
+        ) : null}
 
-        {/* Secondary stat pills */}
         {stats.length > 0 && (
           <div className="flex flex-wrap gap-1 mr-auto">
             {stats.map((s) => (
@@ -150,7 +125,6 @@ export default function EventCard({ event }: Props) {
         )}
       </div>
 
-      {/* Alert footer — anchor error */}
       {isNegative && (
         <div className="mt-auto border-t border-red-300 bg-red-100 px-4 py-2 flex items-center gap-2">
           <AlertTriangle className="w-3.5 h-3.5 text-red-600 shrink-0" />
@@ -158,7 +132,6 @@ export default function EventCard({ event }: Props) {
         </div>
       )}
 
-      {/* Info footer — incomplete meta */}
       {!isNegative && incompleteMeta && (
         <div className="mt-auto border-t border-amber-200 bg-amber-50 px-4 py-2 flex items-center gap-2">
           <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
@@ -168,7 +141,6 @@ export default function EventCard({ event }: Props) {
         </div>
       )}
 
-      {/* Finale footer */}
       {isFinale && (
         <div className="mt-auto border-t border-green-200 bg-green-100 px-4 py-2 flex items-center justify-center gap-2">
           <CheckCircle className="w-3.5 h-3.5 text-green-600" />
@@ -176,10 +148,9 @@ export default function EventCard({ event }: Props) {
         </div>
       )}
 
-      {/* Notes footer — show if hearot has content */}
       {event.hearot && event.hearot.trim() && (
         <div className="border-t border-indigo-200 bg-indigo-50 px-4 py-2 flex items-start gap-2">
-           <Info className="w-3.5 h-3.5 text-indigo-600" />
+          <Info className="w-3.5 h-3.5 text-indigo-600 mt-0.5" />
           <p className="text-xs text-indigo-800 font-medium leading-snug line-clamp-2">{event.hearot.trim()}</p>
         </div>
       )}

@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from "react";
 import { Shield, Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
 import { signIn, type SignInState } from "@/app/login/actions";
 
-export default function LoginPage() {
+export default function LoginPage({ next }: { next?: string }) {
   const [state, formAction, pending] = useActionState<SignInState, FormData>(signIn, {});
   const [showPass, setShowPass] = useState(false);
   const [shaking, setShaking]   = useState(false);
@@ -34,6 +34,7 @@ export default function LoginPage() {
           </div>
 
           <form action={formAction} className="px-8 py-7 space-y-5">
+            <input type="hidden" name="next" value={next ?? "/"} />
             <p className="text-center text-gray-500 text-sm">כניסה עם פרטי הגדוד</p>
 
             <div className="space-y-1.5">

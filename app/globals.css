@@ -50,12 +50,6 @@
 }
 
 @layer utilities {
-  .plugah-alef  { @apply bg-plugah-alef text-white; }
-  .plugah-bet   { @apply bg-plugah-bet text-white; }
-  .plugah-gimel { @apply bg-plugah-gimel text-white; }
-  .plugah-dalet { @apply bg-plugah-dalet text-white; }
-  .plugah-other { @apply bg-plugah-other text-white; }
-  .plugah-none  { @apply bg-pikud-gray-mid text-white; }
 
   .table-header {
     @apply text-sm font-700 text-pikud-navy uppercase tracking-wide;

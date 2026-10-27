@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useLogs, exportLogsAsText, exportLogsAsJson, LogActionType } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
-import { PLUGAH_LABELS, Plugah } from "@/types";
+import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
+import { useBattalion } from "@/lib/session";
 import { ArrowRight, Download, Trash2, ScrollText, Filter } from "lucide-react";
 
 const ACTION_COLORS: Record<LogActionType, string> = {
@@ -12,9 +13,10 @@ const ACTION_COLORS: Record<LogActionType, string> = {
   "עדכון נתונים": "bg-amber-100 text-amber-800",
   "סגירת אירוע":  "bg-gray-100 text-gray-700",
   "שינוי פלוגה":  "bg-purple-100 text-purple-800",
+  "ייבוא נתונים": "bg-teal-100 text-teal-800",
 };
 
-const plugahFilters: (Plugah | "all")[] = ["all", "alef", "bet", "gimel", "other"];
+const plugahFilters: (Plugah | "all")[] = ["all", ...PLUGAH_KEYS];
 
 function downloadFile(content: string, filename: string, type: string) {
   const blob = new Blob([content], { type });
@@ -26,7 +28,8 @@ function downloadFile(content: string, filename: string, type: string) {
 
 export default function LogsPage() {
   const router = useRouter();
-  const { logs, clearLogs } = useLogs();
+  const { logs, loaded, clearLogs } = useLogs();
+  const battalion = useBattalion();
 
   const [plugahFilter, setPlugahFilter] = useState<Plugah | "all">("all");
   const [actionFilter, setActionFilter] = useState<LogActionType | "all">("all");
@@ -39,7 +42,7 @@ export default function LogsPage() {
   }, [logs, plugahFilter, actionFilter]);
 
   function handleExportTxt() {
-    const content = exportLogsAsText(logs, plugahFilter);
+    const content = exportLogsAsText(logs, plugahFilter, battalion.name);
     const label   = plugahFilter === "all" || plugahFilter === null
       ? "כל-הפלוגות"
       : PLUGAH_LABELS[plugahFilter as NonNullable<Plugah>].replace(" ", "-");
@@ -59,7 +62,7 @@ export default function LogsPage() {
   }
 
   const actionTypes: (LogActionType | "all")[] = [
-    "all", "פתיחת אירוע", "עדכון נתונים", "סגירת אירוע", "שינוי פלוגה"
+    "all", "פתיחת אירוע", "עדכון נתונים", "סגירת אירוע", "שינוי פלוגה", "ייבוא נתונים"
   ];
 
   return (
@@ -69,7 +72,7 @@ export default function LogsPage() {
       <div className="bg-pikud-navy shrink-0">
         <div className="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <button onClick={() => router.push("/")} className="text-white/60 hover:text-white transition-colors">
+            <button onClick={() => router.push("/events")} className="text-white/60 hover:text-white transition-colors">
               <ArrowRight className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-2">
@@ -137,7 +140,7 @@ export default function LogsPage() {
             <div className="text-center bg-white rounded-2xl p-12 max-w-sm mx-auto border border-pikud-gray-light">
               <ScrollText className="w-12 h-12 text-pikud-gray-mid mx-auto mb-4" />
               <p className="text-pikud-navy font-bold text-lg mb-2">אין רשומות</p>
-              <p className="text-pikud-gray-mid text-sm">הפעולות יירשמו אוטומטית</p>
+              <p className="text-pikud-gray-mid text-sm">{loaded ? "הפעולות יירשמו אוטומטית" : "טוען…"}</p>
             </div>
           </div>
         ) : (

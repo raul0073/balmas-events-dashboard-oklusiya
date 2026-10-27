@@ -2,6 +2,7 @@ import LoginPage from "@/components/LoginPage";
 
 export const metadata = { title: "כניסה | חמ\"ל אוכלוסייה" };
 
-export default function Login() {
-  return <LoginPage />;
+export default async function Login({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const { next } = await searchParams;
+  return <LoginPage next={next} />;
 }

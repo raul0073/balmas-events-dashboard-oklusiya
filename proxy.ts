@@ -1,17 +1,17 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-const PUBLIC_PATHS = ["/login"];
+import { isProtectedPath } from "@/lib/tools";
 
 /**
- * Runs on every request: refreshes the Supabase session cookie and
- * sends signed-out visitors to /login (and signed-in ones away from it).
+ * Runs on every request: refreshes the Supabase session cookie, sends signed-out
+ * visitors of protected tools to /login (remembering where they were going), and
+ * sends signed-in visitors of /login to the hub.
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL!.replace(/(\.supabase\.co)\/.*$/, "$1"),
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
@@ -30,17 +30,18 @@ export async function proxy(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const signedIn = Boolean(data?.claims);
   const path     = request.nextUrl.pathname;
-  const isPublic = PUBLIC_PATHS.some((p) => path === p || path.startsWith(`${p}/`));
 
-  if (!signedIn && !isPublic) {
+  if (!signedIn && isProtectedPath(path)) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.search = "";
+    url.searchParams.set("next", path);
     return NextResponse.redirect(url);
   }
-  if (signedIn && isPublic) {
+  if (signedIn && path === "/login") {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    const next = url.searchParams.get("next");
+    url.pathname = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
     url.search = "";
     return NextResponse.redirect(url);
   }

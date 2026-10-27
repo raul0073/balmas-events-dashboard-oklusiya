@@ -12,41 +12,58 @@ export type CrisisType =
   | "אחר"
   | null;
 
+export type EventStatus = "active" | "closed";
+
 export interface CrisisEvent {
   id: string;
   address: string;
   crisisType: CrisisType;
   infrastructureType: InfrastructureType;
   plugah: Plugah;
+  /** forecast of people on site, before the anchor list exists */
   tzapi: number | null;
-  resheimEogen: number | null;
-  patzuim: number | null;
-  lekudimSmuim: number | null;
+  /** the anchor list: how many people are known to have been on site */
+  anchor: number | null;
   lekudimGluyim: number | null;
+  lekudimSmuim: number | null;
   hulitzu: number | null;
   meautarim: number | null;
   punu: number | null;
-  nedarim: number | null;
   hearot: string;
   createdAt: string;
   updatedAt: string;
-  status: "active" | "closed";
+  status: EventStatus;
 }
 
+/** The five counters that are subtracted from the anchor to give the missing count. */
+export const COUNTER_KEYS = ["lekudimGluyim", "lekudimSmuim", "hulitzu", "meautarim", "punu"] as const;
+export type CounterKey = (typeof COUNTER_KEYS)[number];
+
+export const PLUGAH_KEYS: NonNullable<Plugah>[] = ["alef", "bet", "gimel", "other"];
+
 export const PLUGAH_LABELS: Record<NonNullable<Plugah>, string> = {
-  alef: "פלוגה א",
-  bet:  "פלוגה ב",
-  gimel:"פלוגה ג",
-  other:"אחר",
+  alef:  "פלוגה א",
+  bet:   "פלוגה ב",
+  gimel: "פלוגה ג",
+  other: "אחר",
 };
 
-export const PLUGAH_COLORS: Record<NonNullable<Plugah> | "none", string> = {
-  alef:  "plugah-alef",
-  bet:   "plugah-bet",
-  gimel: "plugah-gimel",
-  other: "plugah-other",
-  none:  "plugah-none",
+/** One source of truth for plugah colors. Becomes per-battalion in the settings stage. */
+export const PLUGAH_HEX: Record<NonNullable<Plugah> | "none", string> = {
+  alef:  "#1A3F7A",
+  bet:   "#2E7D32",
+  gimel: "#6A1B9A",
+  other: "#37474F",
+  none:  "#9B9890",
 };
+
+export function plugahHex(plugah: Plugah): string {
+  return PLUGAH_HEX[plugah ?? "none"];
+}
+
+export function plugahLabel(plugah: Plugah, fallback = "ללא פלוגה"): string {
+  return plugah ? PLUGAH_LABELS[plugah] : fallback;
+}
 
 export const INFRASTRUCTURE_LABELS: Record<NonNullable<InfrastructureType>, string> = {
   house:    "בית",
@@ -55,7 +72,7 @@ export const INFRASTRUCTURE_LABELS: Record<NonNullable<InfrastructureType>, stri
   other:    "אחר",
 };
 
-export const CRISIS_TYPES: CrisisType[] = [
+export const CRISIS_TYPES: NonNullable<CrisisType>[] = [
   "שברי רסיס",
   "רעידת אדמה",
   "הרס מבנה",

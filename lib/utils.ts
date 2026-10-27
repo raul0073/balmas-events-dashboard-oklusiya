@@ -5,8 +5,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/** Row ids are uuids, generated on the client so optimistic updates and realtime echoes match. */
 export function generateId(): string {
-  return `evt-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  return crypto.randomUUID();
 }
 
 export function now(): string {
