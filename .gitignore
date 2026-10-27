@@ -53,3 +53,8 @@ coverage/
 *.pem
 .vercel
 .turbo
+# local test accounts
+scripts/.seed.local.json
+
+# local tooling
+.claude/

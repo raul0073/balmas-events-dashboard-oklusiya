@@ -1,11 +1,16 @@
 {
-  "name": "crisis-dashboard",
+  "name": "oklusiya-events-dashboard",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "node scripts/migrate.mjs",
+    "admin:create": "node scripts/create-admin.mjs",
+    "battalion:create": "node scripts/create-battalion.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.4",
@@ -14,6 +19,8 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.2",
     "@radix-ui/react-toast": "^1.2.4",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.475.0",
@@ -21,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.0.0",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^3.0.2",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -30,9 +38,11 @@
     "@types/react-dom": "^19",
     "autoprefixer": "^10.0.1",
     "baseline-browser-mapping": "^2.10.9",
+    "dotenv": "^18.0.9",
     "eslint": "^8",
     "eslint-config-next": "15.2.2",
     "postcss": "^8",
+    "postgres": "^3.4.9",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
