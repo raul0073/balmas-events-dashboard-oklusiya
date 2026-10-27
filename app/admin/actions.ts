@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { loadSession } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { USERNAME_PATTERN, normalizeUsername, usernameToEmail } from "@/lib/auth/username";
+import { normalizeChecklist } from "@/lib/checklist/types";
 
 export interface ActionState {
   error?: string;
@@ -115,6 +116,21 @@ export async function deleteFeedback(formData: FormData): Promise<void> {
   await admin.from("feedback").delete().eq("id", id);
   revalidatePath("/admin/feedback");
   revalidatePath("/admin", "layout");
+}
+
+export async function saveChecklist(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  let parsed: unknown;
+  try { parsed = JSON.parse(String(formData.get("content") ?? "")); } catch { return { error: "תוכן לא תקין" }; }
+  const content = normalizeChecklist(parsed);
+  if (!content.title) return { error: "חסרה כותרת" };
+  const admin = createAdminClient();
+  const { error } = await admin.from("site_content")
+    .upsert({ key: "checklist", data: content, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (error) return { error: error.message };
+  revalidatePath("/checklist");
+  revalidatePath("/admin/checklist");
+  return { ok: true };
 }
 
 export async function deleteBattalion(formData: FormData): Promise<void> {

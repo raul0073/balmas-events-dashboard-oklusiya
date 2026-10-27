@@ -42,7 +42,7 @@ export const TOOLS: ToolDef[] = [
     name: "צ'קליסט מש\"ק אוכלוסייה",
     description: "שלבי העבודה של מש\"ק האוכלוסייה, שלב אחר שלב",
     protected: false,
-    ready: false,
+    ready: true,
     tones: ["orange"],
   },
   {
