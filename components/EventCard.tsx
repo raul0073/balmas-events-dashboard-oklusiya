@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahHex, plugahLabel } from "@/types";
-import { calcMissing, isMetaIncomplete } from "@/lib/events/math";
+import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon, UserCog } from "lucide-react";
 
 interface Props { event: CrisisEvent; }
@@ -12,7 +12,8 @@ export default function EventCard({ event }: Props) {
   const color  = plugahHex(event.plugah);
 
   const missing    = calcMissing(event);
-  const hasAnchor  = event.anchor !== null;
+  const anchor     = anchorInfo(event);
+  const hasAnchor  = anchor.value !== null;
   const isFinale   = missing === 0;
   const isNegative = missing !== null && missing < 0;
   const hasIssue   = missing !== null && missing > 0;
@@ -90,9 +91,10 @@ export default function EventCard({ event }: Props) {
       <div className="px-4 py-2 flex items-center gap-3">
         {hasAnchor && (
           <>
-            <div className="flex flex-col items-center bg-pikud-navy/5 rounded-lg px-3 py-1.5 min-w-[48px] shrink-0">
-              <span className="text-[10px] text-pikud-gray-mid font-medium">עוגן</span>
-              <span className="text-xl font-bold text-pikud-navy leading-tight">{event.anchor}</span>
+            <div className={`flex flex-col items-center rounded-lg px-3 py-1.5 min-w-[48px] shrink-0 ${anchor.assumed ? "bg-amber-50 border border-amber-300" : "bg-pikud-navy/5"}`}
+              title={anchor.assumed ? "עוגן משוער לפי צפי, טרם הוזנה רשימת עוגן" : undefined}>
+              <span className={`text-[10px] font-medium ${anchor.assumed ? "text-amber-700" : "text-pikud-gray-mid"}`}>{anchor.assumed ? "עוגן משוער" : "עוגן"}</span>
+              <span className={`text-xl font-bold leading-tight ${anchor.assumed ? "text-amber-800" : "text-pikud-navy"}`}>{anchor.value}</span>
             </div>
             <div className="w-px h-8 bg-pikud-gray-light shrink-0" />
           </>
@@ -116,8 +118,6 @@ export default function EventCard({ event }: Props) {
             <span className="text-[10px] text-red-400 font-medium">נעדרים</span>
             <span className="text-xl font-bold text-red-600 leading-tight">{missing}</span>
           </div>
-        ) : !hasAnchor && event.tzapi ? (
-          <span className="text-xs text-pikud-gray-mid italic">צפי ראשוני: {event.tzapi}</span>
         ) : !hasAnchor ? (
           <span className="text-xs text-pikud-gray-mid italic">הזן עוגן לחישוב</span>
         ) : null}

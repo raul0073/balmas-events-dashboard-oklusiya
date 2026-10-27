@@ -12,7 +12,7 @@ import ImportLocalBanner from "@/components/ImportLocalBanner";
 import ActivityPulse from "@/components/ActivityPulse";
 import { Button } from "@/components/ui/button";
 import { formatAllEventsForWhatsApp } from "@/lib/whatsapp";
-import { calcMissing, isMetaIncomplete } from "@/lib/events/math";
+import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
 import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter, ScrollText, Trash2, Loader2, EyeOff, Eye } from "lucide-react";
 import { FaUsersSlash, FaPeopleRoof } from "react-icons/fa6";
@@ -49,8 +49,9 @@ export default function EventsBoard() {
 
   const totalMissing     = activeEvents.reduce((s, e) => { const n = calcMissing(e); return s + (n !== null && n > 0 ? n : 0); }, 0);
   const totalTrapped     = activeEvents.reduce((s, e) => s + (e.lekudimGluyim ?? 0) + (e.lekudimSmuim ?? 0), 0);
-  const totalPeople      = activeEvents.reduce((s, e) => s + (e.anchor ?? 0), 0);
-  const eventsWithAnchor = activeEvents.filter((e) => e.anchor !== null).length;
+  const totalPeople      = activeEvents.reduce((s, e) => s + (anchorInfo(e).value ?? 0), 0);
+  const eventsWithAnchor = activeEvents.filter((e) => anchorInfo(e).value !== null).length;
+  const assumedCount     = activeEvents.filter((e) => anchorInfo(e).assumed).length;
   const incompleteCount  = activeEvents.filter(isMetaIncomplete).length;
   const anchorErrorCount = activeEvents.filter((e) => { const n = calcMissing(e); return n !== null && n < 0; }).length;
 
@@ -59,7 +60,7 @@ export default function EventsBoard() {
     return [...list].sort((a, b) => {
       switch (sort) {
         case "missing": return (calcMissing(b) ?? -1) - (calcMissing(a) ?? -1);
-        case "anchor":  return (b.anchor ?? -1) - (a.anchor ?? -1);
+        case "anchor":  return (anchorInfo(b).value ?? -1) - (anchorInfo(a).value ?? -1);
         case "plugah":  return (a.plugah ?? "z").localeCompare(b.plugah ?? "z");
         case "time":
         default:        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -122,6 +123,15 @@ export default function EventsBoard() {
                   <FaPeopleRoof className="w-4 h-4 text-amber-400" />
                   <span className="text-white/60 text-sm">לכודים:</span>
                   <span className="text-amber-400 font-bold text-sm">{totalTrapped}</span>
+                </div>
+              </>
+            )}
+            {assumedCount > 0 && (
+              <>
+                <div className="w-px h-4 bg-white/20 shrink-0" />
+                <div className="flex items-center gap-2 shrink-0" title="אירועים שבהם העוגן משוער לפי צפי">
+                  <AlertTriangle className="w-4 h-4 text-amber-300" />
+                  <span className="text-amber-300 text-sm font-medium">{assumedCount} עוגן משוער</span>
                 </div>
               </>
             )}

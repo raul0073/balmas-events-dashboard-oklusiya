@@ -1,5 +1,5 @@
 import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahLabel } from "@/types";
-import { accountedFor, calcMissing } from "@/lib/events/math";
+import { accountedFor, anchorInfo, calcMissing } from "@/lib/events/math";
 
 function fmt(val: number | null | undefined): string {
   return val !== null && val !== undefined ? String(val) : "—";
@@ -25,9 +25,12 @@ export function formatEventForWhatsApp(event: CrisisEvent, header = "פיקוד 
     ? `⚠️ *נעדרים: ${missing} — סכום עולה על העוגן!*`
     : `🔴 *נעדרים: ${missing}*`;
 
-  const anchorLine = event.anchor !== null
-    ? `✅ *עוגן: ${event.anchor}* | מסוכם: ${accountedFor(event)}`
-    : `• עוגן: —`;
+  const anchor = anchorInfo(event);
+  const anchorLine = anchor.value === null
+    ? `• עוגן: —`
+    : anchor.assumed
+    ? `⚠️ *עוגן משוער לפי צפי: ${anchor.value}* | מסוכם: ${accountedFor(event)}`
+    : `✅ *עוגן: ${anchor.value}* | מסוכם: ${accountedFor(event)}`;
 
   return `🚨 *דיווח אירוע | ${header}*
 ${LINE}
@@ -52,7 +55,8 @@ ${LINE}
 
 export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פיקוד העורף"): string {
   const active       = events.filter((e) => e.status === "active");
-  const totalAnchor  = active.reduce((s, e) => s + (e.anchor ?? 0), 0);
+  const totalAnchor  = active.reduce((s, e) => s + (anchorInfo(e).value ?? 0), 0);
+  const assumedCount = active.filter((e) => anchorInfo(e).assumed).length;
   const totalMissing = active.reduce((s, e) => s + Math.max(calcMissing(e) ?? 0, 0), 0);
   const totalTrapped = active.reduce((s, e) => s + (e.lekudimGluyim ?? 0) + (e.lekudimSmuim ?? 0), 0);
   const totalRescued = active.reduce((s, e) => s + (e.hulitzu ?? 0), 0);
@@ -70,6 +74,7 @@ export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פי
     totalRescued > 0 ? `✅ חולצו: *${totalRescued}*` : null,
     finaleCount  > 0 ? `🎉 אירועים הושלמו: *${finaleCount}*` : null,
     errCount     > 0 ? `🚨 שגיאות נתונים: *${errCount}*` : null,
+    assumedCount > 0 ? `⚠️ עוגן משוער לפי צפי: *${assumedCount}* אירועים` : null,
     LINE,
   ].filter(Boolean).join("\n");
 
@@ -79,7 +84,7 @@ export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פי
     return [
       `*${i + 1}. ${eventTitle(e)}*${e.name.trim() && e.address.trim() ? ` — ${e.address}` : ""}`,
       e.commander.trim() ? `   👤 ${e.commander}` : null,
-      `   🪖 ${plugahLabel(e.plugah, "—")} | ⚡ ${e.crisisType ?? "—"} | עוגן: ${fmt(e.anchor)}`,
+      `   🪖 ${plugahLabel(e.plugah, "—")} | ⚡ ${e.crisisType ?? "—"} | עוגן: ${anchorInfo(e).value === null ? "—" : anchorInfo(e).assumed ? `${anchorInfo(e).value} (משוער)` : anchorInfo(e).value}`,
       `   לכודים גלויים: ${fmt(e.lekudimGluyim)} | לכודים סמויים: ${fmt(e.lekudimSmuim)}`,
       `   חולצו: ${fmt(e.hulitzu)} | פונו: ${fmt(e.punu)} | מאותרים: ${fmt(e.meautarim)}`,
       `   🔴 נעדרים: ${missingStr}`,

@@ -7,28 +7,30 @@ import { useLogs } from "@/lib/logger";
 import { useBattalion } from "@/lib/session";
 import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, eventTitle, plugahHex, plugahLabel } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Input, Label, Select, NumberInput } from "@/components/ui/primitives";
+import { Input, Label, Select } from "@/components/ui/primitives";
+import CounterCard from "@/components/events/CounterCard";
 import { formatEventForWhatsApp } from "@/lib/whatsapp";
-import { accountedFor, calcMissing, isMetaIncomplete } from "@/lib/events/math";
+import { accountedFor, anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { now } from "@/lib/utils";
 import {
   ArrowRight, Check, AlertTriangle, Save, Loader2,
   MapPin, Clock, Pencil, X, CheckCircle, MessageCircle, UserCog,
-  PartyPopper, XCircle, ShieldAlert
+  PartyPopper, XCircle, ShieldAlert, Eye, EyeOff, Zap, UserCheck, Truck, Users, ListChecks, Sigma,
 } from "lucide-react";
 
-interface FieldDef { key: CounterKey; label: string; hint: string; }
+interface FieldDef { key: CounterKey; label: string; hint: string; icon: React.ReactNode; tone: string; }
 
-const EDITABLE_FIELDS: FieldDef[] = [
-  { key: "punu",          label: "פונו",           hint: "פונו לאתר אחר" },
-  { key: "hulitzu",       label: "חולצו",          hint: "חולצו מהשטח" },
-  { key: "meautarim",     label: "מאותרים",        hint: "אותרו, בטיפול" },
-  { key: "lekudimGluyim", label: "לכודים גלויים", hint: "נמצאו, טרם חולצו" },
-  { key: "lekudimSmuim",  label: "לכודים סמויים", hint: "מוערכים, טרם אותרו" },
+const COUNTERS: FieldDef[] = [
+  { key: "lekudimGluyim", label: "לכודים גלויים", hint: "נמצאו, טרם חולצו",    icon: <Eye className="w-4 h-4" />,       tone: "bg-red-100 text-red-700" },
+  { key: "lekudimSmuim",  label: "לכודים סמויים", hint: "מוערכים, טרם אותרו",  icon: <EyeOff className="w-4 h-4" />,    tone: "bg-orange-100 text-orange-700" },
+  { key: "hulitzu",       label: "חולצו",          hint: "חולצו מהשטח",         icon: <Zap className="w-4 h-4" />,       tone: "bg-blue-100 text-blue-700" },
+  { key: "meautarim",     label: "מאותרים",        hint: "אותרו, בטיפול",       icon: <UserCheck className="w-4 h-4" />, tone: "bg-purple-100 text-purple-700" },
+  { key: "punu",          label: "פונו",           hint: "פונו לאתר אחר",       icon: <Truck className="w-4 h-4" />,     tone: "bg-teal-100 text-teal-700" },
 ];
 
 const FIELD_LABELS: Partial<Record<keyof CrisisEvent, string>> = {
-  name: "שם האירוע", address: "כתובת", commander: "אחראי אירוע", anchor: "עוגן", tzapi: "צפי", lekudimGluyim: "לכודים גלויים",
+  name: "שם האירוע", address: "כתובת", commander: "אחראי אירוע",
+  anchor: "עוגן", tzapi: "צפי", lekudimGluyim: "לכודים גלויים",
   lekudimSmuim: "לכודים סמויים", hulitzu: "חולצו", meautarim: "מאותרים",
   punu: "פונו", hearot: "הערות", crisisType: "סוג אירוע", infrastructureType: "תשתית",
 };
@@ -51,6 +53,11 @@ function buildChangeSummary(prev: CrisisEvent, next: CrisisEvent): string {
   return changes.join(" | ");
 }
 
+function parseNum(raw: string): number | null {
+  const n = parseInt(raw, 10);
+  return isNaN(n) ? null : Math.max(0, n);
+}
+
 export default function EventPage() {
   const params    = useParams();
   const router    = useRouter();
@@ -67,8 +74,6 @@ export default function EventPage() {
   const [confirmClose, setConfirmClose] = useState(false);
   const prevFormRef = useRef<CrisisEvent | null>(null);
 
-  // Wait for the first server load before deciding the event doesn't exist.
-  // The form is seeded once; later realtime updates don't clobber what's being typed.
   useEffect(() => {
     if (!loaded || form) return;
     const event = getEvent(params.id as string);
@@ -82,6 +87,7 @@ export default function EventPage() {
   }, [loaded, form, getEvent, params.id, router]);
 
   const missing = useMemo(() => (form ? calcMissing(form) : null), [form]);
+  const anchor  = useMemo(() => (form ? anchorInfo(form) : { value: null, assumed: false }), [form]);
 
   if (!loaded || !form) {
     return (
@@ -93,11 +99,6 @@ export default function EventPage() {
 
   function update<K extends keyof CrisisEvent>(key: K, value: CrisisEvent[K]) {
     setForm((prev) => (prev ? { ...prev, [key]: value } : prev));
-  }
-
-  function parseNum(raw: string): number | null {
-    const n = parseInt(raw, 10);
-    return isNaN(n) ? null : Math.max(0, n);
   }
 
   async function persist(next: CrisisEvent, logs: Parameters<typeof addLog>[0][]) {
@@ -158,11 +159,17 @@ export default function EventPage() {
 
   const incompleteMeta = isMetaIncomplete(form);
   const color      = plugahHex(form.plugah);
-  const hasAnchor  = form.anchor !== null;
   const isFinale   = missing === 0;
   const isNegative = missing !== null && missing < 0;
+  const isUrgent   = missing !== null && missing > 0;
   const isClosed   = form.status === "closed";
-  const accounted  = hasAnchor ? accountedFor(form) : null;
+  const accounted  = accountedFor(form);
+
+  const missingTone = missing === null
+    ? "bg-white border-gray-200 text-gray-300"
+    : isFinale ? "bg-green-600 border-green-700 text-white"
+    : isNegative ? "bg-red-700 border-red-800 text-white"
+    : "bg-red-600 border-red-700 text-white";
 
   return (
     <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden bg-gray-50">
@@ -178,31 +185,23 @@ export default function EventPage() {
             <div className="h-10 w-1 rounded-full shrink-0" style={{ backgroundColor: color }} />
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 min-w-0">
                   <MapPin className="w-3.5 h-3.5 text-pikud-orange shrink-0" />
                   <span className="font-bold text-pikud-cream text-base truncate">{eventTitle(form)}</span>
                 </div>
                 {form.name.trim() && form.address.trim() && (
                   <span className="text-white/60 text-sm truncate">{form.address}</span>
                 )}
-                {isClosed && (
-                  <span className="bg-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full font-bold">סגור</span>
-                )}
+                {isClosed && <span className="bg-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full font-bold">סגור</span>}
                 {form.crisisType && (
-                  <span className="bg-pikud-orange/15 text-pikud-orange-light text-xs px-2 py-0.5 rounded-md font-semibold border border-pikud-orange/20">
-                    {form.crisisType}
-                  </span>
+                  <span className="bg-pikud-orange/15 text-pikud-orange-light text-xs px-2 py-0.5 rounded-md font-semibold border border-pikud-orange/20">{form.crisisType}</span>
                 )}
                 {form.plugah && (
-                  <span style={{ backgroundColor: color }} className="text-white text-xs px-2 py-0.5 rounded-md font-semibold">
-                    {PLUGAH_LABELS[form.plugah]}
-                  </span>
+                  <span style={{ backgroundColor: color }} className="text-white text-xs px-2 py-0.5 rounded-md font-semibold">{PLUGAH_LABELS[form.plugah]}</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 mt-0.5">
-                {form.infrastructureType && (
-                  <span className="text-white/50 text-xs">{INFRASTRUCTURE_LABELS[form.infrastructureType]}</span>
-                )}
+              <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                {form.infrastructureType && <span className="text-white/50 text-xs">{INFRASTRUCTURE_LABELS[form.infrastructureType]}</span>}
                 {form.commander.trim() && (
                   <span className="flex items-center gap-1 text-white/70 text-xs"><UserCog className="w-3 h-3 text-pikud-orange" /> {form.commander}</span>
                 )}
@@ -211,9 +210,7 @@ export default function EventPage() {
                   {new Date(form.createdAt).toLocaleString("he-IL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}
                 </span>
                 {incompleteMeta && !isClosed && (
-                  <span className="flex items-center gap-1 text-amber-400 text-xs font-semibold">
-                    <AlertTriangle className="w-3 h-3" /> נדרשת השלמה
-                  </span>
+                  <span className="flex items-center gap-1 text-amber-400 text-xs font-semibold"><AlertTriangle className="w-3 h-3" /> נדרשת השלמה</span>
                 )}
               </div>
             </div>
@@ -225,7 +222,7 @@ export default function EventPage() {
                 metaOpen ? "bg-white text-pikud-navy border-white" : "text-white/80 border-white/30 hover:bg-white/10 hover:text-white"
               }`}>
               {metaOpen ? <X className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
-              <span className="hidden sm:inline text-xs">{metaOpen ? "סגור עריכה" : "ערוך כתובת, פלוגה וסוג אירוע"}</span>
+              <span className="hidden sm:inline text-xs">{metaOpen ? "סגור עריכה" : "ערוך פרטי אירוע"}</span>
             </button>
             <Button variant="whatsapp" size="sm" onClick={handleCopy} className="flex items-center gap-1.5 text-sm font-semibold">
               {copied ? <Check className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
@@ -262,7 +259,7 @@ export default function EventPage() {
               <Label htmlFor="infra" className="text-xs font-semibold text-gray-600 flex gap-1">תשתית {!form.infrastructureType && <span className="text-amber-600">*</span>}</Label>
               <Select id="infra" value={form.infrastructureType ?? ""} onChange={(e) => update("infrastructureType", (e.target.value || null) as CrisisEvent["infrastructureType"])} className="h-9 text-sm bg-white">
                 <option value="">-- בחר --</option>
-{INFRASTRUCTURE_GROUPS.map((g) => (
+                {INFRASTRUCTURE_GROUPS.map((g) => (
                   <optgroup key={g.label} label={g.label}>
                     {g.keys.map((k) => <option key={k} value={k}>{INFRASTRUCTURE_LABELS[k]}</option>)}
                   </optgroup>
@@ -280,121 +277,93 @@ export default function EventPage() {
         </div>
       )}
 
-      {/* ── STATUS BANNER ── */}
+      {/* ── BANNERS ── */}
       {isFinale && !isClosed && (
-        <div className="shrink-0 bg-green-500 px-6 py-2.5 flex items-center justify-center gap-2">
-          <PartyPopper className="w-4 h-4 text-white" />
-          <span className="text-white font-bold text-sm">נעדרים: 0 — כל האנשים ידועים! מוכן לסגירה</span>
-          <PartyPopper className="w-4 h-4 text-white" />
+        <div className="shrink-0 bg-green-500 px-6 py-2 flex items-center justify-center gap-2 text-white font-bold text-sm">
+          <PartyPopper className="w-4 h-4" /> נעדרים: 0 — כל האנשים ידועים! מוכן לסגירה <PartyPopper className="w-4 h-4" />
         </div>
       )}
       {isNegative && (
-        <div className="shrink-0 bg-red-500 px-6 py-2.5 flex items-center justify-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-white" />
-          <span className="text-white font-bold text-sm">שגיאה: הסכום ({accounted}) עולה על העוגן ({form.anchor})</span>
+        <div className="shrink-0 bg-red-600 px-6 py-2 flex items-center justify-center gap-2 text-white font-bold text-sm">
+          <ShieldAlert className="w-4 h-4" /> שגיאה: הסכום ({accounted}) עולה על העוגן ({anchor.value})
+        </div>
+      )}
+      {anchor.assumed && !isClosed && (
+        <div role="alert" className="shrink-0 bg-amber-100 border-b border-amber-300 px-4 sm:px-6 py-2 flex items-center gap-2 text-amber-900 text-sm">
+          <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+          <span><strong>רשימת עוגן טרם הוזנה.</strong> החישוב מניח עוגן לפי הצפי ({anchor.value}). הזן עוגן כשהרשימה תתקבל.</span>
         </div>
       )}
 
       {/* ── BODY ── */}
-      <div className="flex-1 flex overflow-hidden min-h-0 gap-0 px-1">
-        <div className="flex-1 flex flex-col overflow-hidden p-4 sm:p-5 gap-3 min-h-0">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
 
-          <div className="shrink-0 flex gap-3">
-            <div className="flex-1 bg-white rounded-xl border border-gray-200 px-4 py-3 flex items-center gap-4">
-              <div>
-                <Label htmlFor="anchor" className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5 block">רשימת עוגן</Label>
-                <NumberInput id="anchor"
-                  value={form.anchor ?? ""}
-                  onChange={(e) => update("anchor", parseNum(e.target.value))}
-                  placeholder="לא הוגדר"
-                  className="w-32 h-9 text-lg font-black border-gray-200 focus:border-pikud-navy"
-                />
-              </div>
-              <div className="h-10 w-px bg-gray-100" />
-              <div>
-                <Label htmlFor="tzapi" className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-0.5 block">צפי</Label>
-                <NumberInput id="tzapi"
-                  value={form.tzapi ?? ""}
-                  onChange={(e) => update("tzapi", parseNum(e.target.value))}
-                  placeholder="—"
-                  className="w-24 h-9 text-sm border-gray-200"
-                />
-              </div>
-              {hasAnchor && (
-                <>
-                  <div className="h-10 w-px bg-gray-100" />
-                  <div className="text-xs text-gray-400 leading-relaxed">
-                    <p>מסוכם: <strong className="text-pikud-navy">{accounted}</strong></p>
-                    <p className="text-gray-300">עוגן − מסוכם = נעדרים</p>
-                  </div>
-                </>
-              )}
+        {/* status tiles */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className={`rounded-2xl border-2 p-4 flex flex-col justify-between min-h-[136px] col-span-2 lg:col-span-1 lg:row-span-2 ${missingTone}`}>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-widest opacity-90">נעדרים</span>
+              {isUrgent && <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full animate-pulse">דחוף</span>}
+              {isFinale && <CheckCircle className="w-5 h-5" />}
             </div>
+            <span className="font-black leading-none text-6xl lg:text-7xl tabular-nums">{missing === null ? "?" : missing}</span>
+            <span className="text-xs opacity-90">
+              {missing === null ? "הזן עוגן או צפי לחישוב" : isFinale ? "כולם ידועים" : isNegative ? "סכום מעל העוגן, בדוק נתונים" : anchor.assumed ? "לפי עוגן משוער" : "עוגן − מסוכם"}
+            </span>
           </div>
 
-          <div className="flex-1 bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col min-h-0">
-            <div className="shrink-0 grid grid-cols-[1fr_160px_1fr] px-5 py-2.5 bg-gray-50 border-b border-gray-100">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">שדה</span>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">ערך</span>
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">הסבר</span>
+          <div className={`rounded-2xl border p-4 flex flex-col gap-1 bg-white ${anchor.assumed ? "border-amber-300" : "border-gray-200"}`}>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="anchor" className="text-xs font-bold text-gray-500 flex items-center gap-1"><ListChecks className="w-3.5 h-3.5" /> רשימת עוגן</Label>
+              {anchor.assumed && <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">משוער לפי צפי</span>}
             </div>
-            <div className="flex-1 overflow-auto divide-y divide-gray-50">
-              {EDITABLE_FIELDS.map((field) => {
-                const val = form[field.key];
-                const hasVal = val !== null && val > 0;
-                return (
-                  <div key={field.key}
-                    className={`grid grid-cols-[1fr_160px_1fr] px-5 py-3 items-center transition-colors hover:bg-gray-50/80 ${hasVal ? "bg-blue-50/30" : "bg-white"}`}>
-                    <Label htmlFor={field.key} className={`font-semibold text-sm ${hasVal ? "text-pikud-navy" : "text-gray-600"}`}>
-                      {field.label}
-                      {hasVal && <span className="mr-2 inline-block w-1.5 h-1.5 rounded-full bg-pikud-orange align-middle" />}
-                    </Label>
-                    <NumberInput id={field.key}
-                      value={val ?? ""}
-                      onChange={(e) => update(field.key, parseNum(e.target.value))}
-                      placeholder="—"
-                      className={`w-28 h-9 text-sm ${hasVal ? "border-pikud-navy/30 font-bold" : "border-gray-200"}`}
-                    />
-                    <span className="text-xs text-gray-400">{field.hint}</span>
-                  </div>
-                );
-              })}
-            </div>
+            <input id="anchor" type="number" min={0} inputMode="numeric"
+              value={form.anchor ?? ""}
+              placeholder={anchor.assumed ? String(anchor.value) : "—"}
+              onChange={(e) => update("anchor", parseNum(e.target.value))}
+              className={`w-full h-12 text-3xl font-black rounded-xl border px-3 focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
+                ${form.anchor !== null ? "text-pikud-navy border-pikud-navy/30" : anchor.assumed ? "text-amber-700/60 placeholder:text-amber-700/50 border-amber-200 bg-amber-50/40" : "text-gray-300 border-gray-200"}`} />
           </div>
 
-          <div className="shrink-0 bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col" style={{ height: "88px" }}>
-            <div className="px-4 py-1.5 border-b border-gray-100 shrink-0">
-              <Label htmlFor="hearot" className="text-xs font-bold text-gray-400 uppercase tracking-wider">הערות</Label>
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col gap-1">
+            <Label htmlFor="tzapi" className="text-xs font-bold text-gray-500 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> צפי אנשים במקום</Label>
+            <input id="tzapi" type="number" min={0} inputMode="numeric"
+              value={form.tzapi ?? ""} placeholder="—"
+              onChange={(e) => update("tzapi", parseNum(e.target.value))}
+              className={`w-full h-12 text-3xl font-black rounded-xl border px-3 focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
+                ${form.tzapi !== null ? "text-pikud-navy border-pikud-navy/30" : "text-gray-300 border-gray-200"}`} />
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col gap-1 col-span-2 lg:col-span-2">
+            <span className="text-xs font-bold text-gray-500 flex items-center gap-1"><Sigma className="w-3.5 h-3.5" /> מסוכם (חמשת המונים)</span>
+            <div className="flex items-end justify-between gap-3">
+              <span className="text-3xl font-black text-pikud-navy tabular-nums">{accounted}</span>
+              <span className="text-xs text-gray-400 text-left leading-tight">
+                {anchor.value !== null ? `${anchor.value} עוגן${anchor.assumed ? " (משוער)" : ""} − ${accounted} מסוכם` : "ללא עוגן אין חישוב"}
+              </span>
             </div>
-            <textarea id="hearot"
-              value={form.hearot}
-              onChange={(e) => update("hearot", e.target.value)}
-              placeholder="הערות שדה, מידע נוסף..."
-              className="flex-1 w-full px-4 py-2 resize-none text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none bg-transparent"
-            />
           </div>
         </div>
 
-        {/* RIGHT: missing panel */}
-        <div className="w-48 shrink-0 flex flex-col p-4 pl-0 sm:p-5 sm:pl-0 gap-3">
-          <div className={`flex-1 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all
-            ${missing === null ? "bg-white border-gray-200" : isFinale ? "bg-green-50 border-green-300" : isNegative ? "bg-red-50 border-red-300" : "bg-red-50 border-red-200"}`}>
-            <span className={`text-xs font-bold uppercase tracking-widest
-              ${isFinale ? "text-green-500" : isNegative ? "text-red-500" : missing !== null ? "text-red-400" : "text-gray-300"}`}>נעדרים</span>
-            <span className={`font-black leading-none
-              ${missing === null ? "text-5xl text-gray-200" : isFinale ? "text-6xl text-green-600" : isNegative ? "text-5xl text-red-600" : "text-6xl text-red-600"}`}>
-              {missing === null ? "?" : missing}
-            </span>
-            {missing === null && <span className="text-xs text-gray-300 text-center px-3 leading-tight">הזן עוגן לחישוב</span>}
-            {isFinale && (
-              <div className="flex flex-col items-center gap-1">
-                <CheckCircle className="w-6 h-6 text-green-500" />
-                <span className="text-xs text-green-600 font-bold text-center">כולם ידועים</span>
-              </div>
-            )}
-            {isNegative && <span className="text-xs text-red-500 font-bold text-center px-2">סכום מעל העוגן!</span>}
-            {missing !== null && missing > 0 && <span className="text-xs text-red-400 font-semibold animate-pulse">דחוף</span>}
+        {/* counters */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+          {COUNTERS.map((c) => (
+            <CounterCard key={c.key} id={c.key} label={c.label} hint={c.hint} icon={c.icon} tone={c.tone}
+              value={form[c.key]} onChange={(v) => update(c.key, v)} />
+          ))}
+        </div>
+
+        {/* notes */}
+        <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+          <div className="px-4 py-2 border-b border-gray-100">
+            <Label htmlFor="hearot" className="text-xs font-bold text-gray-500">הערות</Label>
           </div>
+          <textarea id="hearot" rows={3}
+            value={form.hearot}
+            onChange={(e) => update("hearot", e.target.value)}
+            placeholder="הערות שדה, מידע נוסף..."
+            className="w-full px-4 py-3 resize-y text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none bg-transparent min-h-[80px]"
+          />
         </div>
       </div>
 
