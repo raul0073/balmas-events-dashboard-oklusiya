@@ -1,4 +1,4 @@
-import { CrisisEvent, INFRASTRUCTURE_LABELS, plugahLabel } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahLabel } from "@/types";
 import { accountedFor, calcMissing } from "@/lib/events/math";
 
 function fmt(val: number | null | undefined): string {
@@ -31,7 +31,9 @@ export function formatEventForWhatsApp(event: CrisisEvent, header = "פיקוד 
 
   return `🚨 *דיווח אירוע | ${header}*
 ${LINE}
-📍 *${event.address}*
+📍 *${eventTitle(event)}*${event.name.trim() && event.address.trim() ? `
+${event.address}` : ""}${event.commander.trim() ? `
+👤 אחראי: ${event.commander}` : ""}
 🏗️ ${infraLabel} | ⚡ ${event.crisisType ?? "לא צוין"} | 🪖 ${plugahLabel(event.plugah, "לא שויך")}
 🕐 ${stamp(event.createdAt)}
 ${LINE}
@@ -75,7 +77,8 @@ export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פי
     const missing    = calcMissing(e);
     const missingStr = missing === null ? "—" : missing === 0 ? "0 🎉" : missing < 0 ? `${missing} ⚠️` : String(missing);
     return [
-      `*${i + 1}. ${e.address}*`,
+      `*${i + 1}. ${eventTitle(e)}*${e.name.trim() && e.address.trim() ? ` — ${e.address}` : ""}`,
+      e.commander.trim() ? `   👤 ${e.commander}` : null,
       `   🪖 ${plugahLabel(e.plugah, "—")} | ⚡ ${e.crisisType ?? "—"} | עוגן: ${fmt(e.anchor)}`,
       `   לכודים גלויים: ${fmt(e.lekudimGluyim)} | לכודים סמויים: ${fmt(e.lekudimSmuim)}`,
       `   חולצו: ${fmt(e.hulitzu)} | פונו: ${fmt(e.punu)} | מאותרים: ${fmt(e.meautarim)}`,

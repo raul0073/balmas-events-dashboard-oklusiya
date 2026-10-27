@@ -6,7 +6,9 @@ import type { LogEntry } from "@/lib/logger";
 export interface EventRow {
   id: string;
   battalion_id: string;
+  name: string;
   address: string;
+  commander: string;
   crisis_type: string | null;
   infrastructure_type: string | null;
   plugah: string | null;
@@ -26,7 +28,9 @@ export interface EventRow {
 export function rowToEvent(r: EventRow): CrisisEvent {
   return {
     id: r.id,
+    name: r.name ?? "",
     address: r.address,
+    commander: r.commander ?? "",
     crisisType: (r.crisis_type as CrisisType) ?? null,
     infrastructureType: (r.infrastructure_type as InfrastructureType) ?? null,
     plugah: (r.plugah as Plugah) ?? null,
@@ -48,7 +52,9 @@ export function eventToRow(e: CrisisEvent, battalionId: string): EventRow {
   return {
     id: e.id,
     battalion_id: battalionId,
+    name: e.name ?? "",
     address: e.address,
+    commander: e.commander ?? "",
     crisis_type: e.crisisType,
     infrastructure_type: e.infrastructureType,
     plugah: e.plugah,

@@ -16,7 +16,11 @@ export type EventStatus = "active" | "closed";
 
 export interface CrisisEvent {
   id: string;
+  /** optional event name; the card title is name, else address */
+  name: string;
   address: string;
+  /** person in charge of the event at battalion level */
+  commander: string;
   crisisType: CrisisType;
   infrastructureType: InfrastructureType;
   plugah: Plugah;
@@ -63,6 +67,11 @@ export function plugahHex(plugah: Plugah): string {
 
 export function plugahLabel(plugah: Plugah, fallback = "ללא פלוגה"): string {
   return plugah ? PLUGAH_LABELS[plugah] : fallback;
+}
+
+/** What to call the event: its name, else its address. */
+export function eventTitle(e: Pick<CrisisEvent, "name" | "address">): string {
+  return e.name.trim() || e.address.trim() || "אירוע ללא שם";
 }
 
 export const INFRASTRUCTURE_LABELS: Record<NonNullable<InfrastructureType>, string> = {

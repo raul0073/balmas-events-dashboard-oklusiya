@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
 import { useBattalion } from "@/lib/session";
-import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, plugahHex, plugahLabel } from "@/types";
+import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, eventTitle, plugahHex, plugahLabel } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, NumberInput } from "@/components/ui/primitives";
 import { formatEventForWhatsApp } from "@/lib/whatsapp";
@@ -13,7 +13,7 @@ import { accountedFor, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { now } from "@/lib/utils";
 import {
   ArrowRight, Check, AlertTriangle, Save, Loader2,
-  MapPin, Clock, Pencil, X, CheckCircle, MessageCircle,
+  MapPin, Clock, Pencil, X, CheckCircle, MessageCircle, UserCog,
   PartyPopper, XCircle, ShieldAlert
 } from "lucide-react";
 
@@ -28,7 +28,7 @@ const EDITABLE_FIELDS: FieldDef[] = [
 ];
 
 const FIELD_LABELS: Partial<Record<keyof CrisisEvent, string>> = {
-  address: "כתובת", anchor: "עוגן", tzapi: "צפי", lekudimGluyim: "לכודים גלויים",
+  name: "שם האירוע", address: "כתובת", commander: "אחראי אירוע", anchor: "עוגן", tzapi: "צפי", lekudimGluyim: "לכודים גלויים",
   lekudimSmuim: "לכודים סמויים", hulitzu: "חולצו", meautarim: "מאותרים",
   punu: "פונו", hearot: "הערות", crisisType: "סוג אירוע", infrastructureType: "תשתית",
 };
@@ -117,16 +117,16 @@ export default function EventPage() {
 
   async function handleSave() {
     if (!form) return;
-    const updated = { ...form, address: form.address.trim() || form.address, updatedAt: now() };
+    const updated = { ...form, name: form.name.trim(), address: form.address.trim(), commander: form.commander.trim(), updatedAt: now() };
     const prev = prevFormRef.current!;
     const logs: Parameters<typeof addLog>[0][] = [];
     if (prev.plugah !== updated.plugah) {
-      logs.push({ action: "שינוי פלוגה", eventId: updated.id, eventAddress: updated.address, plugah: updated.plugah,
+      logs.push({ action: "שינוי פלוגה", eventId: updated.id, eventAddress: eventTitle(updated), plugah: updated.plugah,
         detail: `${plugahLabel(prev.plugah, "ללא")} → ${plugahLabel(updated.plugah, "ללא")}` });
     }
     const changeSummary = buildChangeSummary(prev, updated);
     if (changeSummary) {
-      logs.push({ action: "עדכון נתונים", eventId: updated.id, eventAddress: updated.address, plugah: updated.plugah, detail: changeSummary });
+      logs.push({ action: "עדכון נתונים", eventId: updated.id, eventAddress: eventTitle(updated), plugah: updated.plugah, detail: changeSummary });
     }
     if (await persist(updated, logs)) {
       setSaved(true);
@@ -143,7 +143,7 @@ export default function EventPage() {
     }
     const updated = { ...form, status: "closed" as const, updatedAt: now() };
     const ok = await persist(updated, [{
-      action: "סגירת אירוע", eventId: updated.id, eventAddress: updated.address, plugah: updated.plugah,
+      action: "סגירת אירוע", eventId: updated.id, eventAddress: eventTitle(updated), plugah: updated.plugah,
       detail: missing === 0 ? "הושלם — אפס נעדרים" : `נעדרים בסגירה: ${missing ?? "—"}`,
     }]);
     if (ok) router.push("/events");
@@ -180,8 +180,11 @@ export default function EventPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-pikud-orange shrink-0" />
-                  <span className="font-bold text-pikud-cream text-base truncate">{form.address}</span>
+                  <span className="font-bold text-pikud-cream text-base truncate">{eventTitle(form)}</span>
                 </div>
+                {form.name.trim() && form.address.trim() && (
+                  <span className="text-white/60 text-sm truncate">{form.address}</span>
+                )}
                 {isClosed && (
                   <span className="bg-white/10 text-white/70 text-xs px-2 py-0.5 rounded-full font-bold">סגור</span>
                 )}
@@ -199,6 +202,9 @@ export default function EventPage() {
               <div className="flex items-center gap-3 mt-0.5">
                 {form.infrastructureType && (
                   <span className="text-white/50 text-xs">{INFRASTRUCTURE_LABELS[form.infrastructureType]}</span>
+                )}
+                {form.commander.trim() && (
+                  <span className="flex items-center gap-1 text-white/70 text-xs"><UserCog className="w-3 h-3 text-pikud-orange" /> {form.commander}</span>
                 )}
                 <span className="flex items-center gap-1 text-white/50 text-xs">
                   <Clock className="w-3 h-3" />
@@ -232,19 +238,27 @@ export default function EventPage() {
       {/* ── META PANEL ── */}
       {metaOpen && (
         <div className="shrink-0 bg-amber-50 border-b border-amber-200">
-          <div className="px-4 sm:px-6 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="px-4 sm:px-6 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="address" className="text-xs font-semibold text-gray-600">כתובת *</Label>
-              <Input id="address" value={form.address} onChange={(e) => update("address", e.target.value)} className="h-9 text-sm bg-white" />
+              <Label htmlFor="name" className="text-xs font-semibold text-gray-600">שם האירוע</Label>
+              <Input id="name" value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="לא חובה" className="h-9 text-sm bg-white" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 lg:col-span-2">
+              <Label htmlFor="address" className="text-xs font-semibold text-gray-600">כתובת</Label>
+              <Input id="address" value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="שם או כתובת, אחד חובה" className="h-9 text-sm bg-white" />
+            </div>
+            <div className="space-y-1 lg:col-span-2">
+              <Label htmlFor="commander" className="text-xs font-semibold text-gray-600">אחראי אירוע בגדוד</Label>
+              <Input id="commander" value={form.commander} onChange={(e) => update("commander", e.target.value)} placeholder="שם ותפקיד" className="h-9 text-sm bg-white" />
+            </div>
+            <div className="space-y-1 lg:col-span-2">
               <Label htmlFor="crisisType" className="text-xs font-semibold text-gray-600 flex gap-1">סוג אירוע {!form.crisisType && <span className="text-amber-600">*</span>}</Label>
               <Select id="crisisType" value={form.crisisType ?? ""} onChange={(e) => update("crisisType", (e.target.value || null) as CrisisEvent["crisisType"])} className="h-9 text-sm bg-white">
                 <option value="">-- בחר --</option>
                 {CRISIS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </Select>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 lg:col-span-2">
               <Label htmlFor="infra" className="text-xs font-semibold text-gray-600 flex gap-1">תשתית {!form.infrastructureType && <span className="text-amber-600">*</span>}</Label>
               <Select id="infra" value={form.infrastructureType ?? ""} onChange={(e) => update("infrastructureType", (e.target.value || null) as CrisisEvent["infrastructureType"])} className="h-9 text-sm bg-white">
                 <option value="">-- בחר --</option>
@@ -253,7 +267,7 @@ export default function EventPage() {
                 ))}
               </Select>
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 lg:col-span-2">
               <Label htmlFor="plugah" className="text-xs font-semibold text-gray-600 flex gap-1">פלוגה {!form.plugah && <span className="text-amber-600">*</span>}</Label>
               <Select id="plugah" value={form.plugah ?? ""} onChange={(e) => update("plugah", (e.target.value || null) as CrisisEvent["plugah"])} className="h-9 text-sm bg-white">
                 <option value="">-- בחר --</option>

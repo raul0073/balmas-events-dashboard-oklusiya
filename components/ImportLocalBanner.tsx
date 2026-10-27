@@ -57,7 +57,7 @@ export default function ImportLocalBanner({ hasEvents }: { hasEvents: boolean })
         const id = crypto.randomUUID();
         idMap.set(e.id, id);
         return {
-          id, battalion_id: battalion.id, address: e.address,
+          id, battalion_id: battalion.id, name: "", address: e.address, commander: "",
           crisis_type: e.crisisType, infrastructure_type: e.infrastructureType, plugah: e.plugah,
           tzapi: e.tzapi, anchor: e.resheimEogen,
           lekudim_gluyim: e.lekudimGluyim, lekudim_smuim: e.lekudimSmuim,

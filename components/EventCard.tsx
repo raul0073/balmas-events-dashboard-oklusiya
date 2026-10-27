@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CrisisEvent, INFRASTRUCTURE_LABELS, plugahHex, plugahLabel } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahHex, plugahLabel } from "@/types";
 import { calcMissing, isMetaIncomplete } from "@/lib/events/math";
-import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon } from "lucide-react";
+import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon, UserCog } from "lucide-react";
 
 interface Props { event: CrisisEvent; }
 
@@ -63,8 +63,18 @@ export default function EventCard({ event }: Props) {
       <div className="px-4 pb-2">
         <div className="flex items-start gap-2">
           <MapPin className="w-4 h-4 text-pikud-orange mt-0.5 shrink-0" />
-          <span className="font-bold text-pikud-navy text-sm leading-snug">{event.address}</span>
+          <div className="min-w-0">
+            <span className="font-bold text-pikud-navy text-sm leading-snug block">{eventTitle(event)}</span>
+            {event.name.trim() && event.address.trim() && (
+              <span className="text-xs text-pikud-gray-mid leading-snug block">{event.address}</span>
+            )}
+          </div>
         </div>
+        {event.commander.trim() && (
+          <div className="flex items-center gap-1.5 mt-1 mr-6 text-xs text-pikud-navy/70">
+            <UserCog className="w-3.5 h-3.5 text-pikud-orange" /> {event.commander}
+          </div>
+        )}
         {(event.crisisType || event.infrastructureType) && (
           <div className="flex items-center gap-1.5 mt-1.5 mr-6">
             {event.crisisType && (
