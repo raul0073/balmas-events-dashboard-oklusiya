@@ -26,8 +26,9 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const { data } = await supabase.auth.getClaims();
-  const signedIn = Boolean(data?.claims);
+  // The same server-side check the page layouts use, so gate and page never disagree.
+  const { data: { user } } = await supabase.auth.getUser();
+  const signedIn = Boolean(user);
   const path     = request.nextUrl.pathname;
 
   if (!signedIn && isProtectedPath(path)) {

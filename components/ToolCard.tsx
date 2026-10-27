@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, CalendarRange, ListChecks, BookOpen, Lock, ArrowLeft } from "lucide-react";
+import { Activity, CalendarRange, ListChecks, BookOpen, Lock, ArrowLeft, ExternalLink } from "lucide-react";
 import type { ToolDef, ToolTone } from "@/lib/tools";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -55,13 +55,15 @@ export default function ToolCard({ tool, tone, signedIn }: Props) {
       </div>
       <div className={`mt-auto pt-2 text-sm font-semibold flex items-center gap-1 ${a.link}`}>
         {tool.ready
-          ? <>{locked ? "כניסה לכלי" : "פתח"} <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" /></>
+          ? tool.standalone
+            ? <>פתח בחלון חדש <ExternalLink className="w-4 h-4" /></>
+            : <>{locked ? "כניסה לכלי" : "פתח"} <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" /></>
           : "בקרוב"}
       </div>
     </>
   );
 
   return tool.ready
-    ? <Link href={href} className={cls}>{body}</Link>
+    ? <Link href={href} className={cls} target={tool.standalone ? "_blank" : undefined} rel={tool.standalone ? "noopener" : undefined}>{body}</Link>
     : <div aria-disabled className={cls}>{body}</div>;
 }

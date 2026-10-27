@@ -24,6 +24,10 @@
     --orange-pale: 254 240 228;
     --olive-pale:  236 238 223;
     --olive-mist:  246 247 239;
+    --officer-pale: 227 234 241;
+    --samber-pale:  246 234 211;
+    --danger-pale:  244 224 219;
+    --night-pale:   231 232 242;
 
     --background: 210 20% 97%;
     --foreground: 222 47% 15%;
@@ -62,6 +66,10 @@
     --orange-pale:  46  28  14;
     --olive-pale:   32  36  20;
     --olive-mist:   24  28  16;
+    --officer-pale: 30  46  62;
+    --samber-pale:  60  44  14;
+    --danger-pale:  64  26  20;
+    --night-pale:   36  38  58;
 
     --background: 222 47% 11%;
     --foreground: 210 40% 96%;

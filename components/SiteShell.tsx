@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus } from "lucide-react";
+import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus, ExternalLink } from "lucide-react";
 import Shell from "@/components/Shell";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -32,6 +32,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const battalion = session?.battalion ?? null;
   const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+  // Standalone tools render without the shell, like a separate site.
+  if (TOOLS.some((t) => t.standalone && (pathname === t.href || pathname.startsWith(t.href + "/")))) {
+    return <main>{children}</main>;
+  }
 
   const brand = (
     <Link href="/" className="flex items-center gap-3 px-4 h-16 border-b border-white/10 hover:opacity-90 min-w-0">
@@ -82,9 +87,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         }
         return (
           <Link key={t.key} href={locked ? `/login?next=${encodeURIComponent(t.href)}` : t.href}
+            target={t.standalone ? "_blank" : undefined} rel={t.standalone ? "noopener" : undefined}
             aria-current={active ? "page" : undefined} className={`${linkCls(active)} justify-between`}>
             <span className="flex items-center gap-3">{ICONS[t.key]} {t.name}</span>
             {locked && <Lock className="w-3.5 h-3.5 text-white/50" aria-label="דורש כניסה" />}
+            {t.standalone && <ExternalLink className="w-3.5 h-3.5 text-white/50" aria-label="נפתח בחלון חדש" />}
           </Link>
         );
       })}

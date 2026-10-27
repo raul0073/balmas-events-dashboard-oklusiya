@@ -15,6 +15,8 @@ export interface ToolDef {
   /** false while the tool is not ported yet; the hub shows it as "coming soon" */
   ready: boolean;
   tones: ToolTone[];
+  /** opens outside the shell, in a new tab, like a separate site */
+  standalone?: boolean;
 }
 
 export const TOOLS: ToolDef[] = [
@@ -30,10 +32,10 @@ export const TOOLS: ToolDef[] = [
   {
     key: "shifts",
     href: "/shifts",
-    name: "מחולל משמרות",
+    name: "סידור משמרות",
     description: "בניית סבבי משמרות לפי אנשים וכללים, עם ייצוא לאקסל",
     protected: true,
-    ready: false,
+    ready: true,
     tones: ["orange", "green"],
   },
   {
@@ -44,6 +46,7 @@ export const TOOLS: ToolDef[] = [
     protected: false,
     ready: true,
     tones: ["orange"],
+    standalone: true,
   },
   {
     key: "library",

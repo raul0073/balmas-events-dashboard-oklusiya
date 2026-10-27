@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Printer, RotateCcw, ChevronDown, Check, ListChecks } from "lucide-react";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Printer, RotateCcw, ChevronDown, Check } from "lucide-react";
 import type { ChecklistContent } from "@/lib/checklist/types";
 
 const STORAGE_KEY = "pikud-checklist-v1";
@@ -52,11 +51,9 @@ export default function ChecklistView({ content }: { content: ChecklistContent }
         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-l from-transparent to-pikud-orange/25 pointer-events-none print:hidden" aria-hidden />
         <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-l from-pikud-orange-dark via-pikud-orange to-pikud-orange-light print:hidden" aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-7">
-          <div className="print:hidden"><Breadcrumbs items={[{ label: "כתום", href: "/orange" }, { label: "צ'קליסט" }]} className="text-white/80 mb-4" /></div>
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="font-black text-3xl sm:text-4xl leading-tight flex items-center gap-3">
-                <ListChecks className="w-8 h-8 text-pikud-orange print:hidden" />
+              <h1 className="font-black text-3xl sm:text-4xl leading-tight">
                 {content.title}{content.subtitle ? ` ${content.subtitle}` : ""}
               </h1>
               {content.intro && <p className="text-white/60 mt-2 print:text-pikud-gray-mid">{content.intro}</p>}

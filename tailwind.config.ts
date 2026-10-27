@@ -42,6 +42,15 @@ const config: Config = {
           "green-pale": "rgb(var(--olive-pale) / <alpha-value>)",
           "green-mist": "rgb(var(--olive-mist) / <alpha-value>)",
         },
+        // shifts organizer palette, aliased onto the theme tokens
+        paper: "rgb(var(--canvas) / <alpha-value>)",
+        panel: "rgb(var(--surface) / <alpha-value>)",
+        faint: "rgb(var(--ink-muted) / <alpha-value>)",
+        olive:   { DEFAULT: "#55613D", dark: "#3E4A2C", deep: "#232A1B", pale: "rgb(var(--olive-pale) / <alpha-value>)" },
+        officer: { DEFAULT: "#3E5C76", pale: "rgb(var(--officer-pale) / <alpha-value>)" },
+        samber:  { DEFAULT: "#B57310", pale: "rgb(var(--samber-pale) / <alpha-value>)" },
+        danger:  { DEFAULT: "#B3402E", pale: "rgb(var(--danger-pale) / <alpha-value>)" },
+        night:   { DEFAULT: "#2B2F45", pale: "rgb(var(--night-pale) / <alpha-value>)" },
         // Plugot colors
         plugah: {
           alef: "#1A3F7A",
@@ -83,6 +92,9 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      boxShadow: {
+        lift: "0 1px 2px rgba(23,26,21,.06), 0 4px 16px rgba(23,26,21,.07)",
       },
       borderRadius: {
         lg: "var(--radius)",
