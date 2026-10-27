@@ -1,0 +1,9 @@
+# Netlify builds the hub from main. The Next.js runtime is auto-detected.
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  # NEXT_PUBLIC_* values are public by design and get inlined into the browser bundle;
+  # they are marked secret in the Netlify UI, so the secrets scanner must skip them.
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY"
