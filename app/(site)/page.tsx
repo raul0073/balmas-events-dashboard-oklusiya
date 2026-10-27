@@ -21,7 +21,7 @@ export default function ChoosePage() {
           </span>
         </Link>
         <Link href="/green"
-          className="group min-h-[220px] sm:min-h-[300px] rounded-3xl bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-xl transition-all p-8 flex flex-col justify-between focus:outline-none focus-visible:ring-4 focus-visible:ring-green-600/40">
+          className="group min-h-[220px] sm:min-h-[300px] rounded-3xl bg-idf-green hover:bg-idf-green-dark text-white shadow-md hover:shadow-xl transition-all p-8 flex flex-col justify-between focus:outline-none focus-visible:ring-4 focus-visible:ring-idf-green/40">
           <span className="text-5xl sm:text-6xl font-black leading-none">ירוק</span>
           <span className="inline-flex items-center gap-2 text-lg font-bold">
             כניסה <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />

@@ -76,10 +76,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
         <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-pikud-orange shrink-0" aria-hidden /> כתום</span>
       </Link>
       <Link href="/green" aria-current={pathname === "/green" ? "page" : undefined} className={`${linkCls(pathname === "/green")} justify-between`}>
-        <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0" aria-hidden /> ירוק</span>
+        <span className="flex items-center gap-3"><span className="w-2.5 h-2.5 rounded-full bg-idf-green-light shrink-0" aria-hidden /> ירוק</span>
       </Link>
       <p className="px-3 pt-4 pb-1 text-[11px] font-bold text-white/40 tracking-wide">כלים · כתום</p>
-      {TOOLS.filter((t) => t.tone === "orange").map((t) => {
+      {TOOLS.filter((t) => t.tones.includes("orange")).map((t) => {
         const active = pathname === t.href || pathname.startsWith(`${t.href}/`);
         const locked = t.protected && !session;
         if (!t.ready) {

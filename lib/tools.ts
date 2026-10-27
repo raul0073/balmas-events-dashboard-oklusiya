@@ -2,7 +2,7 @@
  * The hub's tool registry. Adding a tool = a folder under app/(site)/ plus one entry here.
  * `protected` tools need a signed-in battalion; the rest are open to everyone.
  */
-/** The card color on the hub: orange or green. The color itself is the meaning; no label. */
+/** The color spaces a tool appears in. Orange is Pikud HaOref orange, green is IDF olive. */
 export type ToolTone = "orange" | "green";
 
 export interface ToolDef {
@@ -14,7 +14,7 @@ export interface ToolDef {
   protected: boolean;
   /** false while the tool is not ported yet; the hub shows it as "coming soon" */
   ready: boolean;
-  tone: ToolTone;
+  tones: ToolTone[];
 }
 
 export const TOOLS: ToolDef[] = [
@@ -25,7 +25,7 @@ export const TOOLS: ToolDef[] = [
     description: "ניהול אירועים בזמן אמת: רשימת עוגן, נעדרים, פלוגות ודיווח לוואטסאפ",
     protected: true,
     ready: true,
-    tone: "orange",
+    tones: ["orange"],
   },
   {
     key: "shifts",
@@ -34,7 +34,7 @@ export const TOOLS: ToolDef[] = [
     description: "בניית סבבי משמרות לפי אנשים וכללים, עם ייצוא לאקסל",
     protected: true,
     ready: false,
-    tone: "orange",
+    tones: ["orange", "green"],
   },
   {
     key: "checklist",
@@ -43,7 +43,7 @@ export const TOOLS: ToolDef[] = [
     description: "שלבי העבודה של מש\"ק האוכלוסייה, שלב אחר שלב",
     protected: false,
     ready: false,
-    tone: "orange",
+    tones: ["orange"],
   },
   {
     key: "library",
@@ -52,7 +52,7 @@ export const TOOLS: ToolDef[] = [
     description: "טפסים להורדה וחומרי למידה: טכניקות סקר, הנחיות ועזרים",
     protected: false,
     ready: false,
-    tone: "orange",
+    tones: ["orange", "green"],
   },
 ];
 

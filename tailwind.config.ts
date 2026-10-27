@@ -23,6 +23,14 @@ const config: Config = {
           "gray-light": "#E8E6E1",
           "gray-mid": "#9B9890",
         },
+        // IDF olive green, the "green" space
+        idf: {
+          green: "#4B5320",
+          "green-dark": "#363C17",
+          "green-light": "#6B7A3A",
+          "green-pale": "#ECEEDF",
+          "green-mist": "#F6F7EF",
+        },
         // Plugot colors
         plugah: {
           alef: "#1A3F7A",
