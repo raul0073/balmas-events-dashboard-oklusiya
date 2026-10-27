@@ -7,7 +7,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     <input
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -22,7 +22,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
     <textarea
       ref={ref}
       className={cn(
-        "flex min-h-[80px] w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 resize-none",
+        "flex min-h-[80px] w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 resize-none",
         className
       )}
       {...props}
@@ -95,7 +95,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
     <select
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -112,7 +112,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, React.InputHTMLAtt
       type="number"
       min={0}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:outline-none disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

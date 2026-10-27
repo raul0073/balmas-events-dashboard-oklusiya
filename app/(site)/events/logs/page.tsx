@@ -4,8 +4,9 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useLogs, exportLogsAsText, exportLogsAsJson, LogActionType } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
-import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
-import { useBattalion } from "@/lib/session";
+import { Plugah } from "@/types";
+import { useBattalion, useBattalionSettings } from "@/lib/session";
+import { plugahLabelOf } from "@/lib/battalion-settings";
 import LogProvenanceEditor from "@/components/events/LogProvenanceEditor";
 import { ArrowRight, Download, Trash2, ScrollText, Filter } from "lucide-react";
 
@@ -17,7 +18,6 @@ const ACTION_COLORS: Record<LogActionType, string> = {
   "ייבוא נתונים": "bg-teal-100 text-teal-800",
 };
 
-const plugahFilters: (Plugah | "all")[] = ["all", ...PLUGAH_KEYS];
 
 function downloadFile(content: string, filename: string, type: string) {
   const blob = new Blob([content], { type });
@@ -31,6 +31,9 @@ export default function LogsPage() {
   const router = useRouter();
   const { logs, loaded, clearLogs } = useLogs();
   const battalion = useBattalion();
+  const settings  = useBattalionSettings();
+  const plugahFilters: (Plugah | "all")[] = ["all", ...settings.plugot.map((p) => p.key)];
+  const labelOf = (k: string | null, f?: string) => plugahLabelOf(settings, k, f);
 
   const [plugahFilter, setPlugahFilter] = useState<Plugah | "all">("all");
   const [actionFilter, setActionFilter] = useState<LogActionType | "all">("all");
@@ -43,10 +46,10 @@ export default function LogsPage() {
   }, [logs, plugahFilter, actionFilter]);
 
   function handleExportTxt() {
-    const content = exportLogsAsText(logs, plugahFilter, battalion.name);
+    const content = exportLogsAsText(logs, plugahFilter, battalion.name, labelOf);
     const label   = plugahFilter === "all" || plugahFilter === null
       ? "כל-הפלוגות"
-      : PLUGAH_LABELS[plugahFilter as NonNullable<Plugah>].replace(" ", "-");
+      : labelOf(plugahFilter).replace(/ /g, "-");
     const date    = new Date().toLocaleDateString("he-IL").replace(/\./g, "-");
     downloadFile(content, `יומן-${label}-${date}.txt`, "text/plain;charset=utf-8");
   }
@@ -115,7 +118,7 @@ export default function LogsPage() {
                   ? "bg-pikud-navy text-white"
                   : "bg-pikud-cream text-ink border border-pikud-gray-light hover:border-ink"
               }`}>
-              {f === "all" ? "הכל" : PLUGAH_LABELS[f as NonNullable<Plugah>]}
+              {f === "all" ? "הכל" : labelOf(f)}
             </button>
           ))}
         </div>
@@ -159,7 +162,7 @@ export default function LogsPage() {
               const date        = ts.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" });
               const time        = ts.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
               const actionCls   = ACTION_COLORS[entry.action] ?? "bg-surface-2 text-ink-soft";
-              const plugahLabel = entry.plugah ? PLUGAH_LABELS[entry.plugah as NonNullable<Plugah>] : "ללא פלוגה";
+              const plugahLabel = labelOf(entry.plugah);
 
               return (
                 <div key={entry.id}

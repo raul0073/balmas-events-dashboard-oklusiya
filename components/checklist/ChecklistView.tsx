@@ -47,10 +47,8 @@ export default function ChecklistView({ content, aids = {} }: { content: Checkli
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-pikud-orange-pale via-canvas to-pikud-cream print:bg-surface print:min-h-0">
-      <section className="relative bg-pikud-navy-dark text-white overflow-hidden print:bg-surface print:text-ink">
-        <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-l from-transparent to-pikud-orange/25 pointer-events-none print:hidden" aria-hidden />
-        <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-l from-pikud-orange-dark via-pikud-orange to-pikud-orange-light print:hidden" aria-hidden />
+    <div className="min-h-screen bg-canvas print:bg-surface print:min-h-0">
+      <section className="relative bg-pikud-navy-dark text-white border-b-4 border-pikud-orange print:bg-surface print:text-ink print:border-0">
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-7">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>

@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
-import { useBattalion } from "@/lib/session";
+import { useBattalion, useBattalionSettings } from "@/lib/session";
 import EventCard from "@/components/EventCard";
 import CreateEventDialog from "@/components/CreateEventDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -13,7 +13,8 @@ import ActivityPulse from "@/components/ActivityPulse";
 import { Button } from "@/components/ui/button";
 import { formatAllEventsForWhatsApp } from "@/lib/whatsapp";
 import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
-import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
+import { Plugah } from "@/types";
+import { plugahLabelOf } from "@/lib/battalion-settings";
 import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter, ScrollText, Trash2, Loader2, EyeOff, Eye, LogOut } from "lucide-react";
 import { FaUsersSlash, FaPeopleRoof } from "react-icons/fa6";
 
@@ -29,6 +30,7 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 export default function EventsBoard() {
   const router = useRouter();
   const battalion = useBattalion();
+  const settings  = useBattalionSettings();
   const { events, loaded, error, clearAll } = useEvents();
   const { clearLogs } = useLogs();
 
@@ -45,7 +47,10 @@ export default function EventsBoard() {
   const closedEvents  = useMemo(() => events.filter((e) => e.status === "closed"), [events]);
   const visibleEvents = showClosed ? events : activeEvents;
 
-  const activePlugot = PLUGAH_KEYS.filter((p) => activeEvents.some((e) => e.plugah === p));
+  // the battalion's plugot in their order, plus any key still on an event but no longer in the list
+  const knownKeys    = settings.plugot.map((p) => p.key);
+  const strayKeys    = Array.from(new Set(activeEvents.map((e) => e.plugah).filter((k): k is string => Boolean(k) && !knownKeys.includes(k as string))));
+  const activePlugot = [...knownKeys, ...strayKeys].filter((p) => activeEvents.some((e) => e.plugah === p));
 
   const totalMissing     = activeEvents.reduce((s, e) => { const n = calcMissing(e); return s + (n !== null && n > 0 ? n : 0); }, 0);
   const totalTrapped     = activeEvents.reduce((s, e) => s + (e.lekudimGluyim ?? 0) + (e.lekudimSmuim ?? 0), 0);
@@ -69,7 +74,7 @@ export default function EventsBoard() {
   }, [visibleEvents, filter, sort]);
 
   async function copyAll() {
-    await navigator.clipboard.writeText(formatAllEventsForWhatsApp(events, `${battalion.name} | פיקוד העורף`));
+    await navigator.clipboard.writeText(formatAllEventsForWhatsApp(events, settings.whatsappHeader, (k, f) => plugahLabelOf(settings, k, f)));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
@@ -171,7 +176,7 @@ export default function EventsBoard() {
           )}
           {activePlugot.map((p) => (
             <button key={p} onClick={() => setFilter(filter === p ? "all" : p)} className={pill(filter === p)}>
-              {PLUGAH_LABELS[p]} ({activeEvents.filter((e) => e.plugah === p).length})
+              {plugahLabelOf(settings, p)} ({activeEvents.filter((e) => e.plugah === p).length})
             </button>
           ))}
 

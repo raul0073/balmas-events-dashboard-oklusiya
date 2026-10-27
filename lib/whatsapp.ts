@@ -1,4 +1,7 @@
-import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahLabel } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahLabel as defaultPlugahLabel } from "@/types";
+
+/** Resolves a plugah key to its label; defaults to the built-in palette. */
+export type PlugahLabelFn = (plugah: string | null, fallback?: string) => string;
 import { accountedFor, anchorInfo, calcMissing } from "@/lib/events/math";
 import { pendingSources } from "@/lib/events/sources";
 
@@ -20,7 +23,7 @@ function pendingLine(event: CrisisEvent): string {
 🔎 מקורות מידע שטרם מוצו (${pending.length}): ${pending.map((s) => s.label).join(", ")}`;
 }
 
-export function formatEventForWhatsApp(event: CrisisEvent, header = "פיקוד העורף"): string {
+export function formatEventForWhatsApp(event: CrisisEvent, header = "פיקוד העורף", plugahLabel: PlugahLabelFn = defaultPlugahLabel): string {
   const infraLabel = event.infrastructureType ? INFRASTRUCTURE_LABELS[event.infrastructureType] : "לא צוין";
   const missing    = calcMissing(event);
   const isFinale   = missing === 0;
@@ -62,7 +65,7 @@ ${LINE}
 עודכן: ${stamp(event.updatedAt)}`;
 }
 
-export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פיקוד העורף"): string {
+export function formatAllEventsForWhatsApp(events: CrisisEvent[], header = "פיקוד העורף", plugahLabel: PlugahLabelFn = defaultPlugahLabel): string {
   const active       = events.filter((e) => e.status === "active");
   const totalAnchor  = active.reduce((s, e) => s + (anchorInfo(e).value ?? 0), 0);
   const assumedCount = active.filter((e) => anchorInfo(e).assumed).length;

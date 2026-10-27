@@ -4,8 +4,9 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
-import { useBattalion } from "@/lib/session";
-import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, eventTitle, plugahHex, plugahLabel } from "@/types";
+import { useBattalion, useBattalionSettings } from "@/lib/session";
+import { CrisisEvent, CounterKey, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, eventTitle } from "@/types";
+import { plugahColorOf, plugahLabelOf, type ResolvedSettings } from "@/lib/battalion-settings";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/primitives";
 import CounterCard from "@/components/events/CounterCard";
@@ -39,19 +40,19 @@ const FIELD_LABELS: Partial<Record<keyof CrisisEvent, string>> = {
   punu: "פונו", hearot: "הערות", crisisType: "סוג אירוע", infrastructureType: "תשתית",
 };
 
-function translateValue(key: keyof CrisisEvent, val: unknown): string {
+function translateValue(key: keyof CrisisEvent, val: unknown, settings: ResolvedSettings): string {
   if (val === null || val === undefined || val === "") return "ריק";
   if (key === "infrastructureType") return INFRASTRUCTURE_LABELS[val as keyof typeof INFRASTRUCTURE_LABELS] ?? String(val);
-  if (key === "plugah") return PLUGAH_LABELS[val as keyof typeof PLUGAH_LABELS] ?? String(val);
+  if (key === "plugah") return plugahLabelOf(settings, String(val));
   return String(val);
 }
 
-function buildChangeSummary(prev: CrisisEvent, next: CrisisEvent): string {
+function buildChangeSummary(prev: CrisisEvent, next: CrisisEvent, settings: ResolvedSettings): string {
   const changes: string[] = [];
   for (const [key, label] of Object.entries(FIELD_LABELS)) {
     const k = key as keyof CrisisEvent;
     if (prev[k] !== next[k]) {
-      changes.push(`ערך שהשתנה: ${label}\n${translateValue(k, prev[k])} השתנה ל${translateValue(k, next[k])}`);
+      changes.push(`ערך שהשתנה: ${label}\n${translateValue(k, prev[k], settings)} השתנה ל${translateValue(k, next[k], settings)}`);
     }
   }
   const prevS = prev.sourcesDone ?? [], nextS = next.sourcesDone ?? [];
@@ -71,6 +72,7 @@ export default function EventPage() {
   const params    = useParams();
   const router    = useRouter();
   const battalion = useBattalion();
+  const settings  = useBattalionSettings();
   const { getEvent, updateEvent, loaded } = useEvents();
   const { addLog } = useLogs();
 
@@ -138,9 +140,9 @@ export default function EventPage() {
     const logs: Parameters<typeof addLog>[0][] = [];
     if (prev.plugah !== updated.plugah) {
       logs.push({ action: "שינוי פלוגה", eventId: updated.id, eventAddress: eventTitle(updated), plugah: updated.plugah,
-        detail: `${plugahLabel(prev.plugah, "ללא")} → ${plugahLabel(updated.plugah, "ללא")}` });
+        detail: `${plugahLabelOf(settings, prev.plugah, "ללא")} → ${plugahLabelOf(settings, updated.plugah, "ללא")}` });
     }
-    const changeSummary = buildChangeSummary(prev, updated);
+    const changeSummary = buildChangeSummary(prev, updated, settings);
     if (changeSummary) {
       logs.push({ action: "עדכון נתונים", eventId: updated.id, eventAddress: eventTitle(updated), plugah: updated.plugah, detail: changeSummary });
     }
@@ -167,13 +169,13 @@ export default function EventPage() {
 
   async function handleCopy() {
     if (!form) return;
-    await navigator.clipboard.writeText(formatEventForWhatsApp(form, `${battalion.name} | פיקוד העורף`));
+    await navigator.clipboard.writeText(formatEventForWhatsApp(form, settings.whatsappHeader, (k, f) => plugahLabelOf(settings, k, f)));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
   const incompleteMeta = isMetaIncomplete(form);
-  const color      = plugahHex(form.plugah);
+  const color      = plugahColorOf(settings, form.plugah);
   const isFinale   = missing === 0;
   const isNegative = missing !== null && missing < 0;
   const isUrgent   = missing !== null && missing > 0;
@@ -212,7 +214,7 @@ export default function EventPage() {
                   <span className="bg-pikud-orange/15 text-pikud-orange-light text-xs px-2 py-0.5 rounded-md font-semibold border border-pikud-orange/20">{form.crisisType}</span>
                 )}
                 {form.plugah && (
-                  <span style={{ backgroundColor: color }} className="text-white text-xs px-2 py-0.5 rounded-md font-semibold">{PLUGAH_LABELS[form.plugah]}</span>
+                  <span style={{ backgroundColor: color }} className="text-white text-xs px-2 py-0.5 rounded-md font-semibold">{plugahLabelOf(settings, form.plugah)}</span>
                 )}
               </div>
               <div className="flex items-center gap-3 mt-0.5 flex-wrap">
@@ -267,7 +269,7 @@ export default function EventPage() {
               <Label htmlFor="crisisType" className="text-xs font-semibold text-ink-soft flex gap-1">סוג אירוע {!form.crisisType && <span className="text-amber-600">*</span>}</Label>
               <Select id="crisisType" value={form.crisisType ?? ""} onChange={(e) => update("crisisType", (e.target.value || null) as CrisisEvent["crisisType"])} className="h-9 text-sm bg-surface">
                 <option value="">-- בחר --</option>
-                {CRISIS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                {(form.crisisType && !settings.crisisTypes.includes(form.crisisType) ? [form.crisisType, ...settings.crisisTypes] : settings.crisisTypes).map((t) => <option key={t} value={t}>{t}</option>)}
               </Select>
             </div>
             <div className="space-y-1 lg:col-span-2">
@@ -285,7 +287,8 @@ export default function EventPage() {
               <Label htmlFor="plugah" className="text-xs font-semibold text-ink-soft flex gap-1">פלוגה {!form.plugah && <span className="text-amber-600">*</span>}</Label>
               <Select id="plugah" value={form.plugah ?? ""} onChange={(e) => update("plugah", (e.target.value || null) as CrisisEvent["plugah"])} className="h-9 text-sm bg-surface">
                 <option value="">-- בחר --</option>
-                {PLUGAH_KEYS.map((k) => <option key={k} value={k}>{PLUGAH_LABELS[k]}</option>)}
+                {settings.plugot.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
+                {form.plugah && !settings.plugot.some((p) => p.key === form.plugah) && <option value={form.plugah}>{form.plugah}</option>}
               </Select>
             </div>
           </div>

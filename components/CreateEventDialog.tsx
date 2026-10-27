@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
 import { generateId, now } from "@/lib/utils";
-import { CrisisEvent, CRISIS_TYPES, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, PLUGAH_KEYS, PLUGAH_LABELS, eventTitle, plugahLabel } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, eventTitle } from "@/types";
+import { useBattalionSettings } from "@/lib/session";
+import { plugahLabelOf } from "@/lib/battalion-settings";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, NumberInput, Textarea } from "@/components/ui/primitives";
 import { X, MapPin, AlertTriangle, Loader2, ArrowRight, ArrowLeft, Check, Tag, UserCog, Users } from "lucide-react";
@@ -38,6 +40,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
   const router = useRouter();
   const { addEvent } = useEvents();
   const { addLog }   = useLogs();
+  const settings = useBattalionSettings();
   const [step, setStep]   = useState<1 | 2>(1);
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [error, setError] = useState("");
@@ -89,7 +92,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
       await addEvent(event);
       const bits = [
         event.crisisType, event.infrastructureType ? INFRASTRUCTURE_LABELS[event.infrastructureType] : null,
-        event.plugah ? plugahLabel(event.plugah) : null, event.commander ? `אחראי: ${event.commander}` : null,
+        event.plugah ? plugahLabelOf(settings, event.plugah) : null, event.commander ? `אחראי: ${event.commander}` : null,
       ].filter(Boolean).join(" · ");
       void addLog({ action: "פתיחת אירוע", eventId: event.id, eventAddress: eventTitle(event), plugah: event.plugah, detail: bits || undefined });
       onClose();
@@ -160,7 +163,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
                   <Label htmlFor="ev-type">סוג אירוע</Label>
                   <Select id="ev-type" value={draft.crisisType ?? ""} onChange={(e) => set("crisisType", (e.target.value || null) as Draft["crisisType"])} className="h-11">
                     <option value="">לא ידוע עדיין</option>
-                    {CRISIS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    {settings.crisisTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                   </Select>
                 </div>
                 <div className="space-y-1.5">
@@ -192,7 +195,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
                   <Label htmlFor="ev-plugah">פלוגה</Label>
                   <Select id="ev-plugah" value={draft.plugah ?? ""} onChange={(e) => set("plugah", (e.target.value || null) as Draft["plugah"])} className="h-11" autoFocus>
                     <option value="">טרם שויך</option>
-                    {PLUGAH_KEYS.map((k) => <option key={k} value={k}>{PLUGAH_LABELS[k]}</option>)}
+                    {settings.plugot.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}
                   </Select>
                 </div>
                 <div className="space-y-1.5">

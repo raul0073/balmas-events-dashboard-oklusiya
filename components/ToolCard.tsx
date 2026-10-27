@@ -11,13 +11,13 @@ const ICONS: Record<string, React.ReactNode> = {
 
 const ACCENT: Record<ToolTone, { card: string; icon: string; link: string; open: string }> = {
   orange: {
-    card: "bg-surface/90 border-pikud-orange/20 hover:border-pikud-orange/50",
+    card: "bg-surface border-line hover:border-pikud-orange",
     icon: "bg-pikud-orange/10 text-pikud-orange-dark",
     link: "text-pikud-orange-dark",
     open: "bg-pikud-orange/10 text-pikud-orange-dark",
   },
   green: {
-    card: "bg-surface/90 border-idf-green/20 hover:border-idf-green/50",
+    card: "bg-surface border-line hover:border-idf-green-light",
     icon: "bg-idf-green/10 text-idf-green",
     link: "text-idf-green",
     open: "bg-idf-green/10 text-idf-green",
@@ -35,7 +35,7 @@ export default function ToolCard({ tool, tone, signedIn }: Props) {
   const locked = tool.protected && !signedIn;
   const target = toolHref(tool, tone);
   const href   = locked ? `/login?next=${encodeURIComponent(target)}` : target;
-  const cls    = `group rounded-2xl border shadow-sm p-5 flex flex-col gap-3 transition-all backdrop-blur-sm ${a.card}
+  const cls    = `group rounded-2xl border shadow-sm p-5 flex flex-col gap-3 transition-all ${a.card}
         ${tool.ready ? "hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : "opacity-60"}`;
 
   const body = (

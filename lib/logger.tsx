@@ -1,6 +1,8 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
-import { Plugah, PLUGAH_LABELS, plugahLabel } from "@/types";
+import { Plugah, plugahLabel as defaultPlugahLabel } from "@/types";
+
+export type LabelFn = (plugah: string | null, fallback?: string) => string;
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useSession } from "@/lib/session";
@@ -129,17 +131,17 @@ export function useLogs() {
   return ctx;
 }
 
-function filterLabel(plugahFilter: Plugah | "all"): string {
+function filterLabel(plugahFilter: Plugah | "all", labelOf: LabelFn): string {
   if (plugahFilter === "all" || plugahFilter === null) return "כל הפלוגות";
-  return PLUGAH_LABELS[plugahFilter];
+  return labelOf(plugahFilter);
 }
 
-export function formatLogLine(entry: LogEntry): string {
+export function formatLogLine(entry: LogEntry, labelOf: LabelFn = defaultPlugahLabel): string {
   const time   = new Date(entry.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const date   = new Date(entry.timestamp).toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" });
   const detail = entry.detail ? ` | ${entry.detail}` : "";
   const prov   = formatProvenance(entry);
-  return `${date} ${time} | ${entry.action} | ${entry.eventAddress} | ${plugahLabel(entry.plugah)}${detail}${prov ? ` | ${prov}` : ""}`;
+  return `${date} ${time} | ${entry.action} | ${entry.eventAddress} | ${labelOf(entry.plugah)}${detail}${prov ? ` | ${prov}` : ""}`;
 }
 
 function filterAndSort(logs: LogEntry[], plugahFilter: Plugah | "all"): LogEntry[] {
@@ -147,17 +149,17 @@ function filterAndSort(logs: LogEntry[], plugahFilter: Plugah | "all"): LogEntry
   return [...filtered].sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
 }
 
-export function exportLogsAsText(logs: LogEntry[], plugahFilter: Plugah | "all", battalionName = "פיקוד העורף"): string {
+export function exportLogsAsText(logs: LogEntry[], plugahFilter: Plugah | "all", battalionName = "פיקוד העורף", labelOf: LabelFn = defaultPlugahLabel): string {
   const sorted = filterAndSort(logs, plugahFilter);
   const header = [
     `יומן פעולות — ${battalionName}`,
-    `סינון: ${filterLabel(plugahFilter)}`,
+    `סינון: ${filterLabel(plugahFilter, labelOf)}`,
     `יוצא: ${new Date().toLocaleString("he-IL")}`,
     `סה"כ רשומות: ${sorted.length}`,
     `${"─".repeat(60)}`,
     "",
   ].join("\n");
-  return header + sorted.map(formatLogLine).join("\n");
+  return header + sorted.map((l) => formatLogLine(l, labelOf)).join("\n");
 }
 
 export function exportLogsAsJson(logs: LogEntry[], plugahFilter: Plugah | "all"): string {

@@ -28,6 +28,7 @@ const config: Config = {
         canvas: { DEFAULT: "rgb(var(--canvas) / <alpha-value>)", deep: "rgb(var(--canvas-deep) / <alpha-value>)" },
         surface: { DEFAULT: "rgb(var(--surface) / <alpha-value>)", 2: "rgb(var(--surface-2) / <alpha-value>)" },
         line: { DEFAULT: "rgb(var(--line) / <alpha-value>)", strong: "rgb(var(--line-strong) / <alpha-value>)" },
+        field: "rgb(var(--field) / <alpha-value>)",
         ink: {
           DEFAULT: "rgb(var(--ink) / <alpha-value>)",
           soft: "rgb(var(--ink-soft) / <alpha-value>)",

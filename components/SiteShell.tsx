@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus, ExternalLink } from "lucide-react";
+import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus, ExternalLink, Settings } from "lucide-react";
 import Shell from "@/components/Shell";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -23,6 +23,7 @@ function pageTitle(pathname: string): string {
   if (pathname === "/") return "ראשי";
   if (pathname === "/orange") return "תפקידי אוכלוסייה בכתום";
   if (pathname === "/green") return "תפקידי אוכלוסייה בירוק";
+  if (pathname === "/settings") return "הגדרות הגדוד";
   return TOOLS.find((t) => pathname === t.href || pathname.startsWith(`${t.href}/`))?.name ?? "חמ\"ל אוכלוסייה";
 }
 
@@ -100,10 +101,16 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
             <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-pikud-orange-light">
               <UserCircle2 className="w-5 h-5" />
             </span>
-            <div className="min-w-0 leading-tight">
+            <div className="min-w-0 leading-tight flex-1">
               <p className="text-sm font-bold text-white truncate">{battalion?.name ?? (session.isAdmin ? "מנהל המערכת" : session.username)}</p>
               <p className="text-[11px] text-white/50 truncate" dir="ltr">{session.username}</p>
             </div>
+            {battalion && (
+              <Link href="/settings" aria-label="הגדרות הגדוד" title="הגדרות הגדוד"
+                className={`p-2 rounded-md transition-colors ${pathname === "/settings" ? "bg-pikud-orange text-white" : "text-white/60 hover:text-white hover:bg-white/10"}`}>
+                <Settings className="w-4 h-4" />
+              </Link>
+            )}
           </div>
           <form action={signOut}>
             <button type="submit"
@@ -132,7 +139,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
       </span>
       <form action={signOut}>
         <button type="submit" aria-label="התנתק" title="התנתק"
-          className="h-9 px-2.5 lg:px-3 inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-red-300 lg:text-red-600 lg:border lg:border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors">
+          className="h-9 px-2.5 lg:px-3 inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-white/80 lg:text-ink-muted lg:border lg:border-line hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors">
           <LogOutIcon className="w-4 h-4" /> <span className="hidden lg:inline">התנתק</span>
         </button>
       </form>

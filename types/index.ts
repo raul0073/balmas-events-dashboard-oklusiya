@@ -1,4 +1,6 @@
-export type Plugah = "alef" | "bet" | "gimel" | "other" | null;
+/** A plugah key. The battalion settings map keys to labels and colors; these constants are the defaults. */
+export type Plugah = string | null;
+export type PlugahKey = "alef" | "bet" | "gimel" | "other";
 
 export type InfrastructureType =
   | "private_home" | "residential" | "assisted_living"
@@ -8,15 +10,8 @@ export type InfrastructureType =
   | "open_area" | "other"
   | null;
 
-export type CrisisType =
-  | "שברי רסיס"
-  | "הרס מבנה"
-  | "פגיעה ישירה"
-  | "שריפה"
-  | "הצפה"
-  | "רעידת אדמה"
-  | "אחר"
-  | null;
+/** Free text chosen from the battalion's list; CRISIS_TYPES are the defaults. */
+export type CrisisType = string | null;
 
 export type EventStatus = "active" | "closed";
 
@@ -51,9 +46,9 @@ export interface CrisisEvent {
 export const COUNTER_KEYS = ["lekudimGluyim", "lekudimSmuim", "hulitzu", "meautarim", "punu"] as const;
 export type CounterKey = (typeof COUNTER_KEYS)[number];
 
-export const PLUGAH_KEYS: NonNullable<Plugah>[] = ["alef", "bet", "gimel", "other"];
+export const PLUGAH_KEYS: PlugahKey[] = ["alef", "bet", "gimel", "other"];
 
-export const PLUGAH_LABELS: Record<NonNullable<Plugah>, string> = {
+export const PLUGAH_LABELS: Record<PlugahKey, string> = {
   alef:  "פלוגה א",
   bet:   "פלוגה ב",
   gimel: "פלוגה ג",
@@ -61,7 +56,7 @@ export const PLUGAH_LABELS: Record<NonNullable<Plugah>, string> = {
 };
 
 /** One source of truth for plugah colors. Becomes per-battalion in the settings stage. */
-export const PLUGAH_HEX: Record<NonNullable<Plugah> | "none", string> = {
+export const PLUGAH_HEX: Record<PlugahKey | "none", string> = {
   alef:  "#1A3F7A",
   bet:   "#2E7D32",
   gimel: "#6A1B9A",
@@ -69,12 +64,13 @@ export const PLUGAH_HEX: Record<NonNullable<Plugah> | "none", string> = {
   none:  "#9B9890",
 };
 
+/** Default-palette helpers. Pages use useBattalionSettings() instead, so a battalion's own plugot apply. */
 export function plugahHex(plugah: Plugah): string {
-  return PLUGAH_HEX[plugah ?? "none"];
+  return (plugah && (PLUGAH_HEX as Record<string, string>)[plugah]) || PLUGAH_HEX.none;
 }
 
 export function plugahLabel(plugah: Plugah, fallback = "ללא פלוגה"): string {
-  return plugah ? PLUGAH_LABELS[plugah] : fallback;
+  return plugah ? ((PLUGAH_LABELS as Record<string, string>)[plugah] ?? plugah) : fallback;
 }
 
 /** What to call the event: its name, else its address. */
@@ -119,7 +115,7 @@ export function normalizeInfrastructure(raw: string | null | undefined): Infrast
   return raw in INFRASTRUCTURE_LABELS ? (raw as NonNullable<InfrastructureType>) : "other";
 }
 
-export const CRISIS_TYPES: NonNullable<CrisisType>[] = [
+export const CRISIS_TYPES: string[] = [
   "שברי רסיס",
   "רעידת אדמה",
   "הרס מבנה",

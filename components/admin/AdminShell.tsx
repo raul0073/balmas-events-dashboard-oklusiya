@@ -105,7 +105,7 @@ export default function AdminShell({ username, newFeedback = 0, newOffers = 0, c
       </span>
       <form action={signOut}>
         <button type="submit" aria-label="התנתק" title="התנתק"
-          className="h-9 px-2.5 lg:px-3 inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-red-300 lg:text-red-600 lg:border lg:border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors">
+          className="h-9 px-2.5 lg:px-3 inline-flex items-center gap-1.5 rounded-md text-sm font-semibold text-white/80 lg:text-ink-muted lg:border lg:border-line hover:bg-red-600 hover:text-white hover:border-red-600 transition-colors">
           <LogOutIcon className="w-4 h-4" /> <span className="hidden lg:inline">התנתק</span>
         </button>
       </form>

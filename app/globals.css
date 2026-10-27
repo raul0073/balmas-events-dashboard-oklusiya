@@ -16,7 +16,8 @@
     --surface:     255 255 255;   /* cards, panels, inputs */
     --surface-2:   248 250 252;   /* subtle chip / row background */
     --line:        226 230 235;   /* borders */
-    --line-strong: 203 210 219;
+    --line-strong: 190 199 212;
+    --field:       255 255 255;   /* input background */
     --ink:          13  43  94;   /* primary text (navy) */
     --ink-soft:     71  85 105;   /* secondary text */
     --ink-muted:   120 128 140;   /* hints, labels */
@@ -53,19 +54,21 @@
 
   .dark {
     color-scheme: dark;
-    --canvas:       15  23  42;
-    --canvas-deep:  10  16  32;
-    --surface:      30  41  59;
-    --surface-2:    38  50  71;
-    --line:         51  65  85;
-    --line-strong:  71  85 105;
-    --ink:         241 245 249;
-    --ink-soft:    203 213 225;
-    --ink-muted:   148 163 184;
-    --ink-faint:   100 116 139;
-    --orange-pale:  46  28  14;
-    --olive-pale:   32  36  20;
-    --olive-mist:   24  28  16;
+    /* one navy family, from the sidebar down: nothing slate, nothing brown */
+    --canvas:        9  17  33;
+    --canvas-deep:   6  12  24;
+    --surface:      15  27  52;
+    --surface-2:    21  36  68;
+    --field:        10  20  40;
+    --line:         31  48  84;
+    --line-strong:  52  73 118;
+    --ink:         236 241 248;
+    --ink-soft:    196 206 222;
+    --ink-muted:   140 156 184;
+    --ink-faint:    96 112 142;
+    --orange-pale:  15  27  52;
+    --olive-pale:   15  27  52;
+    --olive-mist:    9  17  33;
     --officer-pale: 30  46  62;
     --samber-pale:  60  44  14;
     --danger-pale:  64  26  20;
@@ -117,6 +120,17 @@
   }
   input::placeholder, textarea::placeholder {
     color: rgb(var(--ink-faint));
+  }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]):not([type="range"]),
+  select, textarea {
+    background-color: rgb(var(--field));
+    border-color: rgb(var(--line-strong));
+    color: rgb(var(--ink));
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible {
+    border-color: #F47920;
+    box-shadow: 0 0 0 3px rgb(244 121 32 / 0.25);
+    outline: none;
   }
   select option {
     color: initial;

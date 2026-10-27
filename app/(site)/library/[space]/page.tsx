@@ -11,15 +11,9 @@ import { BookOpen } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-const SPACES: Record<ToolTone, { hero: string; glow: string; bar: string; page: string; dot: string; home: string }> = {
-  orange: {
-    hero: "bg-pikud-navy-dark", glow: "to-pikud-orange/25", bar: "from-pikud-orange-dark via-pikud-orange to-pikud-orange-light",
-    page: "bg-gradient-to-b from-pikud-orange-pale via-canvas to-canvas", dot: "bg-pikud-orange", home: "/orange",
-  },
-  green: {
-    hero: "bg-idf-green-dark", glow: "to-idf-green-light/30", bar: "from-idf-green via-idf-green-light to-idf-green-pale",
-    page: "bg-gradient-to-b from-idf-green-pale via-idf-green-mist to-canvas", dot: "bg-idf-green-light", home: "/green",
-  },
+const SPACES: Record<ToolTone, { bar: string; home: string }> = {
+  orange: { bar: "border-pikud-orange", home: "/orange" },
+  green:  { bar: "border-idf-green-light", home: "/green" },
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ space: string }> }) {
@@ -38,10 +32,8 @@ export default async function LibraryPage({ params, searchParams }: { params: Pr
   const [{ items, lockedCounts }, wanted] = await Promise.all([loadLibrary(tone, Boolean(session)), loadOpenWanted(tone)]);
 
   return (
-    <div className={`min-h-[calc(100vh-64px)] ${s.page}`}>
-      <section className={`relative ${s.hero} text-white overflow-hidden`}>
-        <div className={`absolute inset-y-0 left-0 w-1/2 bg-gradient-to-l from-transparent ${s.glow} pointer-events-none`} aria-hidden />
-        <div className={`absolute bottom-0 inset-x-0 h-1 bg-gradient-to-l ${s.bar}`} aria-hidden />
+    <div className="min-h-[calc(100vh-64px)] bg-canvas">
+      <section className={`relative bg-pikud-navy-dark text-white border-b-4 ${s.bar}`}>
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <Breadcrumbs items={[{ label: SPACE_LABELS[tone], href: s.home }, { label: "ספריית ידע" }]} className="text-white/80 mb-4" />
           <h1 className="font-black text-3xl sm:text-4xl leading-tight flex items-center gap-3">

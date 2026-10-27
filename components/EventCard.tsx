@@ -1,7 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle, plugahHex, plugahLabel } from "@/types";
+import { CrisisEvent, INFRASTRUCTURE_LABELS, eventTitle } from "@/types";
+import { useBattalionSettings } from "@/lib/session";
+import { plugahColorOf, plugahLabelOf } from "@/lib/battalion-settings";
 import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { INFO_SOURCES } from "@/lib/events/sources";
 import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck, Info, TruckIcon, UserCog, Radar } from "lucide-react";
@@ -9,8 +11,9 @@ import { MapPin, AlertTriangle, Clock, CheckCircle, Eye, EyeOff, Zap, UserCheck,
 interface Props { event: CrisisEvent; }
 
 export default function EventCard({ event }: Props) {
-  const router = useRouter();
-  const color  = plugahHex(event.plugah);
+  const router   = useRouter();
+  const settings = useBattalionSettings();
+  const color    = plugahColorOf(settings, event.plugah);
 
   const missing    = calcMissing(event);
   const anchor     = anchorInfo(event);
@@ -48,7 +51,7 @@ export default function EventCard({ event }: Props) {
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
         {event.plugah ? (
           <span style={{ backgroundColor: color }} className="text-white text-xs font-semibold px-2.5 py-1 rounded-full">
-            {plugahLabel(event.plugah)}
+            {plugahLabelOf(settings, event.plugah)}
           </span>
         ) : (
           <span className="bg-pikud-gray-light text-pikud-gray-mid text-xs px-2.5 py-1 rounded-full">ללא פלוגה</span>
