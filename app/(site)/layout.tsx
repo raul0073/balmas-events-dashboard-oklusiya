@@ -1,14 +1,13 @@
 import { loadSession } from "@/lib/auth/session";
 import { SessionProvider } from "@/lib/session";
-import Navbar from "@/components/Navbar";
+import SiteShell from "@/components/SiteShell";
 
-/** Shell for every tool and the hub home: session (may be null), navbar, content. */
+/** Main layout: session (may be null) and the sidebar shell around every tool and the hub. */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const session = await loadSession();
   return (
     <SessionProvider value={session}>
-      <Navbar />
-      <main>{children}</main>
+      <SiteShell>{children}</SiteShell>
     </SessionProvider>
   );
 }
