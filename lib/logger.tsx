@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { useSession } from "@/lib/session";
 import { logToRow, rowToLog, type LogRow } from "@/lib/events/db";
+import { formatProvenance } from "@/lib/events/provenance";
 
 export type LogActionType =
   | "פתיחת אירוע"
@@ -21,6 +22,12 @@ export interface LogEntry {
   eventAddress: string;
   plugah: Plugah | null;
   detail?: string;
+  /** who gave the information */
+  reportedBy?: string;
+  /** how it reached the HAMAL (lib/events/provenance.ts) */
+  channel?: string;
+  /** why the data changed */
+  reason?: string;
 }
 
 interface LogContextType {
@@ -114,7 +121,8 @@ export function formatLogLine(entry: LogEntry): string {
   const time   = new Date(entry.timestamp).toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
   const date   = new Date(entry.timestamp).toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" });
   const detail = entry.detail ? ` | ${entry.detail}` : "";
-  return `${date} ${time} | ${entry.action} | ${entry.eventAddress} | ${plugahLabel(entry.plugah)}${detail}`;
+  const prov   = formatProvenance(entry);
+  return `${date} ${time} | ${entry.action} | ${entry.eventAddress} | ${plugahLabel(entry.plugah)}${detail}${prov ? ` | ${prov}` : ""}`;
 }
 
 function filterAndSort(logs: LogEntry[], plugahFilter: Plugah | "all"): LogEntry[] {

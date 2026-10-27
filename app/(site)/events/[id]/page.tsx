@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Input, Label, Select } from "@/components/ui/primitives";
 import CounterCard from "@/components/events/CounterCard";
 import InfoSources from "@/components/events/InfoSources";
+import ProvenanceBar from "@/components/events/ProvenanceBar";
+import { EMPTY_PROVENANCE, type Provenance } from "@/lib/events/provenance";
 import { sourceLabel } from "@/lib/events/sources";
 import { formatEventForWhatsApp } from "@/lib/whatsapp";
 import { accountedFor, anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
@@ -79,6 +81,7 @@ export default function EventPage() {
   const [saved, setSaved]               = useState(false);
   const [saveError, setSaveError]       = useState("");
   const [confirmClose, setConfirmClose] = useState(false);
+  const [prov, setProv]                 = useState<Provenance>(EMPTY_PROVENANCE);
   const prevFormRef = useRef<CrisisEvent | null>(null);
 
   useEffect(() => {
@@ -110,9 +113,14 @@ export default function EventPage() {
 
   async function persist(next: CrisisEvent, logs: Parameters<typeof addLog>[0][]) {
     setSaving(true); setSaveError("");
+    const stamp = {
+      reportedBy: (prov.reportedBy || next.commander).trim() || undefined,
+      channel: prov.channel ?? undefined,
+      reason: prov.reason.trim() || undefined,
+    };
     try {
       await updateEvent(next);
-      for (const l of logs) void addLog(l);
+      for (const l of logs) void addLog({ ...l, ...stamp });
       prevFormRef.current = next;
       return true;
     } catch (e) {
@@ -376,6 +384,9 @@ export default function EventPage() {
           />
         </div>
       </div>
+
+      {/* ── UPDATE PROVENANCE ── */}
+      <ProvenanceBar value={prov} onChange={setProv} defaultReporter={form.commander} disabled={isClosed} />
 
       {/* ── STICKY BOTTOM BAR ── */}
       <div className="shrink-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-sm">

@@ -83,6 +83,9 @@ export interface LogRow {
   action: string;
   plugah: string | null;
   detail: string | null;
+  reported_by: string | null;
+  channel: string | null;
+  reason: string | null;
   created_at: string;
 }
 
@@ -95,6 +98,9 @@ export function rowToLog(r: LogRow): LogEntry {
     eventAddress: r.event_address,
     plugah: (r.plugah as Plugah) ?? null,
     detail: r.detail ?? undefined,
+    reportedBy: r.reported_by ?? undefined,
+    channel: r.channel ?? undefined,
+    reason: r.reason ?? undefined,
   };
 }
 
@@ -107,6 +113,9 @@ export function logToRow(l: LogEntry, battalionId: string): LogRow {
     action: l.action,
     plugah: l.plugah,
     detail: l.detail ?? null,
+    reported_by: l.reportedBy || null,
+    channel: l.channel || null,
+    reason: l.reason || null,
     created_at: l.timestamp,
   };
 }
