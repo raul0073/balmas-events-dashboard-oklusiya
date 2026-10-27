@@ -1,6 +1,10 @@
 export interface CheckItem {
   id: string;
   text: string;
+  /** an aid from the knowledge library (library_items.id) */
+  libraryItemId?: string;
+  /** or any URL */
+  href?: string;
 }
 
 export interface ChecklistSection {
@@ -32,7 +36,12 @@ export function normalizeChecklist(raw: unknown): ChecklistContent {
         id: String(s?.id ?? `s${si + 1}`),
         label: String(s?.label ?? "").trim(),
         items: (Array.isArray(s?.items) ? s.items : [])
-          .map((it, ii) => ({ id: String(it?.id ?? `s${si + 1}i${ii + 1}`), text: String(it?.text ?? "").trim() }))
+          .map((it, ii) => ({
+            id: String(it?.id ?? `s${si + 1}i${ii + 1}`),
+            text: String(it?.text ?? "").trim(),
+            libraryItemId: String(it?.libraryItemId ?? "").trim() || undefined,
+            href: String(it?.href ?? "").trim() || undefined,
+          }))
           .filter((it) => it.text),
       }))
       .filter((s) => s.label),

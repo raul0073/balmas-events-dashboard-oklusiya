@@ -1,20 +1,23 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Plus, Trash2, Save, ArrowUp, ArrowDown, Loader2, Check, AlertTriangle, ExternalLink } from "lucide-react";
+import { Plus, Trash2, Save, ArrowUp, ArrowDown, Loader2, Check, AlertTriangle, ExternalLink, BookOpen, Link2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea } from "@/components/ui/primitives";
 import { saveChecklist } from "@/app/admin/actions";
 import type { ActionState } from "@/app/admin/actions";
 import type { ChecklistContent } from "@/lib/checklist/types";
+import { SPACE_LABELS, categoryLabel } from "@/lib/library/types";
+
+export interface LibraryOption { id: string; title: string; space: "orange" | "green"; category: string }
 
 function newId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
 /** Edits the public checklist: title, subtitle, intro, sections and items, with reordering. */
-export default function ChecklistEditor({ initial, updatedAt }: { initial: ChecklistContent; updatedAt: string | null }) {
+export default function ChecklistEditor({ initial, updatedAt, library = [] }: { initial: ChecklistContent; updatedAt: string | null; library?: LibraryOption[] }) {
   const [content, setContent] = useState<ChecklistContent>(initial);
   const [state, formAction, pending] = useActionState<ActionState, FormData>(saveChecklist, {});
 
@@ -93,10 +96,31 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
                 {section.items.map((item, ii) => (
                   <div key={item.id} className="flex items-start gap-2">
                     <span className="text-xs text-pikud-gray-mid pt-3 w-5 shrink-0 tabular-nums">{ii + 1}.</span>
-                    <Textarea value={item.text} rows={2} placeholder="טקסט הפריט"
-                      onChange={(e) => setSections((s) => s.map((x, i) => i === si
-                        ? { ...x, items: x.items.map((it, j) => (j === ii ? { ...it, text: e.target.value } : it)) } : x))}
-                      className="min-h-[56px] text-sm" />
+                    <div className="flex-1 min-w-0 space-y-1.5">
+                      <Textarea value={item.text} rows={2} placeholder="טקסט הפריט"
+                        onChange={(e) => setSections((s) => s.map((x, i) => i === si
+                          ? { ...x, items: x.items.map((it, j) => (j === ii ? { ...it, text: e.target.value } : it)) } : x))}
+                        className="min-h-[56px] text-sm" />
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <label className="inline-flex items-center gap-1.5 text-xs text-ink-muted">
+                          <BookOpen className="w-3.5 h-3.5 text-pikud-orange" /> עזר מהספרייה
+                          <select value={item.libraryItemId ?? ""}
+                            onChange={(e) => setSections((s) => s.map((x, i) => i === si
+                              ? { ...x, items: x.items.map((it, j) => (j === ii ? { ...it, libraryItemId: e.target.value || undefined } : it)) } : x))}
+                            className="h-8 rounded-md border border-line bg-surface px-2 text-xs text-ink max-w-[260px]">
+                            <option value="">ללא</option>
+                            {library.map((l) => <option key={l.id} value={l.id}>{SPACE_LABELS[l.space]} · {categoryLabel(l.category)} · {l.title}</option>)}
+                          </select>
+                        </label>
+                        <label className="inline-flex items-center gap-1.5 text-xs text-ink-muted flex-1 min-w-[200px]">
+                          <Link2 className="w-3.5 h-3.5 text-pikud-orange" /> או קישור
+                          <Input value={item.href ?? ""} placeholder="https://…" dir="ltr"
+                            onChange={(e) => setSections((s) => s.map((x, i) => i === si
+                              ? { ...x, items: x.items.map((it, j) => (j === ii ? { ...it, href: e.target.value || undefined } : it)) } : x))}
+                            className="h-8 text-xs" />
+                        </label>
+                      </div>
+                    </div>
                     <div className="flex flex-col gap-0.5 pt-1">
                       <button type="button" aria-label="העלה פריט" disabled={ii === 0}
                         onClick={() => setSections((s) => s.map((x, i) => (i === si ? { ...x, items: move(x.items, ii, ii - 1) } : x)))}

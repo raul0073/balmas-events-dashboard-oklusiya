@@ -22,10 +22,12 @@ interface Props {
   /** items per category a visitor cannot see yet */
   lockedCounts?: Partial<Record<LibraryCategory, number>>;
   loginHref?: string;
+  /** item to open in the lightbox on arrival (deep link) */
+  openId?: string;
 }
 
-export default function LibraryGrid({ items, space, lockedCounts = {}, loginHref = "/login" }: Props) {
-  const [open, setOpen] = useState<LibraryItem | null>(null);
+export default function LibraryGrid({ items, space, lockedCounts = {}, loginHref = "/login", openId }: Props) {
+  const [open, setOpen] = useState<LibraryItem | null>(() => items.find((i) => i.id === openId) ?? null);
   const a = ACCENT[space];
 
   useEffect(() => {

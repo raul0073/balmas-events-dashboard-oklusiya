@@ -26,8 +26,9 @@ export async function generateMetadata({ params }: { params: Promise<{ space: st
   return { title: `ספריית ידע ${label ? `ב${label}` : ""} | חמ"ל אוכלוסייה` };
 }
 
-export default async function LibraryPage({ params }: { params: Promise<{ space: string }> }) {
+export default async function LibraryPage({ params, searchParams }: { params: Promise<{ space: string }>; searchParams: Promise<{ item?: string }> }) {
   const { space } = await params;
+  const { item: openId } = await searchParams;
   if (space !== "orange" && space !== "green") notFound();
   const tone  = space as ToolTone;
   const s     = SPACES[tone];
@@ -50,7 +51,7 @@ export default async function LibraryPage({ params }: { params: Promise<{ space:
       </section>
 
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <LibraryGrid items={items} space={tone} lockedCounts={lockedCounts} loginHref={`/login?next=${encodeURIComponent(`/library/${tone}`)}`} />
+        <LibraryGrid items={items} space={tone} lockedCounts={lockedCounts} openId={openId} loginHref={`/login?next=${encodeURIComponent(`/library/${tone}`)}`} />
       </section>
     </div>
   );

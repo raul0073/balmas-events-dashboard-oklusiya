@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Printer, RotateCcw, ChevronDown, Check } from "lucide-react";
+import { Printer, RotateCcw, ChevronDown, Check, BookOpen, ExternalLink } from "lucide-react";
 import type { ChecklistContent } from "@/lib/checklist/types";
+import type { AidRef } from "@/lib/checklist/content";
 
 const STORAGE_KEY = "pikud-checklist-v1";
 const ACCENTS = ["#F47920", "#2D7DD2", "#059669", "#7C3AED"];
@@ -15,7 +16,7 @@ function saveChecked(checked: Record<string, boolean>) {
 }
 
 /** The public checklist: sections as an accordion, checks kept in this browser, print and reset. */
-export default function ChecklistView({ content }: { content: ChecklistContent }) {
+export default function ChecklistView({ content, aids = {} }: { content: ChecklistContent; aids?: Record<string, AidRef> }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [open, setOpen]       = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
@@ -109,11 +110,25 @@ export default function ChecklistView({ content }: { content: ChecklistContent }
                   <div id={`sec-${section.id}`} hidden={!isOpen} className="print:!block">
                     <div className="border-t border-pikud-gray-light bg-pikud-cream/40 px-3 sm:px-5 py-2 flex flex-col print:bg-surface">
                       {section.items.map((item) => (
-                        <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-lg px-2 sm:px-3 py-2.5 transition-colors hover:bg-surface ${checked[item.id] ? "opacity-60" : ""}`}>
-                          <input type="checkbox" checked={!!checked[item.id]} onChange={() => toggle(item.id)}
+                        <div key={item.id} className={`flex items-start gap-3 rounded-lg px-2 sm:px-3 py-2.5 transition-colors hover:bg-surface ${checked[item.id] ? "opacity-60" : ""}`}>
+                          <input id={`chk-${item.id}`} type="checkbox" checked={!!checked[item.id]} onChange={() => toggle(item.id)}
                             className="mt-1 h-5 w-5 shrink-0 rounded border-pikud-gray-mid accent-[#F47920] cursor-pointer" />
-                          <span className={`text-sm sm:text-base leading-relaxed ${checked[item.id] ? "line-through text-pikud-gray-mid" : "text-ink-soft"}`}>{item.text}</span>
-                        </label>
+                          <div className="min-w-0 flex-1">
+                            <label htmlFor={`chk-${item.id}`} className={`block cursor-pointer text-sm sm:text-base leading-relaxed ${checked[item.id] ? "line-through text-pikud-gray-mid" : "text-ink-soft"}`}>{item.text}</label>
+                            {(() => {
+                              const aid  = item.libraryItemId ? aids[item.libraryItemId] : undefined;
+                              const href = aid?.href ?? item.href;
+                              if (!href) return null;
+                              return (
+                                <a href={href} target="_blank" rel="noopener"
+                                  className="mt-1.5 inline-flex items-center gap-1.5 text-xs font-semibold text-pikud-orange-dark bg-pikud-orange/10 border border-pikud-orange/20 rounded-full px-2.5 py-1 hover:bg-pikud-orange/20 print:hidden">
+                                  {aid ? <BookOpen className="w-3.5 h-3.5" /> : <ExternalLink className="w-3.5 h-3.5" />}
+                                  {aid ? `עזר: ${aid.title}` : "קישור"}
+                                </a>
+                              );
+                            })()}
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

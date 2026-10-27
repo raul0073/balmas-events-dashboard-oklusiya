@@ -1,4 +1,4 @@
-import { loadChecklist } from "@/lib/checklist/content";
+import { loadChecklist, resolveAids } from "@/lib/checklist/content";
 import ChecklistView from "@/components/checklist/ChecklistView";
 
 export const dynamic = "force-dynamic";
@@ -6,5 +6,6 @@ export const metadata = { title: "צ'קליסט מש\"ק אוכלוסייה | ח
 
 export default async function ChecklistPage() {
   const { content } = await loadChecklist();
-  return <ChecklistView content={content} />;
+  const aids = await resolveAids(content);
+  return <ChecklistView content={content} aids={aids} />;
 }
