@@ -2,6 +2,9 @@
  * The hub's tool registry. Adding a tool = a folder under app/(site)/ plus one entry here.
  * `protected` tools need a signed-in battalion; the rest are open to everyone.
  */
+/** The card color on the hub. It says what the tool is for; the `tag` is the word shown next to it. */
+export type ToolTone = "orange" | "green";
+
 export interface ToolDef {
   key: string;
   /** route prefix, e.g. "/events" */
@@ -11,6 +14,9 @@ export interface ToolDef {
   protected: boolean;
   /** false while the tool is not ported yet; the hub shows it as "coming soon" */
   ready: boolean;
+  tone: ToolTone;
+  /** short purpose label shown on the card, e.g. "חירום" */
+  tag: string;
 }
 
 export const TOOLS: ToolDef[] = [
@@ -21,6 +27,8 @@ export const TOOLS: ToolDef[] = [
     description: "ניהול אירועים בזמן אמת: רשימת עוגן, נעדרים, פלוגות ודיווח לוואטסאפ",
     protected: true,
     ready: true,
+    tone: "orange",
+    tag: "חירום",
   },
   {
     key: "shifts",
@@ -29,6 +37,8 @@ export const TOOLS: ToolDef[] = [
     description: "בניית סבבי משמרות לפי אנשים וכללים, עם ייצוא לאקסל",
     protected: true,
     ready: false,
+    tone: "orange",
+    tag: "חירום",
   },
   {
     key: "checklist",
@@ -37,6 +47,8 @@ export const TOOLS: ToolDef[] = [
     description: "שלבי העבודה של מש\"ק האוכלוסייה, שלב אחר שלב",
     protected: false,
     ready: false,
+    tone: "orange",
+    tag: "חירום",
   },
   {
     key: "library",
@@ -45,6 +57,8 @@ export const TOOLS: ToolDef[] = [
     description: "טפסים להורדה וחומרי למידה: טכניקות סקר, הנחיות ועזרים",
     protected: false,
     ready: false,
+    tone: "orange",
+    tag: "חירום",
   },
 ];
 
