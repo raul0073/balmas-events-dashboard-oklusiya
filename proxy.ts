@@ -3,9 +3,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { isProtectedPath } from "@/lib/tools";
 
 /**
- * Runs on every request: refreshes the Supabase session cookie, sends signed-out
- * visitors of protected tools to /login (remembering where they were going), and
- * sends signed-in visitors of /login to the hub.
+ * Runs on every request: refreshes the Supabase session cookie and sends signed-out
+ * visitors of protected tools to /login, remembering where they were going.
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -38,13 +37,8 @@ export async function proxy(request: NextRequest) {
     url.searchParams.set("next", path);
     return NextResponse.redirect(url);
   }
-  if (signedIn && path === "/login") {
-    const url = request.nextUrl.clone();
-    const next = url.searchParams.get("next");
-    url.pathname = next && next.startsWith("/") && !next.startsWith("//") ? next : "/";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
+  // /login is always reachable, even with a session cookie: the page itself shows
+  // who is signed in, and signing in again simply replaces a stale session.
   return response;
 }
 

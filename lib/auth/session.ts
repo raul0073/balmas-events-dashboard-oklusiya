@@ -5,7 +5,11 @@ import type { BattalionInfo, SessionInfo } from "@/lib/session";
 /** Loads the signed-in user and, for battalions, their battalion row. null when signed out. */
 export async function loadSession(): Promise<SessionInfo | null> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error && error.name !== "AuthSessionMissingError") {
+    // a cookie exists but the auth server rejects it (deleted user, revoked token, network)
+    console.error("[session] getUser failed:", error.message);
+  }
   if (!user) return null;
 
   const isAdmin  = user.app_metadata?.role === "admin";
