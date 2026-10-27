@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { LayoutDashboard, CalendarRange, Users, Scale, Settings2, LogOut } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useT } from "@/lib/shifts/i18n";
+import { useApp } from "@/lib/shifts/store";
 
 const ITEMS = [
   { href: "/shifts",          key: "nav.dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -18,6 +19,7 @@ const ITEMS = [
 export default function ShiftsNav() {
   const path = usePathname();
   const { t, lang, setLang } = useT();
+  const hasData = useApp((s) => s.people.some((p) => p.active) || s.schedule !== null);
 
   return (
     <div className="bg-surface border-b border-line sticky top-0 z-20">
@@ -28,6 +30,15 @@ export default function ShiftsNav() {
         <nav aria-label="סידור משמרות" className="flex items-center gap-1 py-2">
           {ITEMS.map((it) => {
             const active = path === it.href;
+            const locked = it.href === "/shifts/schedule" && !hasData;
+            if (locked) {
+              return (
+                <span key={it.href} title={t("nav.scheduleLocked")} aria-disabled
+                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold text-ink-faint cursor-not-allowed">
+                  {it.icon} {t(it.key)}
+                </span>
+              );
+            }
             return (
               <Link key={it.href} href={it.href} aria-current={active ? "page" : undefined}
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
