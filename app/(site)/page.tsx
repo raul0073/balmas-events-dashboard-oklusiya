@@ -12,7 +12,7 @@ const ICONS: Record<string, React.ReactNode> = {
 
 export default async function HubHome() {
   const session = await loadSession();
-  const signedIn = Boolean(session?.battalion);
+  const signedIn = Boolean(session);
 
   return (
     <div className="min-h-[calc(100vh-64px)] bg-pikud-cream">

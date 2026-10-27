@@ -27,12 +27,12 @@ export default function AdminDashboard({ battalions }: { battalions: BattalionSu
   const events   = battalions.reduce((s, b) => s + b.eventCount, 0);
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-pikud-cream">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="bg-pikud-cream">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
         <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
           <div>
-            <h1 className="text-pikud-navy font-black text-2xl">ניהול גדודים</h1>
+            <h2 className="text-pikud-navy font-black text-2xl lg:hidden">ניהול גדודים</h2>
             <p className="text-pikud-gray-mid text-sm mt-1">כל חשבון הוא גדוד אחד. פרטי הכניסה משותפים לכל חמ&quot;ל הגדוד.</p>
           </div>
           <Button variant="orange" onClick={() => setCreateOpen(true)} className="flex items-center gap-1.5">
