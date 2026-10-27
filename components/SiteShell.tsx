@@ -21,8 +21,8 @@ const ICONS: Record<string, React.ReactNode> = {
 
 function pageTitle(pathname: string): string {
   if (pathname === "/") return "ראשי";
-  if (pathname === "/orange") return "כתום";
-  if (pathname === "/green") return "ירוק";
+  if (pathname === "/orange") return "תפקידי אוכלוסייה בכתום";
+  if (pathname === "/green") return "תפקידי אוכלוסייה בירוק";
   return TOOLS.find((t) => pathname === t.href || pathname.startsWith(`${t.href}/`))?.name ?? "חמ\"ל אוכלוסייה";
 }
 

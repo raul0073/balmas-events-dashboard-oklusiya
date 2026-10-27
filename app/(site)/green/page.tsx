@@ -3,7 +3,7 @@ import { TOOLS } from "@/lib/tools";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ToolCard from "@/components/ToolCard";
 
-export const metadata = { title: "ירוק | חמ\"ל אוכלוסייה" };
+export const metadata = { title: "תפקידי אוכלוסייה בירוק | חמ\"ל אוכלוסייה" };
 
 /** The green space: IDF olive. Tools listed here are placeholders until they are built. */
 export default async function GreenHome() {
@@ -20,7 +20,7 @@ export default async function GreenHome() {
           <Breadcrumbs items={[{ label: "ירוק" }]} className="text-white/80 mb-4" />
           <h1 className="font-black text-3xl sm:text-4xl leading-tight flex items-center gap-3">
             <span className="inline-block w-3.5 h-3.5 rounded-full bg-idf-green-light shadow-[0_0_0_6px_rgba(107,122,58,0.3)]" aria-hidden />
-            ירוק
+            תפקידי אוכלוסייה בירוק
           </h1>
           <p className="text-white/60 mt-3 max-w-2xl">
             {session?.battalion
