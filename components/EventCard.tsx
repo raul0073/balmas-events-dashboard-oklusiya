@@ -39,10 +39,10 @@ export default function EventCard({ event }: Props) {
       onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); router.push(`/events/${event.id}`); } }}
       style={{ borderTopColor: color }}
       className={`rounded-lg shadow-sm border border-t-4 cursor-pointer hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col focus:outline-none focus-visible:ring-2 focus-visible:ring-pikud-orange
-        ${isClosed                              ? "bg-gray-50 border-gray-200 opacity-75" : ""}
+        ${isClosed                              ? "bg-canvas border-line opacity-75" : ""}
         ${!isClosed && isFinale                 ? "bg-green-50 border-green-200"          : ""}
         ${!isClosed && isNegative               ? "bg-red-50 border-red-300"              : ""}
-        ${!isClosed && !isFinale && !isNegative ? "bg-white border-pikud-gray-light"      : ""}
+        ${!isClosed && !isFinale && !isNegative ? "bg-surface border-pikud-gray-light"      : ""}
       `}
     >
       <div className="flex items-center justify-between px-4 pt-3 pb-2">
@@ -55,7 +55,7 @@ export default function EventCard({ event }: Props) {
         )}
         <div className="flex items-center gap-2">
           {isClosed && (
-            <span className="bg-gray-200 text-gray-600 text-xs font-bold px-2 py-0.5 rounded-full">סגור</span>
+            <span className="bg-line text-ink-soft text-xs font-bold px-2 py-0.5 rounded-full">סגור</span>
           )}
           <div className="flex items-center gap-1 text-pikud-gray-mid">
             <Clock className="w-3 h-3" />
@@ -68,7 +68,7 @@ export default function EventCard({ event }: Props) {
         <div className="flex items-start gap-2">
           <MapPin className="w-4 h-4 text-pikud-orange mt-0.5 shrink-0" />
           <div className="min-w-0">
-            <span className="font-bold text-pikud-navy text-sm leading-snug block">{eventTitle(event)}</span>
+            <span className="font-bold text-ink text-sm leading-snug block">{eventTitle(event)}</span>
             {event.name.trim() && event.address.trim() && (
               <span className="text-xs text-pikud-gray-mid leading-snug block">{event.address}</span>
             )}
@@ -81,7 +81,7 @@ export default function EventCard({ event }: Props) {
           </div>
         )}
         {event.commander.trim() && (
-          <div className="flex items-center gap-1.5 mt-1 mr-6 text-xs text-pikud-navy/70">
+          <div className="flex items-center gap-1.5 mt-1 mr-6 text-xs text-ink/70">
             <UserCog className="w-3.5 h-3.5 text-pikud-orange" /> {event.commander}
           </div>
         )}
@@ -100,10 +100,10 @@ export default function EventCard({ event }: Props) {
       <div className="px-4 py-2 flex items-center gap-3">
         {hasAnchor && (
           <>
-            <div className={`flex flex-col items-center rounded-lg px-3 py-1.5 min-w-[48px] shrink-0 ${anchor.assumed ? "bg-amber-50 border border-amber-300" : "bg-pikud-navy/5"}`}
+            <div className={`flex flex-col items-center rounded-lg px-3 py-1.5 min-w-[48px] shrink-0 ${anchor.assumed ? "bg-amber-50 border border-amber-300" : "bg-ink/5"}`}
               title={anchor.assumed ? "עוגן משוער לפי צפי, טרם הוזנה רשימת עוגן" : undefined}>
               <span className={`text-[10px] font-medium ${anchor.assumed ? "text-amber-700" : "text-pikud-gray-mid"}`}>{anchor.assumed ? "עוגן משוער" : "עוגן"}</span>
-              <span className={`text-xl font-bold leading-tight ${anchor.assumed ? "text-amber-800" : "text-pikud-navy"}`}>{anchor.value}</span>
+              <span className={`text-xl font-bold leading-tight ${anchor.assumed ? "text-amber-800" : "text-ink"}`}>{anchor.value}</span>
             </div>
             <div className="w-px h-8 bg-pikud-gray-light shrink-0" />
           </>

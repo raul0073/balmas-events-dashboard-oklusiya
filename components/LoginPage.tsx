@@ -23,7 +23,7 @@ export default function LoginPage({ next }: { next?: string }) {
         style={{ backgroundImage: "repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%)", backgroundSize: "20px 20px" }} />
 
       <div className={`relative w-full max-w-sm ${shaking ? "animate-[shake_0.4s_ease-in-out]" : ""}`}>
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-2xl overflow-hidden">
 
           <div className="bg-pikud-navy px-8 pt-8 pb-6 text-center border-b-4 border-pikud-orange">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-pikud-orange rounded-2xl mb-4 shadow-lg">
@@ -35,10 +35,10 @@ export default function LoginPage({ next }: { next?: string }) {
 
           <form action={formAction} className="px-8 py-7 space-y-5">
             <input type="hidden" name="next" value={next ?? "/"} />
-            <p className="text-center text-gray-500 text-sm">כניסה עם פרטי הגדוד</p>
+            <p className="text-center text-ink-muted text-sm">כניסה עם פרטי הגדוד</p>
 
             <div className="space-y-1.5">
-              <label htmlFor="username" className="text-xs font-bold text-gray-500 uppercase tracking-wider">שם משתמש</label>
+              <label htmlFor="username" className="text-xs font-bold text-ink-muted uppercase tracking-wider">שם משתמש</label>
               <input
                 id="username"
                 name="username"
@@ -49,12 +49,12 @@ export default function LoginPage({ next }: { next?: string }) {
                 required
                 dir="ltr"
                 placeholder="gdod996"
-                className="w-full h-11 px-4 rounded-lg border-2 border-gray-200 text-pikud-navy text-sm font-medium focus:outline-none focus:border-pikud-navy transition-colors placeholder:text-gray-300 text-left"
+                className="w-full h-11 px-4 rounded-lg border-2 border-line text-ink text-sm font-medium focus:outline-none focus:border-ink transition-colors placeholder:text-ink-faint text-left"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="password" className="text-xs font-bold text-gray-500 uppercase tracking-wider">סיסמה</label>
+              <label htmlFor="password" className="text-xs font-bold text-ink-muted uppercase tracking-wider">סיסמה</label>
               <div className="relative">
                 <input
                   id="password"
@@ -64,13 +64,13 @@ export default function LoginPage({ next }: { next?: string }) {
                   required
                   dir="ltr"
                   placeholder="••••••••"
-                  className="w-full h-11 px-4 pl-11 rounded-lg border-2 border-gray-200 text-pikud-navy text-sm font-medium focus:outline-none focus:border-pikud-navy transition-colors placeholder:text-gray-300 text-left"
+                  className="w-full h-11 px-4 pl-11 rounded-lg border-2 border-line text-ink text-sm font-medium focus:outline-none focus:border-ink transition-colors placeholder:text-ink-faint text-left"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPass((v) => !v)}
                   aria-label={showPass ? "הסתר סיסמה" : "הצג סיסמה"}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink-soft transition-colors"
                 >
                   {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -95,7 +95,7 @@ export default function LoginPage({ next }: { next?: string }) {
           </form>
 
           <div className="px-8 pb-6 text-center">
-            <p className="text-gray-300 text-xs">גישה מורשית בלבד · פרטי הכניסה ניתנים לכל גדוד בנפרד</p>
+            <p className="text-ink-faint text-xs">גישה מורשית בלבד · פרטי הכניסה ניתנים לכל גדוד בנפרד</p>
           </div>
         </div>
       </div>

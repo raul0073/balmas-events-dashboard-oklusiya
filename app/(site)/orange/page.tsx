@@ -12,7 +12,7 @@ export default async function OrangeHome() {
   const tools    = TOOLS.filter((t) => t.tones.includes("orange"));
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-pikud-orange-pale via-[#FBF1E6] to-pikud-cream">
+    <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-pikud-orange-pale via-canvas to-pikud-cream">
       <section className="relative bg-pikud-navy-dark text-white overflow-hidden">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-l from-transparent to-pikud-orange/25 pointer-events-none" aria-hidden />
         <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-l from-pikud-orange-dark via-pikud-orange to-pikud-orange-light" aria-hidden />

@@ -28,7 +28,7 @@ export default function InfoSources({ done, onChange, readOnly = false, defaultO
 
   return (
     <section aria-label="מקורות המידע"
-      className={`rounded-2xl border bg-white transition-colors ${complete ? "border-green-300" : "border-amber-200"}`}>
+      className={`rounded-2xl border bg-surface transition-colors ${complete ? "border-green-300" : "border-amber-200"}`}>
       <button type="button" onClick={() => setOpen((v) => !v)} aria-expanded={open}
         className="w-full flex items-center justify-between gap-3 px-4 py-2.5 text-right">
         <div className="flex items-center gap-2 min-w-0">
@@ -36,26 +36,26 @@ export default function InfoSources({ done, onChange, readOnly = false, defaultO
             <Radar className="w-4 h-4" />
           </span>
           <div className="leading-tight min-w-0">
-            <h3 className="font-bold text-sm text-pikud-navy">מקורות המידע</h3>
-            <p className="text-[11px] text-gray-400 truncate">
+            <h3 className="font-bold text-sm text-ink">מקורות המידע</h3>
+            <p className="text-[11px] text-ink-muted truncate">
               {complete ? "כל המקורות מוצו" : `${total - count} מקורות טרם מוצו · לחץ לפתיחה`}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3 shrink-0">
-          <div className="w-28 h-2 rounded-full bg-gray-100 overflow-hidden hidden sm:block" aria-hidden>
+          <div className="w-28 h-2 rounded-full bg-surface-2 overflow-hidden hidden sm:block" aria-hidden>
             <div className={`h-full rounded-full transition-all ${complete ? "bg-green-500" : "bg-amber-400"}`} style={{ width: `${(count / total) * 100}%` }} />
           </div>
           <span className={`text-sm font-bold tabular-nums ${complete ? "text-green-700" : "text-amber-700"}`}>{count}/{total}</span>
-          <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
+          <ChevronDown className={`w-4 h-4 text-ink-muted transition-transform ${open ? "rotate-180" : ""}`} aria-hidden />
         </div>
       </button>
 
       {open && (
-        <div className="px-4 pb-4 pt-1 space-y-2 border-t border-gray-100">
+        <div className="px-4 pb-4 pt-1 space-y-2 border-t border-line">
           {INFO_SOURCE_GROUPS.map((g) => (
             <div key={g.label} className="flex items-start gap-2 flex-wrap pt-2">
-              <span className="text-[11px] font-bold text-gray-400 w-24 shrink-0 pt-1.5">{g.label}</span>
+              <span className="text-[11px] font-bold text-ink-muted w-24 shrink-0 pt-1.5">{g.label}</span>
               <div className="flex flex-wrap gap-1.5 flex-1">
                 {g.sources.map((s) => {
                   const isDone = done.includes(s.key);

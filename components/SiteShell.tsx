@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus } from "lucide-react";
 import Shell from "@/components/Shell";
 import FeedbackDialog from "@/components/FeedbackDialog";
+import ThemeToggle from "@/components/ThemeToggle";
 import emblem from "@/app/assets/pikud-haoref.svg";
 import { useSession } from "@/lib/session";
 import { TOOLS } from "@/lib/tools";
@@ -35,11 +36,11 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const brand = (
     <Link href="/" className="flex items-center gap-3 px-4 h-16 border-b border-white/10 hover:opacity-90 min-w-0">
       <div className="flex items-center gap-1.5 shrink-0">
-        <div className="bg-white rounded-lg w-10 h-10 overflow-hidden flex items-center justify-center p-0.5">
+        <div className="bg-[#fff] rounded-lg w-10 h-10 overflow-hidden flex items-center justify-center p-0.5">
           <img src={emblem.src} alt="פיקוד העורף" className="w-full h-full object-contain" />
         </div>
         {battalion?.logoUrl && (
-          <div className="bg-white rounded-lg w-10 h-10 overflow-hidden flex items-center justify-center p-0.5">
+          <div className="bg-[#fff] rounded-lg w-10 h-10 overflow-hidden flex items-center justify-center p-0.5">
             <img src={battalion.logoUrl} alt={battalion.name} className="w-full h-full object-contain" />
           </div>
         )}
@@ -104,6 +105,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   const footer = (
     <div className="px-3 py-4 border-t border-white/10 space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <span className="text-[11px] text-white/50">תצוגה</span>
+        <ThemeToggle onDark compact />
+      </div>
       {session ? (
         <>
           <div className="flex items-center gap-3 px-2">
@@ -136,7 +141,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
 
   const headerActions = session ? (
     <>
-      <span className="hidden lg:inline-flex items-center gap-2 text-sm text-pikud-navy bg-pikud-cream border border-pikud-gray-light rounded-full pl-3 pr-1.5 py-1">
+      <span className="hidden lg:inline-flex items-center gap-2 text-sm text-ink bg-pikud-cream border border-pikud-gray-light rounded-full pl-3 pr-1.5 py-1">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pikud-navy text-white"><UserCircle2 className="w-4 h-4" /></span>
         <span className="font-semibold">{battalion?.name ?? session.username}</span>
       </span>
@@ -157,7 +162,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Shell brand={brand} nav={nav} footer={footer} title={pageTitle(pathname)}
-        titleIcon={<img src={emblem.src} alt="" className="w-5 h-5 object-contain bg-white rounded p-px" />}
+        titleIcon={<img src={emblem.src} alt="" className="w-5 h-5 object-contain bg-surface rounded p-px" />}
         headerActions={headerActions}>
         {children}
       </Shell>

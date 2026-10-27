@@ -37,13 +37,13 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
 
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
-            <h2 className="text-pikud-navy font-black text-2xl lg:hidden">תוכן הצ'קליסט</h2>
+            <h2 className="text-ink font-black text-2xl lg:hidden">תוכן הצ'קליסט</h2>
             <p className="text-pikud-gray-mid text-sm">מה שנשמר כאן מתפרסם מיד בעמוד הציבורי.
               {updatedAt && <> עודכן לאחרונה {new Date(updatedAt).toLocaleString("he-IL")}.</>}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/checklist" target="_blank" className="inline-flex items-center gap-1.5 text-sm font-semibold text-pikud-navy hover:underline underline-offset-4">
+            <Link href="/checklist" target="_blank" className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink hover:underline underline-offset-4">
               <ExternalLink className="w-4 h-4" /> פתח את העמוד
             </Link>
             <Button type="submit" variant="orange" disabled={pending} className="flex items-center gap-1.5">
@@ -59,7 +59,7 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
           </p>
         )}
 
-        <div className="bg-white rounded-xl border border-pikud-gray-light p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="bg-surface rounded-xl border border-pikud-gray-light p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="cl-title">כותרת *</Label>
             <Input id="cl-title" value={content.title} onChange={(e) => set({ title: e.target.value })} required className="h-10" />
@@ -76,16 +76,16 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
 
         <div className="space-y-4">
           {content.sections.map((section, si) => (
-            <div key={section.id} className="bg-white rounded-xl border border-pikud-gray-light overflow-hidden">
+            <div key={section.id} className="bg-surface rounded-xl border border-pikud-gray-light overflow-hidden">
               <div className="flex items-center gap-2 px-4 py-3 bg-pikud-cream/60 border-b border-pikud-gray-light">
                 <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-pikud-navy text-white text-xs font-black shrink-0">{si + 1}</span>
                 <Input value={section.label} placeholder="שם השלב"
                   onChange={(e) => setSections((s) => s.map((x, i) => (i === si ? { ...x, label: e.target.value } : x)))}
                   className="h-9 font-bold" />
                 <button type="button" onClick={() => setSections((s) => move(s, si, si - 1))} disabled={si === 0} aria-label="העלה שלב"
-                  className="p-1.5 rounded-md text-pikud-gray-mid hover:text-pikud-navy hover:bg-white disabled:opacity-30"><ArrowUp className="w-4 h-4" /></button>
+                  className="p-1.5 rounded-md text-pikud-gray-mid hover:text-ink hover:bg-surface disabled:opacity-30"><ArrowUp className="w-4 h-4" /></button>
                 <button type="button" onClick={() => setSections((s) => move(s, si, si + 1))} disabled={si === content.sections.length - 1} aria-label="הורד שלב"
-                  className="p-1.5 rounded-md text-pikud-gray-mid hover:text-pikud-navy hover:bg-white disabled:opacity-30"><ArrowDown className="w-4 h-4" /></button>
+                  className="p-1.5 rounded-md text-pikud-gray-mid hover:text-ink hover:bg-surface disabled:opacity-30"><ArrowDown className="w-4 h-4" /></button>
                 <button type="button" onClick={() => setSections((s) => s.filter((_, i) => i !== si))} aria-label="מחק שלב"
                   className="p-1.5 rounded-md text-red-500 hover:text-red-700 hover:bg-red-50"><Trash2 className="w-4 h-4" /></button>
               </div>
@@ -100,10 +100,10 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
                     <div className="flex flex-col gap-0.5 pt-1">
                       <button type="button" aria-label="העלה פריט" disabled={ii === 0}
                         onClick={() => setSections((s) => s.map((x, i) => (i === si ? { ...x, items: move(x.items, ii, ii - 1) } : x)))}
-                        className="p-1 rounded text-pikud-gray-mid hover:text-pikud-navy disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
+                        className="p-1 rounded text-pikud-gray-mid hover:text-ink disabled:opacity-30"><ArrowUp className="w-3.5 h-3.5" /></button>
                       <button type="button" aria-label="הורד פריט" disabled={ii === section.items.length - 1}
                         onClick={() => setSections((s) => s.map((x, i) => (i === si ? { ...x, items: move(x.items, ii, ii + 1) } : x)))}
-                        className="p-1 rounded text-pikud-gray-mid hover:text-pikud-navy disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
+                        className="p-1 rounded text-pikud-gray-mid hover:text-ink disabled:opacity-30"><ArrowDown className="w-3.5 h-3.5" /></button>
                       <button type="button" aria-label="מחק פריט"
                         onClick={() => setSections((s) => s.map((x, i) => (i === si ? { ...x, items: x.items.filter((_, j) => j !== ii) } : x)))}
                         className="p-1 rounded text-red-500 hover:text-red-700"><Trash2 className="w-3.5 h-3.5" /></button>
@@ -121,7 +121,7 @@ export default function ChecklistEditor({ initial, updatedAt }: { initial: Check
 
           <button type="button"
             onClick={() => setSections((s) => [...s, { id: newId("s"), label: "", items: [{ id: newId("i"), text: "" }] }])}
-            className="w-full rounded-xl border-2 border-dashed border-pikud-gray-light py-4 text-sm font-semibold text-pikud-navy hover:border-pikud-navy hover:bg-white transition-colors inline-flex items-center justify-center gap-2">
+            className="w-full rounded-xl border-2 border-dashed border-pikud-gray-light py-4 text-sm font-semibold text-ink hover:border-ink hover:bg-surface transition-colors inline-flex items-center justify-center gap-2">
             <Plus className="w-4 h-4" /> הוסף שלב
           </button>
         </div>

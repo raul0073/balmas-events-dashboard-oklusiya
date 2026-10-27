@@ -88,14 +88,14 @@ export default function ActivityPulse({ buckets = 24, bucketMinutes = 5, classNa
             {isActive && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />}
             <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isActive ? "bg-green-500" : "bg-gray-300"}`} />
           </span>
-          <span className="text-sm font-bold text-gray-700">דופק מבצעי</span>
-          <span className="text-xs text-gray-400">עדכונים ל-{bucketMinutes} דק', {buckets * bucketMinutes} דק' אחרונות</span>
+          <span className="text-sm font-bold text-ink-soft">דופק מבצעי</span>
+          <span className="text-xs text-ink-muted">עדכונים ל-{bucketMinutes} דק', {buckets * bucketMinutes} דק' אחרונות</span>
         </div>
         <div className="flex items-center gap-3">
           {recentCount > 0 && (
             <span className="text-xs font-semibold text-pikud-orange bg-pikud-orange/10 px-2 py-0.5 rounded-full">{recentCount} עדכונים אחרונים</span>
           )}
-          <span className="text-xs text-gray-400">{lastActivity}</span>
+          <span className="text-xs text-ink-muted">{lastActivity}</span>
         </div>
       </div>
 
@@ -125,8 +125,8 @@ export default function ActivityPulse({ buckets = 24, bucketMinutes = 5, classNa
         </svg>
 
         {/* y labels sit outside the mirrored svg so the text stays readable */}
-        <span className="absolute top-0 right-0 -translate-y-1/2 text-[10px] text-gray-400 bg-white px-1">{max}</span>
-        <span className="absolute bottom-1 right-0 text-[10px] text-gray-400 bg-white px-1">0</span>
+        <span className="absolute top-0 right-0 -translate-y-1/2 text-[10px] text-ink-muted bg-surface px-1">{max}</span>
+        <span className="absolute bottom-1 right-0 text-[10px] text-ink-muted bg-surface px-1">0</span>
 
         {hover !== null && (
           <div className="absolute top-0 -translate-y-full pointer-events-none"
@@ -138,7 +138,7 @@ export default function ActivityPulse({ buckets = 24, bucketMinutes = 5, classNa
         )}
       </div>
 
-      <div className="flex justify-between mt-0.5 text-[10px] text-gray-400">
+      <div className="flex justify-between mt-0.5 text-[10px] text-ink-muted">
         <span>עכשיו</span>
         <span>{`לפני ${buckets * bucketMinutes} דק'`}</span>
       </div>

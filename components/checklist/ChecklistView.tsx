@@ -47,8 +47,8 @@ export default function ChecklistView({ content }: { content: ChecklistContent }
   }
 
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-pikud-orange-pale via-[#FBF1E6] to-pikud-cream print:bg-white print:min-h-0">
-      <section className="relative bg-pikud-navy-dark text-white overflow-hidden print:bg-white print:text-pikud-navy">
+    <div className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-pikud-orange-pale via-canvas to-pikud-cream print:bg-surface print:min-h-0">
+      <section className="relative bg-pikud-navy-dark text-white overflow-hidden print:bg-surface print:text-ink">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-l from-transparent to-pikud-orange/25 pointer-events-none print:hidden" aria-hidden />
         <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-l from-pikud-orange-dark via-pikud-orange to-pikud-orange-light print:hidden" aria-hidden />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-7">
@@ -89,9 +89,9 @@ export default function ChecklistView({ content }: { content: ChecklistContent }
 
       <section className="max-w-3xl mx-auto px-4 sm:px-6 py-6 print:py-2 print:max-w-full">
         {content.sections.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-pikud-gray-light px-6 py-12 text-center text-pikud-gray-mid">הצ'קליסט עדיין ריק.</div>
+          <div className="bg-surface rounded-2xl border border-pikud-gray-light px-6 py-12 text-center text-pikud-gray-mid">הצ'קליסט עדיין ריק.</div>
         ) : (
-          <div className="rounded-2xl bg-white shadow-sm border border-pikud-gray-light overflow-hidden print:shadow-none print:rounded-none">
+          <div className="rounded-2xl bg-surface shadow-sm border border-pikud-gray-light overflow-hidden print:shadow-none print:rounded-none">
             {content.sections.map((section, i) => {
               const accent  = ACCENTS[i % ACCENTS.length];
               const doneIn  = section.items.filter((it) => checked[it.id]).length;
@@ -105,17 +105,17 @@ export default function ChecklistView({ content }: { content: ChecklistContent }
                       style={{ backgroundColor: allDone ? "#059669" : accent }}>
                       {allDone ? <Check className="w-3.5 h-3.5" strokeWidth={3} /> : i + 1}
                     </span>
-                    <span className={`flex-1 text-sm sm:text-lg font-bold leading-snug ${allDone ? "text-emerald-600" : "text-pikud-navy"}`}>{section.label}</span>
+                    <span className={`flex-1 text-sm sm:text-lg font-bold leading-snug ${allDone ? "text-emerald-600" : "text-ink"}`}>{section.label}</span>
                     <span className="shrink-0 text-xs text-pikud-gray-mid tabular-nums print:hidden">{doneIn}/{section.items.length}</span>
                     <ChevronDown className={`w-5 h-5 shrink-0 text-pikud-gray-mid transition-transform print:hidden ${isOpen ? "rotate-180" : ""}`} aria-hidden />
                   </button>
                   <div id={`sec-${section.id}`} hidden={!isOpen} className="print:!block">
-                    <div className="border-t border-pikud-gray-light bg-pikud-cream/40 px-3 sm:px-5 py-2 flex flex-col print:bg-white">
+                    <div className="border-t border-pikud-gray-light bg-pikud-cream/40 px-3 sm:px-5 py-2 flex flex-col print:bg-surface">
                       {section.items.map((item) => (
-                        <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-lg px-2 sm:px-3 py-2.5 transition-colors hover:bg-white ${checked[item.id] ? "opacity-60" : ""}`}>
+                        <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-lg px-2 sm:px-3 py-2.5 transition-colors hover:bg-surface ${checked[item.id] ? "opacity-60" : ""}`}>
                           <input type="checkbox" checked={!!checked[item.id]} onChange={() => toggle(item.id)}
                             className="mt-1 h-5 w-5 shrink-0 rounded border-pikud-gray-mid accent-[#F47920] cursor-pointer" />
-                          <span className={`text-sm sm:text-base leading-relaxed ${checked[item.id] ? "line-through text-pikud-gray-mid" : "text-gray-700"}`}>{item.text}</span>
+                          <span className={`text-sm sm:text-base leading-relaxed ${checked[item.id] ? "line-through text-pikud-gray-mid" : "text-ink-soft"}`}>{item.text}</span>
                         </label>
                       ))}
                     </div>

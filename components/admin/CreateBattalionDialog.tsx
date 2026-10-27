@@ -19,7 +19,7 @@ export default function CreateBattalionDialog({ open, onClose }: Props) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-pikud-navy/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="create-battalion-title">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
+      <div className="bg-surface rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden animate-fade-in">
         <div className="bg-pikud-navy px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-pikud-orange rounded-lg p-2"><Building2 className="w-5 h-5 text-white" /></div>

@@ -18,18 +18,29 @@ const config: Config = {
           orange: "#F47920",
           "orange-dark": "#D4620E",
           "orange-light": "#F9A55A",
-          "orange-pale": "#FEF0E4",
-          cream: "#F5F3EE",
-          "gray-light": "#E8E6E1",
-          "gray-mid": "#9B9890",
+          "orange-pale": "rgb(var(--orange-pale) / <alpha-value>)",
+          // the old cream and grays now follow the theme tokens
+          cream: "rgb(var(--canvas) / <alpha-value>)",
+          "gray-light": "rgb(var(--line) / <alpha-value>)",
+          "gray-mid": "rgb(var(--ink-muted) / <alpha-value>)",
+        },
+        // theme tokens (light/dark values live in globals.css)
+        canvas: { DEFAULT: "rgb(var(--canvas) / <alpha-value>)", deep: "rgb(var(--canvas-deep) / <alpha-value>)" },
+        surface: { DEFAULT: "rgb(var(--surface) / <alpha-value>)", 2: "rgb(var(--surface-2) / <alpha-value>)" },
+        line: { DEFAULT: "rgb(var(--line) / <alpha-value>)", strong: "rgb(var(--line-strong) / <alpha-value>)" },
+        ink: {
+          DEFAULT: "rgb(var(--ink) / <alpha-value>)",
+          soft: "rgb(var(--ink-soft) / <alpha-value>)",
+          muted: "rgb(var(--ink-muted) / <alpha-value>)",
+          faint: "rgb(var(--ink-faint) / <alpha-value>)",
         },
         // IDF olive green, the "green" space
         idf: {
           green: "#4B5320",
           "green-dark": "#363C17",
           "green-light": "#6B7A3A",
-          "green-pale": "#ECEEDF",
-          "green-mist": "#F6F7EF",
+          "green-pale": "rgb(var(--olive-pale) / <alpha-value>)",
+          "green-mist": "rgb(var(--olive-mist) / <alpha-value>)",
         },
         // Plugot colors
         plugah: {

@@ -31,7 +31,7 @@ export default function BattalionRow({ battalion: b }: { battalion: BattalionSum
   const [renameState, renameAction, renaming] = useActionState<ActionState, FormData>(renameBattalion, {});
   const [resetState, resetAction, resetting]  = useActionState<ActionState, FormData>(resetPassword, {});
 
-  const rowTone = b.active ? "" : "bg-gray-50 text-gray-500";
+  const rowTone = b.active ? "" : "bg-canvas text-ink-muted";
 
   return (
     <li className={`px-5 py-3 ${rowTone}`}>
@@ -43,13 +43,13 @@ export default function BattalionRow({ battalion: b }: { battalion: BattalionSum
               <input type="hidden" name="id" value={b.id} />
               <Input name="name" defaultValue={b.name} autoFocus required className="h-8 text-sm" />
               <button type="submit" aria-label="שמור" className="text-green-700 hover:text-green-900"><Check className="w-4 h-4" /></button>
-              <button type="button" aria-label="ביטול" onClick={() => setMode("view")} className="text-gray-400 hover:text-gray-600"><X className="w-4 h-4" /></button>
+              <button type="button" aria-label="ביטול" onClick={() => setMode("view")} className="text-ink-muted hover:text-ink-soft"><X className="w-4 h-4" /></button>
             </form>
           ) : (
             <>
-              <p className="font-bold text-pikud-navy truncate flex items-center gap-2">
+              <p className="font-bold text-ink truncate flex items-center gap-2">
                 {b.name}
-                {renaming && <Loader2 className="w-3 h-3 animate-spin text-gray-400" />}
+                {renaming && <Loader2 className="w-3 h-3 animate-spin text-ink-muted" />}
               </p>
               <p className="text-xs text-pikud-gray-mid font-mono" dir="ltr">{b.username}</p>
             </>
@@ -67,16 +67,16 @@ export default function BattalionRow({ battalion: b }: { battalion: BattalionSum
           <span className="md:hidden text-xs text-pikud-gray-mid">אירועים / יומן: </span>{b.eventCount} / {b.logCount}
         </div>
         <div>
-          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${b.active ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-600"}`}>
+          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${b.active ? "bg-green-100 text-green-700" : "bg-line text-ink-soft"}`}>
             {b.active ? "פעיל" : "מושבת"}
           </span>
         </div>
 
         <div className="flex items-center gap-1 justify-end w-full md:w-24">
           <button onClick={() => setMode(mode === "rename" ? "view" : "rename")} title="שנה שם" aria-label="שנה שם"
-            className="p-1.5 rounded-md text-pikud-gray-mid hover:text-pikud-navy hover:bg-pikud-cream"><Pencil className="w-4 h-4" /></button>
+            className="p-1.5 rounded-md text-pikud-gray-mid hover:text-ink hover:bg-pikud-cream"><Pencil className="w-4 h-4" /></button>
           <button onClick={() => setMode(mode === "reset" ? "view" : "reset")} title="אפס סיסמה" aria-label="אפס סיסמה"
-            className="p-1.5 rounded-md text-pikud-gray-mid hover:text-pikud-navy hover:bg-pikud-cream"><KeyRound className="w-4 h-4" /></button>
+            className="p-1.5 rounded-md text-pikud-gray-mid hover:text-ink hover:bg-pikud-cream"><KeyRound className="w-4 h-4" /></button>
           <form action={setBattalionActive}>
             <input type="hidden" name="id" value={b.id} />
             <input type="hidden" name="active" value={String(!b.active)} />
@@ -101,7 +101,7 @@ export default function BattalionRow({ battalion: b }: { battalion: BattalionSum
             <form action={resetAction} className="flex items-end gap-3 flex-wrap">
               <input type="hidden" name="userId" value={b.userId} />
               <div className="space-y-1">
-                <label htmlFor={`pw-${b.id}`} className="text-xs font-semibold text-pikud-navy">סיסמה חדשה ל{b.name}</label>
+                <label htmlFor={`pw-${b.id}`} className="text-xs font-semibold text-ink">סיסמה חדשה ל{b.name}</label>
                 <Input id={`pw-${b.id}`} name="password" placeholder="ריק = סיסמה אקראית" dir="ltr" minLength={8} className="h-9 text-sm w-56 text-left" />
               </div>
               <Button type="submit" size="sm" variant="orange" disabled={resetting} className="flex items-center gap-1.5">

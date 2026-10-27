@@ -2,9 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Theme tokens. Every surface, line and ink color on the pages reads one of these,
+  so light and dark are two value sets, not two stylesheets. Values are RGB channels
+  so Tailwind opacity modifiers (bg-surface/60) keep working.
+  Brand accents (navy, orange, olive) stay fixed in both modes.
+*/
 @layer base {
   :root {
-    --background: 40 20% 97%;
+    color-scheme: light;
+    --canvas:      244 246 248;   /* page background (was the cream) */
+    --canvas-deep: 236 239 243;   /* a step below the canvas */
+    --surface:     255 255 255;   /* cards, panels, inputs */
+    --surface-2:   248 250 252;   /* subtle chip / row background */
+    --line:        226 230 235;   /* borders */
+    --line-strong: 203 210 219;
+    --ink:          13  43  94;   /* primary text (navy) */
+    --ink-soft:     71  85 105;   /* secondary text */
+    --ink-muted:   120 128 140;   /* hints, labels */
+    --ink-faint:   170 178 190;   /* placeholders */
+    --orange-pale: 254 240 228;
+    --olive-pale:  236 238 223;
+    --olive-mist:  246 247 239;
+
+    --background: 210 20% 97%;
     --foreground: 222 47% 15%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 15%;
@@ -14,7 +35,7 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 36 90% 54%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 36 20% 93%;
+    --muted: 210 20% 93%;
     --muted-foreground: 220 10% 45%;
     --accent: 36 90% 54%;
     --accent-foreground: 0 0% 100%;
@@ -25,6 +46,35 @@
     --ring: 220 65% 22%;
     --radius: 0.5rem;
   }
+
+  .dark {
+    color-scheme: dark;
+    --canvas:       15  23  42;
+    --canvas-deep:  10  16  32;
+    --surface:      30  41  59;
+    --surface-2:    38  50  71;
+    --line:         51  65  85;
+    --line-strong:  71  85 105;
+    --ink:         241 245 249;
+    --ink-soft:    203 213 225;
+    --ink-muted:   148 163 184;
+    --ink-faint:   100 116 139;
+    --orange-pale:  46  28  14;
+    --olive-pale:   32  36  20;
+    --olive-mist:   24  28  16;
+
+    --background: 222 47% 11%;
+    --foreground: 210 40% 96%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 96%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 96%;
+    --muted: 217 33% 22%;
+    --muted-foreground: 215 20% 65%;
+    --border: 217 33% 27%;
+    --input: 217 33% 27%;
+    --ring: 36 90% 54%;
+  }
 }
 
 @layer base {
@@ -32,7 +82,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-pikud-cream text-pikud-navy;
+    @apply bg-canvas text-ink;
     font-family: var(--font-heebo), 'Heebo', sans-serif;
     direction: rtl;
     font-size: 15px;
@@ -57,11 +107,50 @@
     -webkit-appearance: none;
     margin: 0;
   }
+  input::placeholder, textarea::placeholder {
+    color: rgb(var(--ink-faint));
+  }
+  select option {
+    color: initial;
+  }
 }
 
-@layer utilities {
+/*
+  Status tints. Light mode uses Tailwind's pale tints; in dark mode the same
+  classes become translucent washes of the hue so the meaning survives.
+*/
+.dark .bg-red-50,    .dark .bg-red-100    { background-color: rgb(239 68 68 / 0.18); }
+.dark .bg-green-50,  .dark .bg-green-100  { background-color: rgb(34 197 94 / 0.18); }
+.dark .bg-amber-50,  .dark .bg-amber-100  { background-color: rgb(245 158 11 / 0.18); }
+.dark .bg-orange-100                      { background-color: rgb(249 115 22 / 0.18); }
+.dark .bg-blue-50,   .dark .bg-blue-100   { background-color: rgb(59 130 246 / 0.18); }
+.dark .bg-purple-100                      { background-color: rgb(168 85 247 / 0.18); }
+.dark .bg-teal-100                        { background-color: rgb(20 184 166 / 0.18); }
+.dark .bg-indigo-50                       { background-color: rgb(99 102 241 / 0.18); }
+.dark .bg-emerald-50                      { background-color: rgb(16 185 129 / 0.18); }
 
+.dark .text-red-700,    .dark .text-red-800,    .dark .text-red-600    { color: rgb(252 165 165); }
+.dark .text-green-700,  .dark .text-green-800,  .dark .text-green-900,
+.dark .text-emerald-600                                                { color: rgb(134 239 172); }
+.dark .text-amber-700,  .dark .text-amber-800,  .dark .text-amber-900  { color: rgb(252 211 77); }
+.dark .text-orange-700                                                 { color: rgb(253 186 116); }
+.dark .text-blue-700,   .dark .text-blue-800                           { color: rgb(147 197 253); }
+.dark .text-purple-700, .dark .text-purple-800                         { color: rgb(216 180 254); }
+.dark .text-teal-700                                                   { color: rgb(94 234 212); }
+.dark .text-indigo-800                                                 { color: rgb(165 180 252); }
+
+.dark .border-red-200,   .dark .border-red-300   { border-color: rgb(239 68 68 / 0.45); }
+.dark .border-green-200, .dark .border-green-300 { border-color: rgb(34 197 94 / 0.45); }
+.dark .border-amber-200, .dark .border-amber-300 { border-color: rgb(245 158 11 / 0.45); }
+.dark .border-indigo-200                         { border-color: rgb(99 102 241 / 0.45); }
+
+/* brand accents that are too dark on a dark surface */
+.dark .text-pikud-orange-dark { color: #F9A55A; }
+.dark .text-idf-green         { color: #A3B86C; }
+.dark .bg-pikud-orange\/10    { background-color: rgb(244 121 32 / 0.18); }
+
+@layer utilities {
   .table-header {
-    @apply text-sm font-700 text-pikud-navy uppercase tracking-wide;
+    @apply text-sm font-bold text-ink uppercase tracking-wide;
   }
 }

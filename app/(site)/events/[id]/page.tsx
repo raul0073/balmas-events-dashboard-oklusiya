@@ -101,7 +101,7 @@ export default function EventPage() {
 
   if (!loaded || !form) {
     return (
-      <div className="h-[calc(100vh-64px)] flex items-center justify-center text-pikud-gray-mid gap-2 bg-gray-50">
+      <div className="h-[calc(100vh-64px)] flex items-center justify-center text-pikud-gray-mid gap-2 bg-canvas">
         <Loader2 className="w-5 h-5 animate-spin" /> טוען אירוע…
       </div>
     );
@@ -181,13 +181,13 @@ export default function EventPage() {
   const accounted  = accountedFor(form);
 
   const missingTone = missing === null
-    ? "bg-white border-gray-200 text-gray-300"
+    ? "bg-surface border-line text-ink-faint"
     : isFinale ? "bg-green-600 border-green-700 text-white"
     : isNegative ? "bg-red-700 border-red-800 text-white"
     : "bg-red-600 border-red-700 text-white";
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden bg-gray-50">
+    <div className="h-[calc(100vh-64px)] flex flex-col overflow-hidden bg-canvas">
 
       {/* ── TOPBAR ── */}
       <div className="bg-pikud-navy-dark border-b border-white/10 shrink-0 shadow-sm">
@@ -202,7 +202,7 @@ export default function EventPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="flex items-center gap-1.5 min-w-0">
                   <MapPin className="w-3.5 h-3.5 text-pikud-orange shrink-0" />
-                  <span className="font-bold text-pikud-cream text-base truncate">{eventTitle(form)}</span>
+                  <span className="font-bold text-white text-base truncate">{eventTitle(form)}</span>
                 </div>
                 {form.name.trim() && form.address.trim() && (
                   <span className="text-white/60 text-sm truncate">{form.address}</span>
@@ -234,7 +234,7 @@ export default function EventPage() {
           <div className="flex items-center gap-2 shrink-0">
             <button onClick={() => setMetaOpen((v) => !v)} title="ערוך פרטי אירוע" aria-expanded={metaOpen}
               className={`p-2 rounded-lg transition-all text-sm font-semibold flex items-center gap-1.5 border ${
-                metaOpen ? "bg-white text-pikud-navy border-white" : "text-white/80 border-white/30 hover:bg-white/10 hover:text-white"
+                metaOpen ? "bg-surface text-ink border-white" : "text-white/80 border-white/30 hover:bg-white/10 hover:text-white"
               }`}>
               {metaOpen ? <X className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
               <span className="hidden sm:inline text-xs">{metaOpen ? "סגור עריכה" : "ערוך פרטי אירוע"}</span>
@@ -252,27 +252,27 @@ export default function EventPage() {
         <div className="shrink-0 bg-amber-50 border-b border-amber-200">
           <div className="px-4 sm:px-6 py-3 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="name" className="text-xs font-semibold text-gray-600">שם האירוע</Label>
-              <Input id="name" value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="לא חובה" className="h-9 text-sm bg-white" />
+              <Label htmlFor="name" className="text-xs font-semibold text-ink-soft">שם האירוע</Label>
+              <Input id="name" value={form.name} onChange={(e) => update("name", e.target.value)} placeholder="לא חובה" className="h-9 text-sm bg-surface" />
             </div>
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="address" className="text-xs font-semibold text-gray-600">כתובת</Label>
-              <Input id="address" value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="שם או כתובת, אחד חובה" className="h-9 text-sm bg-white" />
+              <Label htmlFor="address" className="text-xs font-semibold text-ink-soft">כתובת</Label>
+              <Input id="address" value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="שם או כתובת, אחד חובה" className="h-9 text-sm bg-surface" />
             </div>
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="commander" className="text-xs font-semibold text-gray-600">אחראי אירוע בגדוד</Label>
-              <Input id="commander" value={form.commander} onChange={(e) => update("commander", e.target.value)} placeholder="שם ותפקיד" className="h-9 text-sm bg-white" />
+              <Label htmlFor="commander" className="text-xs font-semibold text-ink-soft">אחראי אירוע בגדוד</Label>
+              <Input id="commander" value={form.commander} onChange={(e) => update("commander", e.target.value)} placeholder="שם ותפקיד" className="h-9 text-sm bg-surface" />
             </div>
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="crisisType" className="text-xs font-semibold text-gray-600 flex gap-1">סוג אירוע {!form.crisisType && <span className="text-amber-600">*</span>}</Label>
-              <Select id="crisisType" value={form.crisisType ?? ""} onChange={(e) => update("crisisType", (e.target.value || null) as CrisisEvent["crisisType"])} className="h-9 text-sm bg-white">
+              <Label htmlFor="crisisType" className="text-xs font-semibold text-ink-soft flex gap-1">סוג אירוע {!form.crisisType && <span className="text-amber-600">*</span>}</Label>
+              <Select id="crisisType" value={form.crisisType ?? ""} onChange={(e) => update("crisisType", (e.target.value || null) as CrisisEvent["crisisType"])} className="h-9 text-sm bg-surface">
                 <option value="">-- בחר --</option>
                 {CRISIS_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </Select>
             </div>
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="infra" className="text-xs font-semibold text-gray-600 flex gap-1">תשתית {!form.infrastructureType && <span className="text-amber-600">*</span>}</Label>
-              <Select id="infra" value={form.infrastructureType ?? ""} onChange={(e) => update("infrastructureType", (e.target.value || null) as CrisisEvent["infrastructureType"])} className="h-9 text-sm bg-white">
+              <Label htmlFor="infra" className="text-xs font-semibold text-ink-soft flex gap-1">תשתית {!form.infrastructureType && <span className="text-amber-600">*</span>}</Label>
+              <Select id="infra" value={form.infrastructureType ?? ""} onChange={(e) => update("infrastructureType", (e.target.value || null) as CrisisEvent["infrastructureType"])} className="h-9 text-sm bg-surface">
                 <option value="">-- בחר --</option>
                 {INFRASTRUCTURE_GROUPS.map((g) => (
                   <optgroup key={g.label} label={g.label}>
@@ -282,8 +282,8 @@ export default function EventPage() {
               </Select>
             </div>
             <div className="space-y-1 lg:col-span-2">
-              <Label htmlFor="plugah" className="text-xs font-semibold text-gray-600 flex gap-1">פלוגה {!form.plugah && <span className="text-amber-600">*</span>}</Label>
-              <Select id="plugah" value={form.plugah ?? ""} onChange={(e) => update("plugah", (e.target.value || null) as CrisisEvent["plugah"])} className="h-9 text-sm bg-white">
+              <Label htmlFor="plugah" className="text-xs font-semibold text-ink-soft flex gap-1">פלוגה {!form.plugah && <span className="text-amber-600">*</span>}</Label>
+              <Select id="plugah" value={form.plugah ?? ""} onChange={(e) => update("plugah", (e.target.value || null) as CrisisEvent["plugah"])} className="h-9 text-sm bg-surface">
                 <option value="">-- בחר --</option>
                 {PLUGAH_KEYS.map((k) => <option key={k} value={k}>{PLUGAH_LABELS[k]}</option>)}
               </Select>
@@ -330,9 +330,9 @@ export default function EventPage() {
             </span>
           </div>
 
-          <div className={`rounded-2xl border p-4 flex flex-col gap-1 bg-white ${anchor.assumed ? "border-amber-300" : "border-gray-200"}`}>
+          <div className={`rounded-2xl border p-4 flex flex-col gap-1 bg-surface ${anchor.assumed ? "border-amber-300" : "border-line"}`}>
             <div className="flex items-center justify-between">
-              <Label htmlFor="anchor" className="text-xs font-bold text-gray-500 flex items-center gap-1"><ListChecks className="w-3.5 h-3.5" /> רשימת עוגן</Label>
+              <Label htmlFor="anchor" className="text-xs font-bold text-ink-muted flex items-center gap-1"><ListChecks className="w-3.5 h-3.5" /> רשימת עוגן</Label>
               {anchor.assumed && <span className="text-[10px] font-bold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">משוער לפי צפי</span>}
             </div>
             <input id="anchor" type="number" min={0} inputMode="numeric"
@@ -340,23 +340,23 @@ export default function EventPage() {
               placeholder={anchor.assumed ? String(anchor.value) : "—"}
               onChange={(e) => update("anchor", parseNum(e.target.value))}
               className={`w-full h-12 text-3xl font-black rounded-xl border px-3 focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
-                ${form.anchor !== null ? "text-pikud-navy border-pikud-navy/30" : anchor.assumed ? "text-amber-700/60 placeholder:text-amber-700/50 border-amber-200 bg-amber-50/40" : "text-gray-300 border-gray-200"}`} />
+                ${form.anchor !== null ? "text-ink border-pikud-navy/30" : anchor.assumed ? "text-amber-700/60 placeholder:text-amber-700/50 border-amber-200 bg-amber-50/40" : "text-ink-faint border-line"}`} />
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col gap-1">
-            <Label htmlFor="tzapi" className="text-xs font-bold text-gray-500 flex items-center gap-1"><Users className="w-3.5 h-3.5" /> צפי אנשים במקום</Label>
+          <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-1">
+            <Label htmlFor="tzapi" className="text-xs font-bold text-ink-muted flex items-center gap-1"><Users className="w-3.5 h-3.5" /> צפי אנשים במקום</Label>
             <input id="tzapi" type="number" min={0} inputMode="numeric"
               value={form.tzapi ?? ""} placeholder="—"
               onChange={(e) => update("tzapi", parseNum(e.target.value))}
               className={`w-full h-12 text-3xl font-black rounded-xl border px-3 focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
-                ${form.tzapi !== null ? "text-pikud-navy border-pikud-navy/30" : "text-gray-300 border-gray-200"}`} />
+                ${form.tzapi !== null ? "text-ink border-pikud-navy/30" : "text-ink-faint border-line"}`} />
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-4 flex flex-col gap-1 col-span-2 lg:col-span-2">
-            <span className="text-xs font-bold text-gray-500 flex items-center gap-1"><Sigma className="w-3.5 h-3.5" /> מסוכם (חמשת המונים)</span>
+          <div className="rounded-2xl border border-line bg-surface p-4 flex flex-col gap-1 col-span-2 lg:col-span-2">
+            <span className="text-xs font-bold text-ink-muted flex items-center gap-1"><Sigma className="w-3.5 h-3.5" /> מסוכם (חמשת המונים)</span>
             <div className="flex items-end justify-between gap-3">
-              <span className="text-3xl font-black text-pikud-navy tabular-nums">{accounted}</span>
-              <span className="text-xs text-gray-400 text-left leading-tight">
+              <span className="text-3xl font-black text-ink tabular-nums">{accounted}</span>
+              <span className="text-xs text-ink-muted text-left leading-tight">
                 {anchor.value !== null ? `${anchor.value} עוגן${anchor.assumed ? " (משוער)" : ""} − ${accounted} מסוכם` : "ללא עוגן אין חישוב"}
               </span>
             </div>
@@ -372,15 +372,15 @@ export default function EventPage() {
         </div>
 
         {/* notes */}
-        <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
-          <div className="px-4 py-2 border-b border-gray-100">
-            <Label htmlFor="hearot" className="text-xs font-bold text-gray-500">הערות</Label>
+        <div className="rounded-2xl border border-line bg-surface overflow-hidden">
+          <div className="px-4 py-2 border-b border-line">
+            <Label htmlFor="hearot" className="text-xs font-bold text-ink-muted">הערות</Label>
           </div>
           <textarea id="hearot" rows={3}
             value={form.hearot}
             onChange={(e) => update("hearot", e.target.value)}
             placeholder="הערות שדה, מידע נוסף..."
-            className="w-full px-4 py-3 resize-y text-sm text-gray-700 placeholder:text-gray-300 focus:outline-none bg-transparent min-h-[80px]"
+            className="w-full px-4 py-3 resize-y text-sm text-ink-soft placeholder:text-ink-faint focus:outline-none bg-transparent min-h-[80px]"
           />
         </div>
       </div>
@@ -389,18 +389,18 @@ export default function EventPage() {
       <ProvenanceBar value={prov} onChange={setProv} defaultReporter={form.commander} disabled={isClosed} />
 
       {/* ── STICKY BOTTOM BAR ── */}
-      <div className="shrink-0 bg-white border-t border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-sm">
+      <div className="shrink-0 bg-surface border-t border-line px-4 sm:px-6 py-3 flex items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
           {!isClosed ? (
             <Button onClick={handleClose} disabled={saving}
               className={`flex items-center gap-2 h-10 text-sm font-semibold transition-all ${
-                confirmClose ? "bg-red-600 text-white border-red-600 shadow-md" : "bg-white text-red-500 border border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
+                confirmClose ? "bg-red-600 text-white border-red-600 shadow-md" : "bg-surface text-red-500 border border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
               }`}>
               <XCircle className="w-4 h-4" />
               {confirmClose ? "לחץ שוב — לאישור סגירה" : "סגור אירוע"}
             </Button>
           ) : (
-            <span className="flex items-center gap-2 text-sm font-semibold text-gray-400 bg-gray-100 px-4 py-2 rounded-lg border border-gray-200">
+            <span className="flex items-center gap-2 text-sm font-semibold text-ink-muted bg-surface-2 px-4 py-2 rounded-lg border border-line">
               <CheckCircle className="w-4 h-4" /> אירוע סגור
             </span>
           )}

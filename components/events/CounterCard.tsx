@@ -24,17 +24,17 @@ export default function CounterCard({ id, label, hint, value, icon, tone, onChan
   }
 
   return (
-    <div className={`rounded-2xl border bg-white p-4 flex flex-col gap-3 transition-colors ${has ? "border-pikud-navy/20 shadow-sm" : "border-gray-200"}`}>
+    <div className={`rounded-2xl border bg-surface p-4 flex flex-col gap-3 transition-colors ${has ? "border-pikud-navy/20 shadow-sm" : "border-line"}`}>
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">
-          <label htmlFor={id} className={`block font-bold text-sm ${has ? "text-pikud-navy" : "text-gray-600"}`}>{label}</label>
-          <p className="text-[11px] text-gray-400 leading-tight">{hint}</p>
+          <label htmlFor={id} className={`block font-bold text-sm ${has ? "text-ink" : "text-ink-soft"}`}>{label}</label>
+          <p className="text-[11px] text-ink-muted leading-tight">{hint}</p>
         </div>
         <span className={`inline-flex items-center justify-center w-9 h-9 rounded-xl shrink-0 ${tone}`}>{icon}</span>
       </div>
       <div className="flex items-center gap-2">
         <button type="button" onClick={() => step(-1)} aria-label={`הפחת ${label}`} disabled={n === 0}
-          className="h-11 w-11 rounded-xl border border-gray-200 text-pikud-navy hover:bg-pikud-cream disabled:opacity-30 disabled:hover:bg-transparent inline-flex items-center justify-center">
+          className="h-11 w-11 rounded-xl border border-line text-ink hover:bg-pikud-cream disabled:opacity-30 disabled:hover:bg-transparent inline-flex items-center justify-center">
           <Minus className="w-4 h-4" />
         </button>
         <input
@@ -45,8 +45,8 @@ export default function CounterCard({ id, label, hint, value, icon, tone, onChan
           value={value ?? ""}
           placeholder="0"
           onChange={(e) => { const v = parseInt(e.target.value, 10); onChange(isNaN(v) ? null : Math.max(0, v)); }}
-          className={`flex-1 min-w-0 h-11 text-center text-2xl font-black rounded-xl border bg-white focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
-            ${has ? "text-pikud-navy border-pikud-navy/30" : "text-gray-300 border-gray-200"}`}
+          className={`flex-1 min-w-0 h-11 text-center text-2xl font-black rounded-xl border bg-surface focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent
+            ${has ? "text-ink border-pikud-navy/30" : "text-ink-faint border-line"}`}
         />
         <button type="button" onClick={() => step(1)} aria-label={`הוסף ${label}`}
           className="h-11 w-11 rounded-xl bg-pikud-navy text-white hover:bg-pikud-navy-dark inline-flex items-center justify-center">

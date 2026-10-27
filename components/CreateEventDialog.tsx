@@ -110,7 +110,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-pikud-navy/60 backdrop-blur-sm px-4"
       role="dialog" aria-modal="true" aria-labelledby="create-event-title">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in max-h-[92vh] flex flex-col">
+      <div className="bg-surface rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-fade-in max-h-[92vh] flex flex-col">
 
         <div className="bg-pikud-navy px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
@@ -132,7 +132,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
                 <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
                   state === "done" ? "bg-green-500 text-white" : state === "current" ? "bg-pikud-orange text-white" : "bg-pikud-gray-light text-pikud-gray-mid"
                 }`}>{state === "done" ? <Check className="w-3.5 h-3.5" /> : s.n}</span>
-                <span className={state === "current" ? "font-bold text-pikud-navy" : "text-pikud-gray-mid"}>{s.label}</span>
+                <span className={state === "current" ? "font-bold text-ink" : "text-pikud-gray-mid"}>{s.label}</span>
                 {i < STEPS.length - 1 && <span className="w-8 h-px bg-pikud-gray-light mx-1" aria-hidden />}
               </li>
             );
@@ -181,7 +181,7 @@ export default function CreateEventDialog({ open, onClose }: Props) {
               {summary.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {summary.map((s, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold bg-pikud-cream border border-pikud-gray-light text-pikud-navy px-2 py-1 rounded-full">
+                    <span key={i} className="inline-flex items-center gap-1 text-xs font-semibold bg-pikud-cream border border-pikud-gray-light text-ink px-2 py-1 rounded-full">
                       {s.icon}{s.text}
                     </span>
                   ))}

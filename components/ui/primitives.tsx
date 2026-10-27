@@ -7,7 +7,7 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     <input
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-white px-3 py-2 text-sm text-pikud-navy placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -22,7 +22,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTML
     <textarea
       ref={ref}
       className={cn(
-        "flex min-h-[80px] w-full rounded-md border border-pikud-gray-light bg-white px-3 py-2 text-sm text-pikud-navy placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 resize-none",
+        "flex min-h-[80px] w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 resize-none",
         className
       )}
       {...props}
@@ -36,7 +36,7 @@ export const Label = React.forwardRef<HTMLLabelElement, React.LabelHTMLAttribute
   ({ className, ...props }, ref) => (
     <label
       ref={ref}
-      className={cn("text-sm font-medium text-pikud-navy leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)}
+      className={cn("text-sm font-medium text-ink leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)}
       {...props}
     />
   )
@@ -71,7 +71,7 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-lg border border-pikud-gray-light bg-white shadow-sm", className)}
+      className={cn("rounded-lg border border-pikud-gray-light bg-surface shadow-sm", className)}
       {...props}
     />
   );
@@ -82,7 +82,7 @@ export function CardHeader({ className, ...props }: React.HTMLAttributes<HTMLDiv
 }
 
 export function CardTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("text-lg font-semibold text-pikud-navy", className)} {...props} />;
+  return <h3 className={cn("text-lg font-semibold text-ink", className)} {...props} />;
 }
 
 export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
@@ -95,7 +95,7 @@ export const Select = React.forwardRef<HTMLSelectElement, React.SelectHTMLAttrib
     <select
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-white px-3 py-2 text-sm text-pikud-navy focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}
@@ -112,7 +112,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, React.InputHTMLAtt
       type="number"
       min={0}
       className={cn(
-        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-white px-3 py-2 text-sm text-pikud-navy placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-10 w-full rounded-md border border-pikud-gray-light bg-surface px-3 py-2 text-sm text-ink placeholder:text-pikud-gray-mid focus:outline-none focus:ring-2 focus:ring-pikud-navy focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50",
         className
       )}
       {...props}

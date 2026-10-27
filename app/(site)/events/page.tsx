@@ -81,7 +81,7 @@ export default function EventsBoard() {
 
   const pill = (active: boolean) =>
     `shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-      active ? "bg-pikud-navy text-white shadow-sm" : "bg-pikud-cream text-pikud-navy border border-pikud-gray-light hover:border-pikud-navy"
+      active ? "bg-pikud-navy text-white shadow-sm" : "bg-pikud-cream text-ink border border-pikud-gray-light hover:border-ink"
     }`;
 
   return (
@@ -160,7 +160,7 @@ export default function EventsBoard() {
       <ImportLocalBanner hasEvents={events.length > 0} />
 
       {/* ── TOOLBAR ── */}
-      <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3 flex-wrap bg-white border-b border-pikud-gray-light">
+      <div className="shrink-0 px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3 flex-wrap bg-surface border-b border-pikud-gray-light">
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-3.5 h-3.5 text-pikud-gray-mid" />
 
@@ -180,7 +180,7 @@ export default function EventsBoard() {
             {SORT_OPTIONS.map((o) => (
               <button key={o.key} onClick={() => setSort(o.key)}
                 className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
-                  sort === o.key ? "bg-pikud-orange text-white" : "text-pikud-gray-mid hover:text-pikud-navy"
+                  sort === o.key ? "bg-pikud-orange text-white" : "text-pikud-gray-mid hover:text-ink"
                 }`}>
                 {o.label}
               </button>
@@ -189,18 +189,18 @@ export default function EventsBoard() {
 
           <button onClick={() => setShowClosed((v) => !v)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              showClosed ? "bg-gray-600 text-white border-gray-600" : "bg-white text-pikud-gray-mid border-pikud-gray-light hover:border-gray-400"
+              showClosed ? "bg-gray-600 text-white border-gray-600" : "bg-surface text-pikud-gray-mid border-pikud-gray-light hover:border-gray-400"
             }`}>
             {showClosed ? "הסתר סגורים" : `הצג סגורים (${closedEvents.length})`}
           </button>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/")} title="יציאה מהלוח לדף הראשי" className="flex items-center gap-1.5 text-pikud-gray-mid hover:text-pikud-navy">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/")} title="יציאה מהלוח לדף הראשי" className="flex items-center gap-1.5 text-pikud-gray-mid hover:text-ink">
             <LogOut className="w-4 h-4" />
             <span className="hidden sm:inline">יציאה</span>
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => router.push("/events/logs")} className="flex items-center gap-1.5 text-pikud-navy">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/events/logs")} className="flex items-center gap-1.5 text-ink">
             <ScrollText className="w-4 h-4" />
             <span className="hidden sm:inline">יומן</span>
           </Button>
@@ -230,9 +230,9 @@ export default function EventsBoard() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center bg-pikud-navy/5 rounded-2xl p-12 max-w-sm mx-auto">
+            <div className="text-center bg-ink/5 rounded-2xl p-12 max-w-sm mx-auto">
               <Activity className="w-12 h-12 text-pikud-gray-mid mx-auto mb-4" />
-              <p className="text-pikud-navy font-semibold text-lg mb-2">אין אירועים פעילים</p>
+              <p className="text-ink font-semibold text-lg mb-2">אין אירועים פעילים</p>
               <p className="text-pikud-gray-mid text-sm mb-6">
                 {filter === "all" ? "לחץ על 'אירוע חדש' כדי להתחיל" : "אין אירועים לפלוגה זו"}
               </p>
@@ -257,17 +257,17 @@ export default function EventsBoard() {
 
       {/* ── ACTIVITY PULSE ── */}
       {events.length > 0 && (
-        <div className="shrink-0 border-t border-pikud-gray-light bg-white px-4 sm:px-6 py-2">
+        <div className="shrink-0 border-t border-pikud-gray-light bg-surface px-4 sm:px-6 py-2">
           {showPulse ? (
             <div className="flex items-start gap-2">
               <div className="flex-1"><ActivityPulse /></div>
               <button onClick={() => setShowPulse(false)} aria-label="הסתר דופק מבצעי" title="הסתר"
-                className="p-1.5 rounded-md text-pikud-gray-mid hover:text-pikud-navy hover:bg-pikud-cream">
+                className="p-1.5 rounded-md text-pikud-gray-mid hover:text-ink hover:bg-pikud-cream">
                 <EyeOff className="w-4 h-4" />
               </button>
             </div>
           ) : (
-            <button onClick={() => setShowPulse(true)} className="flex items-center gap-1.5 text-xs text-pikud-gray-mid hover:text-pikud-navy">
+            <button onClick={() => setShowPulse(true)} className="flex items-center gap-1.5 text-xs text-pikud-gray-mid hover:text-ink">
               <Eye className="w-3.5 h-3.5" /> הצג דופק מבצעי
             </button>
           )}

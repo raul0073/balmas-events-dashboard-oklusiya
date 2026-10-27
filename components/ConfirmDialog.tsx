@@ -32,7 +32,7 @@ export default function ConfirmDialog({
     <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-pikud-navy/60 backdrop-blur-sm data-[state=open]:animate-fade-in" />
-        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md mx-4 bg-white rounded-xl shadow-2xl overflow-hidden data-[state=open]:animate-fade-in focus:outline-none">
+        <Dialog.Content className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md mx-4 bg-surface rounded-xl shadow-2xl overflow-hidden data-[state=open]:animate-fade-in focus:outline-none">
 
           {/* Header */}
           <div className="bg-red-600 px-6 py-4 flex items-center justify-between">
@@ -51,7 +51,7 @@ export default function ConfirmDialog({
 
           {/* Body */}
           <div className="px-6 py-5 space-y-4">
-            <Dialog.Description className="text-pikud-navy text-sm leading-relaxed">
+            <Dialog.Description className="text-ink text-sm leading-relaxed">
               {description}
             </Dialog.Description>
 
@@ -62,9 +62,9 @@ export default function ConfirmDialog({
                   type="checkbox"
                   checked={checkbox.checked}
                   onChange={(e) => checkbox.onChange(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer"
+                  className="w-4 h-4 rounded border-line-strong text-red-600 focus:ring-red-500 cursor-pointer"
                 />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 select-none">
+                <span className="text-sm font-medium text-ink-soft group-hover:text-gray-900 select-none">
                   {checkbox.label}
                 </span>
               </label>

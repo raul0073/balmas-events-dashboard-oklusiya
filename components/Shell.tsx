@@ -54,8 +54,8 @@ export default function Shell({ brand, nav, footer, title, titleIcon, headerActi
           <div className="shrink-0 flex items-center gap-1">{headerActions}</div>
         </header>
 
-        <header className="hidden lg:flex h-16 items-center justify-between px-6 bg-white border-b border-pikud-gray-light sticky top-0 z-30">
-          <h1 className="text-pikud-navy font-black text-xl">{title}</h1>
+        <header className="hidden lg:flex h-16 items-center justify-between px-6 bg-surface border-b border-pikud-gray-light sticky top-0 z-30">
+          <h1 className="text-ink font-black text-xl">{title}</h1>
           <div className="flex items-center gap-3">{headerActions}</div>
         </header>
 

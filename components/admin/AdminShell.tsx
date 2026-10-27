@@ -6,6 +6,7 @@ import { Building2, ListChecks, BookOpen, Settings, ShieldCheck, LogOutIcon, Hom
 import Shell from "@/components/Shell";
 import { ADMIN_NAV, adminPageTitle, type AdminNavItem } from "@/lib/admin-nav";
 import { signOut } from "@/app/login/actions";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ICONS: Record<AdminNavItem["icon"], React.ReactNode> = {
   battalions: <Building2 className="w-4 h-4" />,
@@ -56,7 +57,7 @@ export default function AdminShell({ username, newFeedback = 0, children }: Prop
             }`}>
             <span className="flex items-center gap-3">{ICONS[item.icon]} {item.label}</span>
             {badge > 0 && (
-              <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${active ? "bg-white text-pikud-orange-dark" : "bg-pikud-orange text-white"}`}
+              <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${active ? "bg-surface text-pikud-orange-dark" : "bg-pikud-orange text-white"}`}
                 aria-label={`${badge} פניות חדשות`}>{badge}</span>
             )}
           </Link>
@@ -67,6 +68,10 @@ export default function AdminShell({ username, newFeedback = 0, children }: Prop
 
   const footer = (
     <div className="px-3 py-4 border-t border-white/10 space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <span className="text-[11px] text-white/50">תצוגה</span>
+        <ThemeToggle onDark compact />
+      </div>
       <div className="flex items-center gap-3 px-2">
         <span className="inline-flex items-center justify-center w-9 h-9 rounded-full bg-white/10 text-pikud-orange-light">
           <UserCircle2 className="w-5 h-5" />
@@ -90,7 +95,8 @@ export default function AdminShell({ username, newFeedback = 0, children }: Prop
 
   const headerActions = (
     <>
-      <span className="hidden lg:inline-flex items-center gap-2 text-sm text-pikud-navy bg-pikud-cream border border-pikud-gray-light rounded-full pl-3 pr-1.5 py-1">
+      <span className="hidden lg:inline-flex"><ThemeToggle compact /></span>
+      <span className="hidden lg:inline-flex items-center gap-2 text-sm text-ink bg-pikud-cream border border-pikud-gray-light rounded-full pl-3 pr-1.5 py-1">
         <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-pikud-navy text-white"><UserCircle2 className="w-4 h-4" /></span>
         <span className="font-semibold" dir="ltr">{username}</span>
         <span className="text-xs text-pikud-gray-mid">מנהל-על</span>

@@ -32,7 +32,7 @@ export default function FeedbackDialog({ open, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center bg-pikud-navy/60 backdrop-blur-sm px-4"
       role="dialog" aria-modal="true" aria-labelledby="feedback-title">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in max-h-[90vh] flex flex-col">
+      <div className="bg-surface rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in max-h-[90vh] flex flex-col">
         <div className="bg-pikud-navy px-6 py-4 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
             <div className="bg-pikud-orange rounded-lg p-2"><MessageSquarePlus className="w-5 h-5 text-white" /></div>
@@ -47,7 +47,7 @@ export default function FeedbackDialog({ open, onClose }: Props) {
         {state.ok ? (
           <div className="p-6 space-y-5 text-center">
             <CheckCircle className="w-12 h-12 text-green-500 mx-auto" />
-            <p className="text-pikud-navy font-bold text-lg">הפנייה נשלחה</p>
+            <p className="text-ink font-bold text-lg">הפנייה נשלחה</p>
             <p className="text-sm text-pikud-gray-mid">תודה. הפניות נקראות על ידי מנהל המערכת.</p>
             <Button variant="outline" className="w-full h-11" onClick={onClose}>סגור</Button>
           </div>
@@ -74,7 +74,7 @@ export default function FeedbackDialog({ open, onClose }: Props) {
             </div>
 
             {who ? (
-              <p className="text-xs text-pikud-gray-mid">נשלח בשם <strong className="text-pikud-navy">{who}</strong></p>
+              <p className="text-xs text-pikud-gray-mid">נשלח בשם <strong className="text-ink">{who}</strong></p>
             ) : (
               <div className="space-y-1.5">
                 <Label htmlFor="fb-contact">איך לחזור אליך (לא חובה)</Label>

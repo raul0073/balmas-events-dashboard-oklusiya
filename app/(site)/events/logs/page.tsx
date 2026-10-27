@@ -12,7 +12,7 @@ import { ArrowRight, Download, Trash2, ScrollText, Filter } from "lucide-react";
 const ACTION_COLORS: Record<LogActionType, string> = {
   "פתיחת אירוע":  "bg-blue-100 text-blue-800",
   "עדכון נתונים": "bg-amber-100 text-amber-800",
-  "סגירת אירוע":  "bg-gray-100 text-gray-700",
+  "סגירת אירוע":  "bg-surface-2 text-ink-soft",
   "שינוי פלוגה":  "bg-purple-100 text-purple-800",
   "ייבוא נתונים": "bg-teal-100 text-teal-800",
 };
@@ -104,29 +104,29 @@ export default function LogsPage() {
       </div>
 
       {/* ── FILTERS ── */}
-      <div className="shrink-0 bg-white border-b border-pikud-gray-light px-4 sm:px-6 py-3 space-y-2">
+      <div className="shrink-0 bg-surface border-b border-pikud-gray-light px-4 sm:px-6 py-3 space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
           <Filter className="w-4 h-4 text-pikud-gray-mid shrink-0" />
-          <span className="text-sm font-semibold text-pikud-navy shrink-0">פלוגה:</span>
+          <span className="text-sm font-semibold text-ink shrink-0">פלוגה:</span>
           {plugahFilters.map((f) => (
             <button key={String(f)} onClick={() => setPlugahFilter(f)}
               className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                 plugahFilter === f
                   ? "bg-pikud-navy text-white"
-                  : "bg-pikud-cream text-pikud-navy border border-pikud-gray-light hover:border-pikud-navy"
+                  : "bg-pikud-cream text-ink border border-pikud-gray-light hover:border-ink"
               }`}>
               {f === "all" ? "הכל" : PLUGAH_LABELS[f as NonNullable<Plugah>]}
             </button>
           ))}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-sm font-semibold text-pikud-navy shrink-0 mr-5">פעולה:</span>
+          <span className="text-sm font-semibold text-ink shrink-0 mr-5">פעולה:</span>
           {actionTypes.map((a) => (
             <button key={a} onClick={() => setActionFilter(a)}
               className={`px-3 py-1 rounded-full text-xs font-semibold transition-all ${
                 actionFilter === a
                   ? "bg-pikud-orange text-white"
-                  : "bg-pikud-cream text-pikud-navy border border-pikud-gray-light hover:border-pikud-orange"
+                  : "bg-pikud-cream text-ink border border-pikud-gray-light hover:border-pikud-orange"
               }`}>
               {a === "all" ? "כל הפעולות" : a}
             </button>
@@ -138,48 +138,48 @@ export default function LogsPage() {
       <div className="flex-1 overflow-auto p-4 sm:p-5">
         {filtered.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center bg-white rounded-2xl p-12 max-w-sm mx-auto border border-pikud-gray-light">
+            <div className="text-center bg-surface rounded-2xl p-12 max-w-sm mx-auto border border-pikud-gray-light">
               <ScrollText className="w-12 h-12 text-pikud-gray-mid mx-auto mb-4" />
-              <p className="text-pikud-navy font-bold text-lg mb-2">אין רשומות</p>
+              <p className="text-ink font-bold text-lg mb-2">אין רשומות</p>
               <p className="text-pikud-gray-mid text-sm">{loaded ? "הפעולות יירשמו אוטומטית" : "טוען…"}</p>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-pikud-gray-light shadow-sm overflow-hidden">
+          <div className="bg-surface rounded-xl border border-pikud-gray-light shadow-sm overflow-hidden">
             <div className="bg-pikud-cream border-b border-pikud-gray-light grid grid-cols-[120px_140px_1fr_1fr_1fr] px-4 py-2.5">
-              <span className="text-sm font-bold text-pikud-navy uppercase tracking-wide">תאריך</span>
-              <span className="text-sm font-bold text-pikud-navy uppercase tracking-wide">שעה</span>
-              <span className="text-sm font-bold text-pikud-navy uppercase tracking-wide">פעולה</span>
-              <span className="text-sm font-bold text-pikud-navy uppercase tracking-wide">אירוע</span>
-              <span className="text-sm font-bold text-pikud-navy uppercase tracking-wide">פרטים</span>
+              <span className="text-sm font-bold text-ink uppercase tracking-wide">תאריך</span>
+              <span className="text-sm font-bold text-ink uppercase tracking-wide">שעה</span>
+              <span className="text-sm font-bold text-ink uppercase tracking-wide">פעולה</span>
+              <span className="text-sm font-bold text-ink uppercase tracking-wide">אירוע</span>
+              <span className="text-sm font-bold text-ink uppercase tracking-wide">פרטים</span>
             </div>
 
             {filtered.map((entry, i) => {
               const ts          = new Date(entry.timestamp);
               const date        = ts.toLocaleDateString("he-IL", { day: "2-digit", month: "2-digit" });
               const time        = ts.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-              const actionCls   = ACTION_COLORS[entry.action] ?? "bg-gray-100 text-gray-700";
+              const actionCls   = ACTION_COLORS[entry.action] ?? "bg-surface-2 text-ink-soft";
               const plugahLabel = entry.plugah ? PLUGAH_LABELS[entry.plugah as NonNullable<Plugah>] : "ללא פלוגה";
 
               return (
                 <div key={entry.id}
                   className={`grid grid-cols-[120px_140px_1fr_1fr_1fr] px-4 py-3 border-b border-pikud-gray-light/50 text-sm transition-colors hover:bg-pikud-cream/30
-                    ${i % 2 === 0 ? "bg-white" : "bg-pikud-cream/10"}`}>
+                    ${i % 2 === 0 ? "bg-surface" : "bg-pikud-cream/10"}`}>
                   <span className="text-pikud-gray-mid font-medium">{date}</span>
-                  <span className="text-pikud-navy font-bold tabular-nums">{time}</span>
+                  <span className="text-ink font-bold tabular-nums">{time}</span>
                   <span>
                     <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold ${actionCls}`}>
                       {entry.action}
                     </span>
                   </span>
                   <div>
-                    <p className="text-pikud-navy font-semibold leading-tight truncate max-w-[200px]">{entry.eventAddress}</p>
+                    <p className="text-ink font-semibold leading-tight truncate max-w-[200px]">{entry.eventAddress}</p>
                     <p className="text-pikud-gray-mid text-xs">{plugahLabel}</p>
                   </div>
                   <div className="text-xs text-pikud-gray-mid">
                     {entry.detail
                       ? entry.detail.split("\n").map((line, idx) => (
-                          <p key={idx} className={idx === 0 ? "font-semibold text-pikud-navy" : "text-pikud-gray-mid"}>{line}</p>
+                          <p key={idx} className={idx === 0 ? "font-semibold text-ink" : "text-pikud-gray-mid"}>{line}</p>
                         ))
                       : <span>—</span>
                     }
@@ -194,9 +194,9 @@ export default function LogsPage() {
 
       {/* ── FOOTER ── */}
       {filtered.length > 0 && (
-        <div className="shrink-0 bg-white border-t border-pikud-gray-light px-6 py-2.5 flex items-center justify-between">
+        <div className="shrink-0 bg-surface border-t border-pikud-gray-light px-6 py-2.5 flex items-center justify-between">
           <span className="text-sm text-pikud-gray-mid">
-            מציג <strong className="text-pikud-navy">{filtered.length}</strong> רשומות מתוך {logs.length}
+            מציג <strong className="text-ink">{filtered.length}</strong> רשומות מתוך {logs.length}
           </span>
           <span className="text-xs text-pikud-gray-mid">ממוין לפי זמן עולה</span>
         </div>
