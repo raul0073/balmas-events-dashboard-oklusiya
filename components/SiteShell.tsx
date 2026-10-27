@@ -9,7 +9,7 @@ import FeedbackDialog from "@/components/FeedbackDialog";
 import ThemeToggle from "@/components/ThemeToggle";
 import emblem from "@/app/assets/pikud-haoref.svg";
 import { useSession } from "@/lib/session";
-import { TOOLS } from "@/lib/tools";
+import { TOOLS, toolHref } from "@/lib/tools";
 import { signOut } from "@/app/login/actions";
 
 const ICONS: Record<string, React.ReactNode> = {
@@ -86,7 +86,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           );
         }
         return (
-          <Link key={t.key} href={locked ? `/login?next=${encodeURIComponent(t.href)}` : t.href}
+          <Link key={t.key} href={locked ? `/login?next=${encodeURIComponent(toolHref(t, "orange"))}` : toolHref(t, "orange")}
             target={t.standalone ? "_blank" : undefined} rel={t.standalone ? "noopener" : undefined}
             aria-current={active ? "page" : undefined} className={`${linkCls(active)} justify-between`}>
             <span className="flex items-center gap-3">{ICONS[t.key]} {t.name}</span>

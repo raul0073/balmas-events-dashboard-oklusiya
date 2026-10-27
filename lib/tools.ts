@@ -17,6 +17,13 @@ export interface ToolDef {
   tones: ToolTone[];
   /** opens outside the shell, in a new tab, like a separate site */
   standalone?: boolean;
+  /** the tool has one page per color space: link to href/<space> */
+  spaced?: boolean;
+}
+
+/** Where a tool opens from a given space. */
+export function toolHref(tool: ToolDef, tone: ToolTone): string {
+  return tool.spaced ? `${tool.href}/${tone}` : tool.href;
 }
 
 export const TOOLS: ToolDef[] = [
@@ -54,8 +61,9 @@ export const TOOLS: ToolDef[] = [
     name: "ספריית ידע",
     description: "טפסים להורדה וחומרי למידה: טכניקות סקר, הנחיות ועזרים",
     protected: false,
-    ready: false,
+    ready: true,
     tones: ["orange", "green"],
+    spaced: true,
   },
 ];
 

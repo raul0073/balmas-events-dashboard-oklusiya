@@ -10,7 +10,7 @@ export const ADMIN_NAV: AdminNavItem[] = [
   { href: "/admin",           label: "גדודים",        icon: "battalions", ready: true },
   { href: "/admin/feedback",  label: "פניות",         icon: "feedback",   ready: true },
   { href: "/admin/checklist", label: "תוכן הצ'קליסט", icon: "checklist",  ready: true },
-  { href: "/admin/library",   label: "ספריית ידע",    icon: "library",    ready: false },
+  { href: "/admin/library",   label: "ספריית ידע",    icon: "library",    ready: true },
   { href: "/admin/settings",  label: "הגדרות מערכת",  icon: "settings",   ready: false },
 ];
 

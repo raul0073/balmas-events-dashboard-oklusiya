@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Activity, CalendarRange, ListChecks, BookOpen, Lock, ArrowLeft, ExternalLink } from "lucide-react";
-import type { ToolDef, ToolTone } from "@/lib/tools";
+import { toolHref, type ToolDef, type ToolTone } from "@/lib/tools";
 
 const ICONS: Record<string, React.ReactNode> = {
   events:    <Activity className="w-6 h-6" />,
@@ -33,7 +33,8 @@ interface Props {
 export default function ToolCard({ tool, tone, signedIn }: Props) {
   const a      = ACCENT[tone];
   const locked = tool.protected && !signedIn;
-  const href   = locked ? `/login?next=${encodeURIComponent(tool.href)}` : tool.href;
+  const target = toolHref(tool, tone);
+  const href   = locked ? `/login?next=${encodeURIComponent(target)}` : target;
   const cls    = `group rounded-2xl border shadow-sm p-5 flex flex-col gap-3 transition-all backdrop-blur-sm ${a.card}
         ${tool.ready ? "hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : "opacity-60"}`;
 
