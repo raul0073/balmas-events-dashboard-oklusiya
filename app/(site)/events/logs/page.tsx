@@ -6,7 +6,7 @@ import { useLogs, exportLogsAsText, exportLogsAsJson, LogActionType } from "@/li
 import { Button } from "@/components/ui/button";
 import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
 import { useBattalion } from "@/lib/session";
-import { formatProvenance } from "@/lib/events/provenance";
+import LogProvenanceEditor from "@/components/events/LogProvenanceEditor";
 import { ArrowRight, Download, Trash2, ScrollText, Filter } from "lucide-react";
 
 const ACTION_COLORS: Record<LogActionType, string> = {
@@ -183,11 +183,7 @@ export default function LogsPage() {
                         ))
                       : <span>—</span>
                     }
-                    {formatProvenance(entry) && (
-                      <p className="mt-1 inline-block text-[11px] font-medium text-pikud-navy bg-pikud-cream border border-pikud-gray-light rounded-full px-2 py-0.5">
-                        {formatProvenance(entry)}
-                      </p>
-                    )}
+                    <LogProvenanceEditor entry={entry} />
                   </div>
                 </div>
               );

@@ -30,10 +30,14 @@ export interface LogEntry {
   reason?: string;
 }
 
+export type LogProvenancePatch = Pick<LogEntry, "reportedBy" | "channel" | "reason">;
+
 interface LogContextType {
   logs: LogEntry[];
   loaded: boolean;
   addLog: (entry: Omit<LogEntry, "id" | "timestamp">) => Promise<void>;
+  /** edits who/how/why on an existing entry */
+  updateLogProvenance: (id: string, patch: LogProvenancePatch) => Promise<void>;
   clearLogs: () => Promise<void>;
 }
 
@@ -75,6 +79,9 @@ export function LogProvider({ children }: { children: React.ReactNode }) {
           } else if (payload.eventType === "INSERT") {
             const entry = rowToLog(payload.new as LogRow);
             setLogs((prev) => (prev.some((l) => l.id === entry.id) ? prev : [entry, ...prev]));
+          } else if (payload.eventType === "UPDATE") {
+            const entry = rowToLog(payload.new as LogRow);
+            setLogs((prev) => prev.map((l) => (l.id === entry.id ? entry : l)));
           }
         }
       )
@@ -93,6 +100,16 @@ export function LogProvider({ children }: { children: React.ReactNode }) {
     await supabase.from("logs").insert(logToRow(full, battalionId));
   }, [supabase, battalionId]);
 
+  const updateLogProvenance = useCallback(async (id: string, patch: LogProvenancePatch) => {
+    setLogs((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+    const { error } = await supabase.from("logs").update({
+      reported_by: patch.reportedBy?.trim() || null,
+      channel: patch.channel || null,
+      reason: patch.reason?.trim() || null,
+    }).eq("id", id);
+    if (error) throw new Error(error.message);
+  }, [supabase]);
+
   const clearLogs = useCallback(async () => {
     if (!battalionId) return;
     setLogs([]);
@@ -100,7 +117,7 @@ export function LogProvider({ children }: { children: React.ReactNode }) {
   }, [supabase, battalionId]);
 
   return (
-    <LogContext.Provider value={{ logs, loaded, addLog, clearLogs }}>
+    <LogContext.Provider value={{ logs, loaded, addLog, updateLogProvenance, clearLogs }}>
       {children}
     </LogContext.Provider>
   );
