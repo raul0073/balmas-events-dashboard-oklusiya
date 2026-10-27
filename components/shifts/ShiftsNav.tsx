@@ -31,7 +31,7 @@ export default function ShiftsNav() {
             return (
               <Link key={it.href} href={it.href} aria-current={active ? "page" : undefined}
                 className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${
-                  active ? "bg-olive text-white" : "text-ink-soft hover:text-ink hover:bg-surface-2"
+                  active ? "bg-pikud-orange text-white" : "text-ink-soft hover:text-ink hover:bg-surface-2"
                 }`}>
                 {it.icon} {t(it.key)}
               </Link>

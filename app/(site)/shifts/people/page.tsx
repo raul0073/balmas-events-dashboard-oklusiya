@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, alertDialog } from "@/lib/dialog";
 import { useMemo, useState } from "react";
 import { uid, useApp, useMounted } from "@/lib/shifts/store";
 import { Person, Role } from "@/lib/shifts/types";
@@ -120,7 +121,7 @@ export default function PeoplePage() {
                 {people.filter((p) => p.groupId === g.id).length}
               </span>
               <button
-                onClick={() => confirm(t("people.delGroupConfirm", { name: g.name })) && removeGroup(g.id)}
+                onClick={async () => { if (await confirmDialog(t("people.delGroupConfirm", { name: g.name }))) removeGroup(g.id); }}
                 className="rounded px-1 text-faint hover:text-danger"
               >
                 ×
@@ -196,7 +197,7 @@ export default function PeoplePage() {
               </Button>
               <Button
                 kind="danger"
-                onClick={() => confirm(t("people.removeConfirm", { name: p.name })) && removePerson(p.id)}
+                onClick={async () => { if (await confirmDialog(t("people.removeConfirm", { name: p.name }))) removePerson(p.id); }}
               >
                 {t("c.remove")}
               </Button>
@@ -208,12 +209,12 @@ export default function PeoplePage() {
       {(people.length > 0 || groups.length > 0) && (
         <div className="mt-6 flex flex-wrap gap-2 border-t border-line pt-4">
           {people.length > 0 && (
-            <Button kind="danger" onClick={() => confirm(t("del.peopleConfirm")) && clearPeople()}>
+            <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.peopleConfirm"))) clearPeople(); }}>
               {t("del.people")}
             </Button>
           )}
           {groups.length > 0 && (
-            <Button kind="danger" onClick={() => confirm(t("del.groupsConfirm")) && clearGroups()}>
+            <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.groupsConfirm"))) clearGroups(); }}>
               {t("del.groups")}
             </Button>
           )}

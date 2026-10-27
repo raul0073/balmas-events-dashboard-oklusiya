@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, alertDialog } from "@/lib/dialog";
 import { useMemo, useState } from "react";
 import { uid, useApp, useMounted } from "@/lib/shifts/store";
 import { Rule, RuleType } from "@/lib/shifts/types";
@@ -95,7 +96,7 @@ export default function RulesPage() {
 
       {rules.length > 0 && (
         <div className="mt-6 border-t border-line pt-4">
-          <Button kind="danger" onClick={() => confirm(t("del.rulesConfirm")) && clearRules()}>
+          <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.rulesConfirm"))) clearRules(); }}>
             {t("del.rules")}
           </Button>
         </div>

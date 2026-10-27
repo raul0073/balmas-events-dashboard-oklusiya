@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, alertDialog } from "@/lib/dialog";
 import { useEffect, useMemo, useState } from "react";
 import {
   DndContext,
@@ -96,9 +97,9 @@ export default function SchedulePage() {
       .filter(Boolean)
       .join(" · ");
 
-  const runGenerate = () => {
-    if (rangeTo < rangeFrom) return alert(t("sched.endBeforeStart"));
-    if (schedule && !confirm(t("sched.regenConfirm"))) return;
+  const runGenerate = async () => {
+    if (rangeTo < rangeFrom) { void alertDialog(t("sched.endBeforeStart")); return; }
+    if (schedule && !(await confirmDialog(t("sched.regenConfirm")))) return;
     generate(rangeFrom, rangeTo);
   };
 
@@ -163,7 +164,7 @@ export default function SchedulePage() {
                 <Button kind="ghost" onClick={() => setTrayOpen(!trayOpen)}>
                   {trayOpen ? t("sched.hideTray") : t("sched.tray")}
                 </Button>
-                <Button kind="danger" onClick={() => confirm(t("sched.clearConfirm")) && clearSchedule()}>
+                <Button kind="danger" onClick={async () => { if (await confirmDialog(t("sched.clearConfirm"))) clearSchedule(); }}>
                   {t("sched.clear")}
                 </Button>
               </>
@@ -225,7 +226,7 @@ export default function SchedulePage() {
                         <div className="text-xs font-semibold">{t(`wd.${weekdayIndex(d)}`)}</div>
                         <div className="font-mono text-[11px] text-faint" dir="ltr">{fmtDay(d)}</div>
                         {dayGroups(d) && (
-                          <div className="mt-0.5 inline-block rounded bg-olive-pale px-1.5 font-mono text-[10px] text-olive-dark">
+                          <div className="mt-0.5 inline-block rounded bg-pikud-orange/10 px-1.5 font-mono text-[10px] text-pikud-orange-dark">
                             {dayGroups(d)}
                           </div>
                         )}
@@ -295,7 +296,7 @@ export default function SchedulePage() {
                                           "rounded-md border border-dashed px-1.5 py-0.5 text-xs transition-colors",
                                           missing.has(`${key}:${role}`)
                                             ? "border-danger/60 text-danger hover:bg-danger-pale"
-                                            : "border-line text-faint hover:border-olive hover:text-olive"
+                                            : "border-line text-faint hover:border-pikud-orange hover:text-pikud-orange-dark"
                                         )}
                                       >
                                         + {role === "officer" ? t("sched.ofc") : t("sched.sol")}
@@ -419,7 +420,7 @@ function DropZone({ id, children, className }: { id: string; children: React.Rea
   return (
     <div
       ref={setNodeRef}
-      className={cls("min-h-6 rounded-md p-0.5 transition-colors", isOver && "bg-olive-pale/60 ring-2 ring-olive/50", className)}
+      className={cls("min-h-6 rounded-md p-0.5 transition-colors", isOver && "bg-pikud-orange/10 ring-2 ring-pikud-orange/50", className)}
     >
       {children}
     </div>
@@ -521,7 +522,7 @@ function AssignModal({
               <RoleBadge roles={p.roles} />
               <span className="flex-1 text-sm font-medium">{p.name}</span>
               {hard.length === 0 && soft.length === 0 ? (
-                <span className="font-mono text-[10px] font-semibold uppercase text-olive">{t("c.ok")}</span>
+                <span className="font-mono text-[10px] font-semibold uppercase text-green-600">{t("c.ok")}</span>
               ) : (
                 <span className={cls("text-end text-[11px] leading-tight", hard.length ? "text-danger" : "text-samber")}>
                   {[...hard, ...soft].map((c) => t(`viol.${c}`)).join(", ")}
@@ -593,7 +594,7 @@ function PersonSummary({
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <RoleBadge roles={person.roles} />
         {groupName && (
-          <span className="rounded bg-olive-pale px-1.5 py-0.5 font-mono text-[10px] text-olive-dark">{groupName}</span>
+          <span className="rounded bg-pikud-orange/10 px-1.5 py-0.5 font-mono text-[10px] text-pikud-orange-dark">{groupName}</span>
         )}
         {person.tags.map((t) => (
           <span key={t} className="rounded bg-paper px-1.5 py-0.5 text-[11px] text-faint">{t}</span>

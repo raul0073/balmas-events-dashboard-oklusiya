@@ -27,8 +27,8 @@ export function Button({
       title={title}
       className={cls(
         "rounded-md px-3 py-1.5 text-sm font-medium transition-colors disabled:opacity-40",
-        kind === "primary" && "bg-olive text-white hover:bg-olive-dark",
-        kind === "ghost" && "border border-line bg-panel text-ink hover:border-olive",
+        kind === "primary" && "bg-pikud-orange text-white hover:bg-pikud-orange-dark",
+        kind === "ghost" && "border border-line-strong bg-surface text-ink hover:border-pikud-orange",
         kind === "danger" && "bg-danger-pale text-danger hover:bg-danger hover:text-white"
       )}
     >
@@ -74,7 +74,7 @@ export function RoleBadge({ roles }: { roles: Person["roles"] }) {
           ? "border border-line bg-paper text-ink"
           : officer
             ? "bg-officer-pale text-officer"
-            : "bg-olive-pale text-olive-dark"
+            : "bg-surface-2 text-ink-soft border border-line"
       )}
     >
       {both ? "O+S" : officer ? "OFC" : "SOL"}
@@ -141,10 +141,10 @@ export function Modal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-ink/40 p-4 pt-14"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-pikud-navy/60 backdrop-blur-sm p-4 pt-14"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className={cls("w-full rounded-xl bg-panel p-5 shadow-lift", wide ? "max-w-2xl" : "max-w-md")}>
+      <div className={cls("w-full rounded-xl bg-surface border border-line p-5 shadow-2xl", wide ? "max-w-4xl" : "max-w-2xl")}>
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-semibold">{title}</h3>
           <button onClick={onClose} aria-label="Close" className="rounded px-2 text-faint hover:text-ink">
@@ -164,20 +164,20 @@ export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boo
       role="switch"
       aria-checked={on}
       className={cls(
-        "inline-flex items-center gap-2 text-sm",
+        "inline-flex items-center gap-2 text-sm rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-pikud-orange/50",
         !label && "align-middle"
       )}
     >
       <span
         className={cls(
-          "relative h-5 w-9 shrink-0 rounded-full transition-colors",
-          on ? "bg-olive" : "bg-line"
+          "relative h-6 w-11 shrink-0 rounded-full border transition-colors",
+          on ? "bg-pikud-orange border-pikud-orange" : "bg-field border-line-strong"
         )}
       >
         <span
           className={cls(
-            "absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform",
-            on ? "ltr:translate-x-[18px] rtl:-translate-x-[18px]" : "ltr:translate-x-0.5 rtl:-translate-x-0.5"
+            "absolute top-0.5 h-[18px] w-[18px] rounded-full shadow transition-transform",
+            on ? "bg-white ltr:translate-x-[22px] rtl:-translate-x-[22px]" : "bg-ink-muted ltr:translate-x-0.5 rtl:-translate-x-0.5"
           )}
         />
       </span>

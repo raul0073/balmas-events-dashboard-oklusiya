@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, alertDialog } from "@/lib/dialog";
 import { useState } from "react";
 import { uid, useApp, useMounted } from "@/lib/shifts/store";
 import { ShiftTemplate } from "@/lib/shifts/types";
@@ -163,14 +164,14 @@ export default function ConfigPage() {
           </Field>
           <Button
             disabled={!plan || plan.turns.length === 0 || !plan.start || !plan.end}
-            onClick={() => {
-              if (confirm(t("config.applyWarn"))) applyPlan(applyFrom || plan!.start, firstTurn);
+            onClick={async () => {
+              if (await confirmDialog(t("config.applyWarn"))) applyPlan(applyFrom || plan!.start, firstTurn);
             }}
           >
             {t("config.applyPlan")}
           </Button>
           {plan && (
-            <Button kind="danger" onClick={() => confirm(t("del.planConfirm")) && clearPlan()}>
+            <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.planConfirm"))) clearPlan(); }}>
               {t("del.plan")}
             </Button>
           )}
@@ -226,7 +227,7 @@ export default function ConfigPage() {
             {t("config.addPeriod")}
           </Button>
           {sortedPeriods.length > 0 && (
-            <Button kind="danger" onClick={() => confirm(t("del.periodsConfirm")) && clearPeriods()}>
+            <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.periodsConfirm"))) clearPeriods(); }}>
               {t("del.periods")}
             </Button>
           )}
@@ -312,12 +313,13 @@ export default function ConfigPage() {
 
         <div className="overflow-x-auto">
         <div className="grid min-w-[720px] gap-2">
-          <div className="grid grid-cols-[1.2fr_repeat(5,0.65fr)_auto_auto_auto] items-center gap-2 px-1 text-xs text-faint">
-            <span>{t("config.colName")}</span><span>{t("config.colStart")}</span><span>{t("config.colEnd")}</span><span>{t("config.colSoldiers")}</span><span>{t("config.colOfficers")}</span>
-            <span>{t("config.colBackups")}</span><span>{t("config.colNight")}</span><span>{t("config.colLength")}</span><span />
+          {/* header and rows share one template; the switch, hours and delete columns are fixed so labels sit over their cells */}
+          <div className="grid grid-cols-[1.2fr_1fr_1fr_0.65fr_0.65fr_0.65fr_3.5rem_3rem_2.5rem] items-center gap-2 text-xs text-faint">
+            <span className="px-2.5">{t("config.colName")}</span><span className="text-center">{t("config.colStart")}</span><span className="text-center">{t("config.colEnd")}</span><span className="text-center">{t("config.colSoldiers")}</span><span className="text-center">{t("config.colOfficers")}</span>
+            <span className="text-center">{t("config.colBackups")}</span><span className="text-center">{t("config.colNight")}</span><span className="text-center">{t("config.colLength")}</span><span />
           </div>
           {config.shifts.map((s) => (
-            <div key={s.id} className="grid grid-cols-[1.2fr_repeat(5,0.65fr)_auto_auto_auto] items-center gap-2">
+            <div key={s.id} className="grid grid-cols-[1.2fr_1fr_1fr_0.65fr_0.65fr_0.65fr_3.5rem_3rem_2.5rem] items-center gap-2 [&>*:nth-child(n+7)]:justify-self-center">
               <input className={inputCls} value={s.name} onChange={(e) => patchShift(s.id, { name: e.target.value })} />
               <input type="time" className={inputCls} value={s.start} onChange={(e) => patchShift(s.id, { start: e.target.value })} />
               <input type="time" className={inputCls} value={s.end} onChange={(e) => patchShift(s.id, { end: e.target.value })} />
@@ -328,10 +330,10 @@ export default function ConfigPage() {
               <span className="font-mono text-xs text-faint" dir="ltr">{shiftHours(s)}h</span>
               <Button
                 kind="danger"
-                onClick={() =>
-                  confirm(t("config.delShiftConfirm", { name: s.name })) &&
-                  setConfig({ ...config, shifts: config.shifts.filter((x) => x.id !== s.id) })
-                }
+                onClick={async () => {
+                  if (await confirmDialog(t("config.delShiftConfirm", { name: s.name })))
+                    setConfig({ ...config, shifts: config.shifts.filter((x) => x.id !== s.id) });
+                }}
               >
                 ×
               </Button>
@@ -345,7 +347,7 @@ export default function ConfigPage() {
       </Card>
 
       <div className="mt-6 border-t border-line pt-4">
-        <Button kind="danger" onClick={() => confirm(t("del.resetConfigConfirm")) && resetConfig()}>
+        <Button kind="danger" onClick={async () => { if (await confirmDialog(t("del.resetConfigConfirm"))) resetConfig(); }}>
           {t("del.resetConfig")}
         </Button>
       </div>

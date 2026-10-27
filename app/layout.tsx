@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider, THEME_BOOT_SCRIPT } from "@/lib/theme";
+import { DialogHost } from "@/lib/dialog";
 
 const heebo = Heebo({
   subsets: ["hebrew", "latin"],
@@ -24,7 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <DialogHost />
+        </ThemeProvider>
       </body>
     </html>
   );

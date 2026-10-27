@@ -1,4 +1,5 @@
 "use client";
+import { confirmDialog, alertDialog } from "@/lib/dialog";
 import { useRef } from "react";
 import Link from "next/link";
 import { useApp, useMounted } from "@/lib/shifts/store";
@@ -51,7 +52,7 @@ export default function Dashboard() {
     try {
       importAll(JSON.parse(await f.text()));
     } catch {
-      alert(t("dash.importErr"));
+      void alertDialog(t("dash.importErr"));
     }
   };
 
@@ -147,7 +148,7 @@ export default function Dashboard() {
                     <div key={c.date} className="flex min-w-9 flex-col items-center gap-1">
                       <div className="flex h-16 w-6 items-end rounded bg-paper">
                         <div
-                          className={cls("w-full rounded", pct >= 1 ? "bg-olive" : pct >= 0.7 ? "bg-samber" : "bg-danger")}
+                          className={cls("w-full rounded", pct >= 1 ? "bg-green-600" : pct >= 0.7 ? "bg-samber" : "bg-danger")}
                           style={{ height: `${Math.max(pct * 100, 4)}%` }}
                           title={`${c.filled}/${c.required}`}
                         />
@@ -171,7 +172,7 @@ export default function Dashboard() {
                     <span className="w-20 truncate">{s.name}</span>
                     <div className="h-3 flex-1 rounded bg-paper">
                       <div
-                        className={cls("h-3 rounded", s.isNight ? "bg-night" : "bg-olive")}
+                        className={cls("h-3 rounded", s.isNight ? "bg-night" : "bg-pikud-orange")}
                         style={{ width: `${(n / max) * 100}%` }}
                       />
                     </div>
@@ -311,9 +312,9 @@ export default function Dashboard() {
             <p className="text-sm text-faint">{t("del.zoneHelp")}</p>
             <Button
               kind="danger"
-              onClick={() =>
-                confirm(t("del.everythingConfirm")) && confirm(t("del.everythingConfirm2")) && resetAll()
-              }
+              onClick={async () => {
+                if ((await confirmDialog(t("del.everythingConfirm"))) && (await confirmDialog(t("del.everythingConfirm2")))) resetAll();
+              }}
             >
               {t("del.everything")}
             </Button>

@@ -95,7 +95,7 @@ export function Wizard({ onClose }: { onClose: () => void }) {
           {Array.from({ length: total }).map((_, i) => (
             <span
               key={i}
-              className={cls("h-1.5 w-6 rounded-full", i <= step ? "bg-olive" : "bg-line")}
+              className={cls("h-1.5 w-6 rounded-full", i <= step ? "bg-pikud-orange" : "bg-line")}
             />
           ))}
         </div>
@@ -137,17 +137,18 @@ export function Wizard({ onClose }: { onClose: () => void }) {
           </Field>
           <div className="overflow-x-auto">
             <div className="grid min-w-[560px] gap-2">
-              <div className="grid grid-cols-[1.2fr_repeat(5,0.7fr)_auto] items-center gap-2 px-1 text-xs text-faint">
-                <span>{t("config.colName")}</span>
-                <span>{t("config.colStart")}</span>
-                <span>{t("config.colEnd")}</span>
-                <span>{t("config.colSoldiers")}</span>
-                <span>{t("config.colOfficers")}</span>
-                <span>{t("config.colBackups")}</span>
-                <span>{t("config.colNight")}</span>
+              {/* header and rows share one template so the labels sit over their cells; the switch column is fixed */}
+              <div className="grid grid-cols-[1.2fr_1fr_1fr_0.7fr_0.7fr_0.7fr_3.5rem] items-center gap-2 text-xs text-faint">
+                <span className="px-2.5">{t("config.colName")}</span>
+                <span className="text-center">{t("config.colStart")}</span>
+                <span className="text-center">{t("config.colEnd")}</span>
+                <span className="text-center">{t("config.colSoldiers")}</span>
+                <span className="text-center">{t("config.colOfficers")}</span>
+                <span className="text-center">{t("config.colBackups")}</span>
+                <span className="text-center">{t("config.colNight")}</span>
               </div>
               {shifts.map((s) => (
-                <div key={s.id} className="grid grid-cols-[1.2fr_repeat(5,0.7fr)_auto] items-center gap-2">
+                <div key={s.id} className="grid grid-cols-[1.2fr_1fr_1fr_0.7fr_0.7fr_0.7fr_3.5rem] items-center gap-2 [&>*:last-child]:justify-self-center">
                   <input className={inputCls} value={s.name} onChange={(e) => patchShift(s.id, { name: e.target.value })} />
                   <input type="time" className={inputCls} value={s.start} onChange={(e) => patchShift(s.id, { start: e.target.value })} />
                   <input type="time" className={inputCls} value={s.end} onChange={(e) => patchShift(s.id, { end: e.target.value })} />
