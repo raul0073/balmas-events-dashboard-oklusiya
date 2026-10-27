@@ -10,18 +10,16 @@ const ICONS: Record<string, React.ReactNode> = {
   library:   <BookOpen className="w-6 h-6" />,
 };
 
-/** Card styling per tone: background, border, icon chip, tag chip, link color. */
-const TONES: Record<ToolTone, { card: string; icon: string; tag: string; link: string }> = {
+/** Card styling per tone: background, border, icon chip, link color. */
+const TONES: Record<ToolTone, { card: string; icon: string; link: string }> = {
   orange: {
     card: "bg-pikud-orange-pale border-pikud-orange/30 hover:border-pikud-orange/60",
     icon: "bg-pikud-orange text-white",
-    tag:  "bg-pikud-orange/15 text-pikud-orange-dark",
     link: "text-pikud-orange-dark",
   },
   green: {
     card: "bg-green-50 border-green-200 hover:border-green-400",
     icon: "bg-green-600 text-white",
-    tag:  "bg-green-600/15 text-green-800",
     link: "text-green-800",
   },
 };
@@ -59,7 +57,6 @@ export default async function HubHome() {
                     {ICONS[tool.key]}
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${tone.tag}`}>{tool.tag}</span>
                     {tool.protected && (
                       <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${locked ? "bg-pikud-navy/10 text-pikud-navy" : "bg-white/70 text-green-700"}`}>
                         <Lock className="w-3 h-3" /> {locked ? "דורש כניסה" : "פתוח לך"}
