@@ -312,20 +312,20 @@ export default function ConfigPage() {
         </SectionTitle>
 
         <div className="overflow-x-auto">
-        <div className="grid min-w-[720px] gap-2">
+        <div className="grid min-w-[780px] gap-2.5">
           {/* header and rows share one template; the switch, hours and delete columns are fixed so labels sit over their cells */}
-          <div className="grid grid-cols-[1.2fr_1fr_1fr_0.65fr_0.65fr_0.65fr_3.5rem_3rem_2.5rem] items-center gap-2 text-xs text-faint">
-            <span className="px-2.5">{t("config.colName")}</span><span className="text-center">{t("config.colStart")}</span><span className="text-center">{t("config.colEnd")}</span><span className="text-center">{t("config.colSoldiers")}</span><span className="text-center">{t("config.colOfficers")}</span>
+          <div className="grid grid-cols-[1.3fr_1fr_1fr_4.5rem_4.5rem_4.5rem_4rem_3.5rem_2.5rem] items-center gap-3 text-xs text-faint">
+            <span className="px-3">{t("config.colName")}</span><span className="text-center">{t("config.colStart")}</span><span className="text-center">{t("config.colEnd")}</span><span className="text-center">{t("config.colSoldiers")}</span><span className="text-center">{t("config.colOfficers")}</span>
             <span className="text-center">{t("config.colBackups")}</span><span className="text-center">{t("config.colNight")}</span><span className="text-center">{t("config.colLength")}</span><span />
           </div>
           {config.shifts.map((s) => (
-            <div key={s.id} className="grid grid-cols-[1.2fr_1fr_1fr_0.65fr_0.65fr_0.65fr_3.5rem_3rem_2.5rem] items-center gap-2 [&>*:nth-child(n+7)]:justify-self-center">
+            <div key={s.id} className="grid grid-cols-[1.3fr_1fr_1fr_4.5rem_4.5rem_4.5rem_4rem_3.5rem_2.5rem] items-center gap-3 [&>*:nth-child(n+7)]:justify-self-center">
               <input className={inputCls} value={s.name} onChange={(e) => patchShift(s.id, { name: e.target.value })} />
               <input type="time" className={inputCls} value={s.start} onChange={(e) => patchShift(s.id, { start: e.target.value })} />
               <input type="time" className={inputCls} value={s.end} onChange={(e) => patchShift(s.id, { end: e.target.value })} />
-              <input type="number" min={0} className={inputCls} value={s.soldiers} onChange={(e) => patchShift(s.id, { soldiers: Number(e.target.value) })} />
-              <input type="number" min={0} className={inputCls} value={s.officers} onChange={(e) => patchShift(s.id, { officers: Number(e.target.value) })} />
-              <input type="number" min={0} className={inputCls} value={s.backups} onChange={(e) => patchShift(s.id, { backups: Number(e.target.value) })} />
+              <input type="number" min={0} className={cls(inputCls, "text-center")} value={s.soldiers} onChange={(e) => patchShift(s.id, { soldiers: Number(e.target.value) })} />
+              <input type="number" min={0} className={cls(inputCls, "text-center")} value={s.officers} onChange={(e) => patchShift(s.id, { officers: Number(e.target.value) })} />
+              <input type="number" min={0} className={cls(inputCls, "text-center")} value={s.backups} onChange={(e) => patchShift(s.id, { backups: Number(e.target.value) })} />
               <Toggle on={s.isNight} onChange={(isNight) => patchShift(s.id, { isNight })} />
               <span className="font-mono text-xs text-faint" dir="ltr">{shiftHours(s)}h</span>
               <Button

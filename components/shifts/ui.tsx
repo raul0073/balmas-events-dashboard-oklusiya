@@ -99,6 +99,7 @@ export function PersonChip({
   const c = person.color ?? colorFor(person.id);
   return (
     <span
+      data-chip
       className={cls(
         "inline-flex items-center gap-1 rounded-md border py-0.5 ps-1.5 pe-1 text-xs font-medium text-ink",
         variant === "backup" && "border-dashed",
@@ -176,8 +177,8 @@ export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boo
       >
         <span
           className={cls(
-            "absolute top-0.5 h-[18px] w-[18px] rounded-full shadow transition-transform",
-            on ? "bg-white ltr:translate-x-[22px] rtl:-translate-x-[22px]" : "bg-ink-muted ltr:translate-x-0.5 rtl:-translate-x-0.5"
+            "absolute top-0.5 h-[18px] w-[18px] rounded-full shadow transition-all",
+            on ? "bg-white end-0.5" : "bg-ink-muted start-0.5"
           )}
         />
       </span>

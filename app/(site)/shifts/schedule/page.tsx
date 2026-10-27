@@ -18,6 +18,7 @@ import { Person, Role, SlotKind } from "@/lib/shifts/types";
 import { addDays, eachDay, fmtDay, shiftHours, todayYmd, weekdayIndex } from "@/lib/shifts/time";
 import { useT } from "@/lib/shifts/i18n";
 import { Button, Card, EmptyState, Modal, PersonChip, RoleBadge, cls, inputCls } from "@/components/shifts/ui";
+import { Maximize2, Minimize2, Printer } from "lucide-react";
 
 type SlotTarget = { key: string; role: Role | "backup" };
 
@@ -45,7 +46,17 @@ export default function SchedulePage() {
   const [trayOpen, setTrayOpen] = useState(false);
   const [trayQ, setTrayQ] = useState("");
   const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [focus, setFocus] = useState(false);
   const { t } = useT();
+
+  // full-screen: the shell chrome hides via a flag on <html>; Esc leaves
+  useEffect(() => {
+    const root = document.documentElement;
+    if (focus) root.setAttribute("data-focus", ""); else root.removeAttribute("data-focus");
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setFocus(false); };
+    if (focus) window.addEventListener("keydown", onKey);
+    return () => { root.removeAttribute("data-focus"); window.removeEventListener("keydown", onKey); };
+  }, [focus]);
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -129,8 +140,8 @@ export default function SchedulePage() {
 
   return (
     <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
-      <div className={cls("mx-auto max-w-full", trayOpen && "pb-24")}>
-        <header className="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div className={cls("mx-auto max-w-full", trayOpen && "pb-24", focus && "px-2 pt-2")}>
+        <header className={cls("mb-4 flex flex-wrap items-center justify-between gap-3", focus && "hidden")} data-noprint>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">{t("sched.title")}</h1>
             {schedule?.generatedAt && (
@@ -140,9 +151,11 @@ export default function SchedulePage() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <input type="date" className={cls(inputCls, "w-auto")} value={rangeFrom} onChange={(e) => setFrom(e.target.value)}  />
-            <span className="text-faint">→</span>
-            <input type="date" className={cls(inputCls, "w-auto")} value={rangeTo} onChange={(e) => setTo(e.target.value)}  />
+            <div className="flex items-center gap-1 rounded-lg border border-line bg-surface p-1" dir="ltr">
+              <input type="date" className={cls(inputCls, "w-auto border-0 bg-transparent")} value={rangeFrom} onChange={(e) => setFrom(e.target.value)}  />
+              <span className="text-faint">→</span>
+              <input type="date" className={cls(inputCls, "w-auto border-0 bg-transparent")} value={rangeTo} onChange={(e) => setTo(e.target.value)}  />
+            </div>
             {plan && (
               <Button
                 kind="ghost"
@@ -167,6 +180,13 @@ export default function SchedulePage() {
                 <Button kind="danger" onClick={async () => { if (await confirmDialog(t("sched.clearConfirm"))) clearSchedule(); }}>
                   {t("sched.clear")}
                 </Button>
+                <span className="mx-1 h-6 w-px bg-line" aria-hidden />
+                <Button kind="ghost" onClick={() => setFocus(true)} title={t("sched.focusHint")}>
+                  <span className="inline-flex items-center gap-1.5"><Maximize2 className="h-4 w-4" /> {t("sched.focus")}</span>
+                </Button>
+                <Button kind="ghost" onClick={() => window.print()}>
+                  <span className="inline-flex items-center gap-1.5"><Printer className="h-4 w-4" /> {t("sched.print")}</span>
+                </Button>
               </>
             )}
           </div>
@@ -179,7 +199,7 @@ export default function SchedulePage() {
         ) : (
           <>
             {schedule.issues.length > 0 && (
-              <Card className="mb-4 border-danger/40 bg-danger-pale/50">
+              <Card className="mb-3 border-danger/40 bg-danger-pale/50 py-2" data-noprint>
                 <p className="text-sm">
                   <span className="font-semibold text-danger">
                     {t("sched.issues", { n: schedule.issues.reduce((n, i) => n + i.missing, 0) })}
@@ -190,41 +210,51 @@ export default function SchedulePage() {
             )}
 
             {weeks.length > 0 && (
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <Button kind="ghost" onClick={() => setWeekIdx(wi - 1)} disabled={wi === 0}>
-                  ‹
-                </Button>
-                <span className="font-mono text-sm">
-                  {t("sched.week", { n: wi + 1, total: weeks.length })} ·{" "}
-                  <span dir="ltr">
-                    {fmtDay(weekDays[0])}–{fmtDay(weekDays[weekDays.length - 1])}
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  {focus && <span className="me-2 text-lg font-bold">{t("sched.title")}</span>}
+                  <span data-noprint className="contents">
+                    <Button kind="ghost" onClick={() => setWeekIdx(wi - 1)} disabled={wi === 0}>‹</Button>
                   </span>
-                </span>
-                <Button kind="ghost" onClick={() => setWeekIdx(wi + 1)} disabled={wi >= weeks.length - 1}>
-                  ›
-                </Button>
-                {weeks.some((w) => w.includes(todayYmd())) && (
-                  <Button
-                    kind="ghost"
-                    onClick={() => setWeekIdx(weeks.findIndex((w) => w.includes(todayYmd())))}
-                  >
-                    {t("sched.today")}
-                  </Button>
+                  <span className="font-mono text-sm">
+                    {t("sched.week", { n: wi + 1, total: weeks.length })} ·{" "}
+                    <span dir="ltr">
+                      {fmtDay(weekDays[0])}–{fmtDay(weekDays[weekDays.length - 1])}
+                    </span>
+                  </span>
+                  <span data-noprint className="contents">
+                    <Button kind="ghost" onClick={() => setWeekIdx(wi + 1)} disabled={wi >= weeks.length - 1}>›</Button>
+                    {weeks.some((w) => w.includes(todayYmd())) && (
+                      <Button kind="ghost" onClick={() => setWeekIdx(weeks.findIndex((w) => w.includes(todayYmd())))}>
+                        {t("sched.today")}
+                      </Button>
+                    )}
+                  </span>
+                </div>
+                {focus && (
+                  <div className="flex items-center gap-2" data-noprint>
+                    <Button kind="ghost" onClick={() => window.print()}>
+                      <span className="inline-flex items-center gap-1.5"><Printer className="h-4 w-4" /> {t("sched.print")}</span>
+                    </Button>
+                    <Button onClick={() => setFocus(false)}>
+                      <span className="inline-flex items-center gap-1.5"><Minimize2 className="h-4 w-4" /> {t("sched.exitFocus")}</span>
+                    </Button>
+                  </div>
                 )}
               </div>
             )}
 
-            <div className="overflow-x-auto rounded-lg border border-line bg-panel shadow-lift">
-              <table className="border-separate border-spacing-0">
+            <div className="sched-grid overflow-x-auto rounded-lg border border-line bg-panel shadow-lift">
+              <table className="w-full min-w-[900px] table-fixed border-separate border-spacing-0">
                 <thead>
                   <tr>
-                    <th className="sticky start-0 z-10 border-b border-e border-line bg-panel px-3 py-2 text-start text-xs font-semibold text-faint">
+                    <th className="sticky start-0 z-10 w-40 border-b border-e border-line bg-panel px-3 py-2.5 text-start text-xs font-semibold text-faint">
                       {t("sched.shiftCol")}
                     </th>
                     {weekDays.map((d) => (
-                      <th key={d} className="min-w-44 border-b border-line px-2 py-2 text-center">
-                        <div className="text-xs font-semibold">{t(`wd.${weekdayIndex(d)}`)}</div>
-                        <div className="font-mono text-[11px] text-faint" dir="ltr">{fmtDay(d)}</div>
+                      <th key={d} className="border-b border-line px-2 py-2.5 text-center">
+                        <div className="text-sm font-bold">{t(`wd.${weekdayIndex(d)}`)}</div>
+                        <div className="font-mono text-xs text-faint" dir="ltr">{fmtDay(d)}</div>
                         {dayGroups(d) && (
                           <div className="mt-0.5 inline-block rounded bg-pikud-orange/10 px-1.5 font-mono text-[10px] text-pikud-orange-dark">
                             {dayGroups(d)}
@@ -237,8 +267,8 @@ export default function SchedulePage() {
                 <tbody>
                   {config.shifts.map((shift) => (
                     <tr key={shift.id}>
-                      <td className="sticky start-0 z-10 border-b border-e border-line bg-panel px-3 py-2 align-top">
-                        <div className="text-sm font-semibold">{shift.name}</div>
+                      <td className="sticky start-0 z-10 border-b border-e border-line bg-panel px-3 py-2.5 align-top">
+                        <div className="text-base font-bold">{shift.name}</div>
                         <div className="font-mono text-[11px] text-faint" dir="ltr">
                           {shift.start}–{shift.end}
                         </div>
@@ -265,7 +295,7 @@ export default function SchedulePage() {
                           <td
                             key={key}
                             className={cls(
-                              "border-b border-line/60 px-1.5 py-1.5 align-top",
+                              "border-b border-line/60 px-2 py-2.5 align-top",
                               shift.isNight && "bg-night-pale/40"
                             )}
                           >
@@ -293,7 +323,7 @@ export default function SchedulePage() {
                                         key={i}
                                         onClick={() => setSlot({ key, role })}
                                         className={cls(
-                                          "rounded-md border border-dashed px-1.5 py-0.5 text-xs transition-colors",
+                                          "rounded-md border border-dashed px-2 py-1 text-xs transition-colors",
                                           missing.has(`${key}:${role}`)
                                             ? "border-danger/60 text-danger hover:bg-danger-pale"
                                             : "border-line text-faint hover:border-pikud-orange hover:text-pikud-orange-dark"
@@ -332,7 +362,7 @@ export default function SchedulePage() {
                                       key={i}
                                       onClick={() => setSlot({ key, role: "backup" })}
                                       className={cls(
-                                        "rounded-md border border-dashed px-1.5 py-0.5 text-xs transition-colors",
+                                        "rounded-md border border-dashed px-2 py-1 text-xs transition-colors",
                                         missing.has(`${key}:backup`)
                                           ? "border-danger/60 text-danger hover:bg-danger-pale"
                                           : "border-line text-faint hover:border-night hover:text-night"
@@ -352,14 +382,12 @@ export default function SchedulePage() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-xs text-faint">
-{t("sched.gridHelp")}
-            </p>
+            <p className="mt-2 text-xs text-faint" data-noprint>{t("sched.gridHelp")}</p>
           </>
         )}
 
         {trayOpen && schedule && (
-          <div className="fixed bottom-0 start-0 end-0 z-20 border-t md:start-48 border-line bg-panel/95 px-4 py-3 shadow-lift backdrop-blur">
+          <div data-noprint className={cls("fixed bottom-0 start-0 end-0 z-20 border-t border-line bg-panel/95 px-4 py-3 shadow-lift backdrop-blur", !focus && "lg:start-64")}>
             <div className="flex items-center gap-3 overflow-x-auto">
               <input
                 className={cls(inputCls, "w-44 shrink-0")}

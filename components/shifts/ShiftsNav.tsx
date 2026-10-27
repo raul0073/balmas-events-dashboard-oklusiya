@@ -22,7 +22,7 @@ export default function ShiftsNav() {
   const hasData = useApp((s) => s.people.some((p) => p.active) || s.schedule !== null);
 
   return (
-    <div className="bg-surface border-b border-line sticky top-0 z-20">
+    <div data-chrome className="bg-surface border-b border-line sticky top-0 z-20">
       <div className="px-4 sm:px-6 pt-3">
         <Breadcrumbs items={[{ label: "כתום", href: "/orange" }, { label: "סידור משמרות" }]} className="text-ink-muted" />
       </div>

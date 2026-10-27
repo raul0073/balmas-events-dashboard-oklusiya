@@ -176,3 +176,27 @@
     @apply text-sm font-bold text-ink uppercase tracking-wide;
   }
 }
+
+/* ── schedule focus mode and print ───────────────────────────────────────── */
+html[data-focus] [data-chrome] { display: none !important; }
+html[data-focus] body { overflow: auto; }
+
+.sched-grid [data-chip] { font-size: 0.85rem; padding: 0.3rem 0.55rem; }
+.sched-grid td, .sched-grid th { min-height: 4.5rem; }
+
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  :root, .dark {
+    color-scheme: light;
+    --canvas: 255 255 255; --canvas-deep: 255 255 255; --surface: 255 255 255; --surface-2: 245 245 245;
+    --line: 200 200 200; --line-strong: 150 150 150; --field: 255 255 255;
+    --ink: 0 0 0; --ink-soft: 40 40 40; --ink-muted: 90 90 90; --ink-faint: 140 140 140;
+    --night-pale: 236 236 236; --danger-pale: 255 230 230;
+  }
+  [data-chrome], [data-noprint] { display: none !important; }
+  body { background: #fff !important; }
+  .sched-grid { box-shadow: none !important; border-color: #999 !important; overflow: visible !important; }
+  .sched-grid table { width: 100% !important; }
+  .sched-grid td, .sched-grid th { border-color: #bbb !important; }
+  .sched-grid [data-chip] { border-width: 1px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

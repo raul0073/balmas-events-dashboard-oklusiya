@@ -37,14 +37,14 @@ export default function Shell({ brand, nav, footer, title, titleIcon, headerActi
   return (
     <div className="min-h-screen bg-pikud-cream lg:flex">
 
-      <aside className="hidden lg:flex lg:flex-col w-64 shrink-0 bg-pikud-navy text-white sticky top-0 h-screen">
+      <aside data-chrome className="hidden lg:flex lg:flex-col w-64 shrink-0 bg-pikud-navy text-white sticky top-0 h-screen">
         {brand}
         {nav}
         {footer}
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="lg:hidden sticky top-0 z-40 bg-pikud-navy text-white h-14 flex items-center justify-between px-3 shadow-md gap-2">
+        <header data-chrome className="lg:hidden sticky top-0 z-40 bg-pikud-navy text-white h-14 flex items-center justify-between px-3 shadow-md gap-2">
           <button onClick={() => setDrawerOpen(true)} aria-label="פתח תפריט" aria-expanded={drawerOpen}
             className="p-2 rounded-md hover:bg-white/10 shrink-0"><Menu className="w-5 h-5" /></button>
           <div className="flex items-center gap-2 min-w-0">
@@ -54,7 +54,7 @@ export default function Shell({ brand, nav, footer, title, titleIcon, headerActi
           <div className="shrink-0 flex items-center gap-1">{headerActions}</div>
         </header>
 
-        <header className="hidden lg:flex h-16 items-center justify-between px-6 bg-surface border-b border-pikud-gray-light sticky top-0 z-30">
+        <header data-chrome className="hidden lg:flex h-16 items-center justify-between px-6 bg-surface border-b border-pikud-gray-light sticky top-0 z-30">
           <h1 className="text-ink font-black text-xl">{title}</h1>
           <div className="flex items-center gap-3">{headerActions}</div>
         </header>
