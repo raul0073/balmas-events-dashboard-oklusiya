@@ -96,6 +96,27 @@ export async function setBattalionActive(formData: FormData): Promise<void> {
   revalidatePath("/admin");
 }
 
+export async function setFeedbackStatus(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id     = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!id || !["new", "seen", "done"].includes(status)) return;
+  const admin = createAdminClient();
+  await admin.from("feedback").update({ status }).eq("id", id);
+  revalidatePath("/admin/feedback");
+  revalidatePath("/admin", "layout");
+}
+
+export async function deleteFeedback(formData: FormData): Promise<void> {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  if (!id) return;
+  const admin = createAdminClient();
+  await admin.from("feedback").delete().eq("id", id);
+  revalidatePath("/admin/feedback");
+  revalidatePath("/admin", "layout");
+}
+
 export async function deleteBattalion(formData: FormData): Promise<void> {
   await requireAdmin();
   const userId = String(formData.get("userId") ?? "");

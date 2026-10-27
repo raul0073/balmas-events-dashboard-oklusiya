@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2 } from "lucide-react";
+import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus } from "lucide-react";
 import Shell from "@/components/Shell";
 import Navbar from "@/components/Navbar";
+import FeedbackDialog from "@/components/FeedbackDialog";
 import emblem from "@/app/assets/pikud-haoref.svg";
 import { useSession } from "@/lib/session";
 import { TOOLS } from "@/lib/tools";
@@ -27,6 +29,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname  = usePathname();
   const battalion = session?.battalion ?? null;
   const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
 
   // The events board is not inside the shell yet: it keeps its own top bar until we work on it.
   if (pathname === "/events" || pathname.startsWith("/events/")) {
@@ -87,6 +90,10 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
           </Link>
         );
       })}
+      <p className="px-3 pt-4 pb-1 text-[11px] font-bold text-white/40 tracking-wide">עזרה</p>
+      <button type="button" onClick={() => setFeedbackOpen(true)} className={`${linkCls(false)} w-full`}>
+        <MessageSquarePlus className="w-4 h-4" /> משוב ובקשות
+      </button>
       {session?.isAdmin && (
         <>
           <p className="px-3 pt-4 pb-1 text-[11px] font-bold text-white/40 tracking-wide">ניהול</p>
@@ -151,10 +158,13 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <Shell brand={brand} nav={nav} footer={footer} title={pageTitle(pathname)}
-      titleIcon={<img src={emblem.src} alt="" className="w-5 h-5 object-contain bg-white rounded p-px" />}
-      headerActions={headerActions}>
-      {children}
-    </Shell>
+    <>
+      <Shell brand={brand} nav={nav} footer={footer} title={pageTitle(pathname)}
+        titleIcon={<img src={emblem.src} alt="" className="w-5 h-5 object-contain bg-white rounded p-px" />}
+        headerActions={headerActions}>
+        {children}
+      </Shell>
+      <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+    </>
   );
 }

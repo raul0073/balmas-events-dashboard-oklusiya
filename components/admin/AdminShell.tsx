@@ -2,19 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, ListChecks, BookOpen, Settings, ShieldCheck, LogOutIcon, Home, UserCircle2 } from "lucide-react";
+import { Building2, ListChecks, BookOpen, Settings, ShieldCheck, LogOutIcon, Home, UserCircle2, Inbox } from "lucide-react";
 import Shell from "@/components/Shell";
 import { ADMIN_NAV, adminPageTitle, type AdminNavItem } from "@/lib/admin-nav";
 import { signOut } from "@/app/login/actions";
 
 const ICONS: Record<AdminNavItem["icon"], React.ReactNode> = {
   battalions: <Building2 className="w-4 h-4" />,
+  feedback:   <Inbox className="w-4 h-4" />,
   checklist:  <ListChecks className="w-4 h-4" />,
   library:    <BookOpen className="w-4 h-4" />,
   settings:   <Settings className="w-4 h-4" />,
 };
 
-export default function AdminShell({ username, children }: { username: string; children: React.ReactNode }) {
+interface Props {
+  username: string;
+  /** unread submissions, shown as a badge on the feedback entry */
+  newFeedback?: number;
+  children: React.ReactNode;
+}
+
+export default function AdminShell({ username, newFeedback = 0, children }: Props) {
   const pathname = usePathname();
 
   const brand = (
@@ -40,12 +48,17 @@ export default function AdminShell({ username, children }: { username: string; c
             </span>
           );
         }
+        const badge = item.icon === "feedback" && newFeedback > 0 ? newFeedback : 0;
         return (
           <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+            className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
               active ? "bg-pikud-orange text-white shadow-sm" : "text-white/75 hover:text-white hover:bg-white/10"
             }`}>
-            {ICONS[item.icon]} {item.label}
+            <span className="flex items-center gap-3">{ICONS[item.icon]} {item.label}</span>
+            {badge > 0 && (
+              <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-full ${active ? "bg-white text-pikud-orange-dark" : "bg-pikud-orange text-white"}`}
+                aria-label={`${badge} פניות חדשות`}>{badge}</span>
+            )}
           </Link>
         );
       })}
