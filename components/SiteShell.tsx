@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Activity, CalendarRange, ListChecks, BookOpen, Home, Lock, LogIn, LogOutIcon, ShieldCheck, UserCircle2, MessageSquarePlus } from "lucide-react";
 import Shell from "@/components/Shell";
-import Navbar from "@/components/Navbar";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import emblem from "@/app/assets/pikud-haoref.svg";
 import { useSession } from "@/lib/session";
@@ -32,16 +31,6 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
   const battalion = session?.battalion ?? null;
   const loginHref = `/login?next=${encodeURIComponent(pathname)}`;
   const [feedbackOpen, setFeedbackOpen] = useState(false);
-
-  // The events board is not inside the shell yet: it keeps its own top bar until we work on it.
-  if (pathname === "/events" || pathname.startsWith("/events/")) {
-    return (
-      <>
-        <Navbar />
-        <main>{children}</main>
-      </>
-    );
-  }
 
   const brand = (
     <Link href="/" className="flex items-center gap-3 px-4 h-16 border-b border-white/10 hover:opacity-90 min-w-0">

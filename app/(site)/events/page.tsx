@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { formatAllEventsForWhatsApp } from "@/lib/whatsapp";
 import { anchorInfo, calcMissing, isMetaIncomplete } from "@/lib/events/math";
 import { PLUGAH_KEYS, PLUGAH_LABELS, Plugah } from "@/types";
-import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter, ScrollText, Trash2, Loader2, EyeOff, Eye } from "lucide-react";
+import { Plus, Copy, Check, AlertTriangle, Users, Activity, ArrowUpDown, Filter, ScrollText, Trash2, Loader2, EyeOff, Eye, LogOut } from "lucide-react";
 import { FaUsersSlash, FaPeopleRoof } from "react-icons/fa6";
 
 type SortKey = "time" | "missing" | "anchor" | "plugah";
@@ -196,6 +196,10 @@ export default function EventsBoard() {
         </div>
 
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => router.push("/")} title="יציאה מהלוח לדף הראשי" className="flex items-center gap-1.5 text-pikud-gray-mid hover:text-pikud-navy">
+            <LogOut className="w-4 h-4" />
+            <span className="hidden sm:inline">יציאה</span>
+          </Button>
           <Button variant="ghost" size="sm" onClick={() => router.push("/events/logs")} className="flex items-center gap-1.5 text-pikud-navy">
             <ScrollText className="w-4 h-4" />
             <span className="hidden sm:inline">יומן</span>
