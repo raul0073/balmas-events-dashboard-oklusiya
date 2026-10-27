@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
 import { generateId, now } from "@/lib/utils";
-import { CrisisEvent, CRISIS_TYPES, INFRASTRUCTURE_LABELS, PLUGAH_KEYS, PLUGAH_LABELS, eventTitle, plugahLabel } from "@/types";
+import { CrisisEvent, CRISIS_TYPES, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, PLUGAH_KEYS, PLUGAH_LABELS, eventTitle, plugahLabel } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, NumberInput, Textarea } from "@/components/ui/primitives";
 import { X, MapPin, AlertTriangle, Loader2, ArrowRight, ArrowLeft, Check, Tag, UserCog, Users } from "lucide-react";
@@ -166,8 +166,10 @@ export default function CreateEventDialog({ open, onClose }: Props) {
                   <Label htmlFor="ev-infra">תשתית</Label>
                   <Select id="ev-infra" value={draft.infrastructureType ?? ""} onChange={(e) => set("infrastructureType", (e.target.value || null) as Draft["infrastructureType"])} className="h-11">
                     <option value="">לא ידוע עדיין</option>
-                    {(Object.keys(INFRASTRUCTURE_LABELS) as (keyof typeof INFRASTRUCTURE_LABELS)[]).map((k) => (
-                      <option key={k} value={k}>{INFRASTRUCTURE_LABELS[k]}</option>
+{INFRASTRUCTURE_GROUPS.map((g) => (
+                      <optgroup key={g.label} label={g.label}>
+                        {g.keys.map((k) => <option key={k} value={k}>{INFRASTRUCTURE_LABELS[k]}</option>)}
+                      </optgroup>
                     ))}
                   </Select>
                 </div>

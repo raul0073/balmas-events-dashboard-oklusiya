@@ -1,6 +1,12 @@
 export type Plugah = "alef" | "bet" | "gimel" | "other" | null;
 
-export type InfrastructureType = "house" | "building" | "school" | "other" | null;
+export type InfrastructureType =
+  | "private_home" | "residential" | "assisted_living"
+  | "education" | "medical"
+  | "public" | "mall" | "hotel" | "offices"
+  | "industrial" | "shelter" | "transport"
+  | "open_area" | "other"
+  | null;
 
 export type CrisisType =
   | "שברי רסיס"
@@ -75,11 +81,41 @@ export function eventTitle(e: Pick<CrisisEvent, "name" | "address">): string {
 }
 
 export const INFRASTRUCTURE_LABELS: Record<NonNullable<InfrastructureType>, string> = {
-  house:    "בית",
-  building: "בניין",
-  school:   "בית ספר",
-  other:    "אחר",
+  private_home:    "בית פרטי",
+  residential:     "בניין מגורים",
+  assisted_living: "דיור מוגן / בית אבות",
+  education:       "מוסד חינוך (בית ספר / גן)",
+  medical:         "בית חולים / מרפאה",
+  public:          "מבנה ציבור",
+  mall:            "מרכז מסחרי / קניון",
+  hotel:           "מלון",
+  offices:         "משרדים",
+  industrial:      "מפעל / תעשייה",
+  shelter:         "מקלט ציבורי",
+  transport:       "תחנת תחבורה",
+  open_area:       "שטח פתוח",
+  other:           "אחר",
 };
+
+/** Select groups, in display order. */
+export const INFRASTRUCTURE_GROUPS: { label: string; keys: NonNullable<InfrastructureType>[] }[] = [
+  { label: "מגורים",          keys: ["private_home", "residential", "assisted_living"] },
+  { label: "חינוך ובריאות",   keys: ["education", "medical"] },
+  { label: "ציבור ומסחר",     keys: ["public", "mall", "hotel", "offices"] },
+  { label: "תעשייה ותשתית",   keys: ["industrial", "shelter", "transport"] },
+  { label: "אחר",             keys: ["open_area", "other"] },
+];
+
+/** Keys used before the list grew; rows still carrying them read as the new key. */
+const LEGACY_INFRASTRUCTURE: Record<string, NonNullable<InfrastructureType>> = {
+  house: "private_home", building: "residential", school: "education",
+};
+
+export function normalizeInfrastructure(raw: string | null | undefined): InfrastructureType {
+  if (!raw) return null;
+  if (raw in LEGACY_INFRASTRUCTURE) return LEGACY_INFRASTRUCTURE[raw];
+  return raw in INFRASTRUCTURE_LABELS ? (raw as NonNullable<InfrastructureType>) : "other";
+}
 
 export const CRISIS_TYPES: NonNullable<CrisisType>[] = [
   "שברי רסיס",

@@ -1,4 +1,4 @@
-import type { CrisisEvent, CrisisType, InfrastructureType, Plugah } from "@/types";
+import { normalizeInfrastructure, type CrisisEvent, type CrisisType, type Plugah } from "@/types";
 import type { LogEntry } from "@/lib/logger";
 
 /** Database row shapes (snake_case) ↔ app models (camelCase). */
@@ -32,7 +32,7 @@ export function rowToEvent(r: EventRow): CrisisEvent {
     address: r.address,
     commander: r.commander ?? "",
     crisisType: (r.crisis_type as CrisisType) ?? null,
-    infrastructureType: (r.infrastructure_type as InfrastructureType) ?? null,
+    infrastructureType: normalizeInfrastructure(r.infrastructure_type),
     plugah: (r.plugah as Plugah) ?? null,
     tzapi: r.tzapi,
     anchor: r.anchor,

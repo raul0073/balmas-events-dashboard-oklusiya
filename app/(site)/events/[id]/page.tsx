@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEvents } from "@/lib/events-context";
 import { useLogs } from "@/lib/logger";
 import { useBattalion } from "@/lib/session";
-import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, eventTitle, plugahHex, plugahLabel } from "@/types";
+import { CrisisEvent, CounterKey, PLUGAH_KEYS, PLUGAH_LABELS, INFRASTRUCTURE_GROUPS, INFRASTRUCTURE_LABELS, CRISIS_TYPES, eventTitle, plugahHex, plugahLabel } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, NumberInput } from "@/components/ui/primitives";
 import { formatEventForWhatsApp } from "@/lib/whatsapp";
@@ -262,8 +262,10 @@ export default function EventPage() {
               <Label htmlFor="infra" className="text-xs font-semibold text-gray-600 flex gap-1">תשתית {!form.infrastructureType && <span className="text-amber-600">*</span>}</Label>
               <Select id="infra" value={form.infrastructureType ?? ""} onChange={(e) => update("infrastructureType", (e.target.value || null) as CrisisEvent["infrastructureType"])} className="h-9 text-sm bg-white">
                 <option value="">-- בחר --</option>
-                {(Object.keys(INFRASTRUCTURE_LABELS) as (keyof typeof INFRASTRUCTURE_LABELS)[]).map((k) => (
-                  <option key={k} value={k}>{INFRASTRUCTURE_LABELS[k]}</option>
+{INFRASTRUCTURE_GROUPS.map((g) => (
+                  <optgroup key={g.label} label={g.label}>
+                    {g.keys.map((k) => <option key={k} value={k}>{INFRASTRUCTURE_LABELS[k]}</option>)}
+                  </optgroup>
                 ))}
               </Select>
             </div>
