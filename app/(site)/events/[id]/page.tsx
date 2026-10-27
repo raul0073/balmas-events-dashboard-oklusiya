@@ -305,6 +305,9 @@ export default function EventPage() {
       {/* ── BODY ── */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
 
+        {/* information sources reminder, collapsed by default */}
+        <InfoSources done={form.sourcesDone ?? []} onChange={(next) => update("sourcesDone", next)} readOnly={isClosed} />
+
         {/* status tiles */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <div className={`rounded-2xl border-2 p-4 flex flex-col justify-between min-h-[136px] col-span-2 lg:col-span-1 lg:row-span-2 ${missingTone}`}>
@@ -351,9 +354,6 @@ export default function EventPage() {
             </div>
           </div>
         </div>
-
-        {/* information sources reminder */}
-        <InfoSources done={form.sourcesDone ?? []} onChange={(next) => update("sourcesDone", next)} readOnly={isClosed} />
 
         {/* counters */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
