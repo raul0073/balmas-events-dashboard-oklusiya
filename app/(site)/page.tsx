@@ -1,83 +1,32 @@
 import Link from "next/link";
-import { loadSession } from "@/lib/auth/session";
-import { TOOLS, type ToolTone } from "@/lib/tools";
-import { Activity, CalendarRange, ListChecks, Lock, ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
-const ICONS: Record<string, React.ReactNode> = {
-  events:    <Activity className="w-6 h-6" />,
-  shifts:    <CalendarRange className="w-6 h-6" />,
-  checklist: <ListChecks className="w-6 h-6" />,
-  library:   <BookOpen className="w-6 h-6" />,
-};
-
-/** Card styling per tone: background, border, icon chip, link color. */
-const TONES: Record<ToolTone, { card: string; icon: string; link: string }> = {
-  orange: {
-    card: "bg-pikud-orange-pale border-pikud-orange/30 hover:border-pikud-orange/60",
-    icon: "bg-pikud-orange text-white",
-    link: "text-pikud-orange-dark",
-  },
-  green: {
-    card: "bg-green-50 border-green-200 hover:border-green-400",
-    icon: "bg-green-600 text-white",
-    link: "text-green-800",
-  },
-};
-
-export default async function HubHome() {
-  const session = await loadSession();
-  const signedIn = Boolean(session);
-
+/** Entry page: pick a color. Orange holds today's tools; green is its own space. */
+export default function ChoosePage() {
   return (
-    <div className="min-h-[calc(100vh-64px)] bg-pikud-cream">
+    <div className="min-h-[calc(100vh-64px)] bg-pikud-cream flex flex-col">
       <section className="bg-pikud-navy-dark text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
           <p className="text-pikud-orange font-bold text-sm mb-2">פיקוד העורף · גדודי חילוץ והצלה</p>
           <h1 className="font-black text-3xl sm:text-4xl leading-tight">כלי העבודה של חמ&quot;ל האוכלוסייה</h1>
-          <p className="text-white/60 mt-3 max-w-2xl">
-            {session?.battalion
-              ? `מחובר כ${session.battalion.name}. הכלים המוגנים פתוחים לך.`
-              : "חלק מהכלים פתוחים לכולם. הכלים המוגנים דורשים כניסה עם פרטי הגדוד."}
-          </p>
         </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {TOOLS.map((tool) => {
-            const tone   = TONES[tool.tone];
-            const locked = tool.protected && !signedIn;
-            const href   = locked ? `/login?next=${encodeURIComponent(tool.href)}` : tool.href;
-            const cls    = `group rounded-2xl border shadow-sm p-5 flex flex-col gap-3 transition-all ${tone.card}
-                  ${tool.ready ? "hover:shadow-md hover:-translate-y-0.5 cursor-pointer" : "opacity-60"}`;
-            const body = (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className={`inline-flex items-center justify-center w-11 h-11 rounded-xl shadow-sm ${tone.icon}`}>
-                    {ICONS[tool.key]}
-                  </span>
-                  <div className="flex items-center gap-1.5">
-                    {tool.protected && (
-                      <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full ${locked ? "bg-pikud-navy/10 text-pikud-navy" : "bg-white/70 text-green-700"}`}>
-                        <Lock className="w-3 h-3" /> {locked ? "דורש כניסה" : "פתוח לך"}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <h2 className="font-bold text-lg text-pikud-navy">{tool.name}</h2>
-                  <p className="text-sm text-pikud-navy/70 leading-snug mt-1">{tool.description}</p>
-                </div>
-                <div className={`mt-auto pt-2 text-sm font-semibold flex items-center gap-1 ${tone.link}`}>
-                  {tool.ready ? <>{locked ? "כניסה לכלי" : "פתח"} <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" /></> : "בקרוב"}
-                </div>
-              </>
-            );
-            return tool.ready
-              ? <Link key={tool.key} href={href} className={cls}>{body}</Link>
-              : <div key={tool.key} aria-disabled className={cls}>{body}</div>;
-          })}
-        </div>
+      <section className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 py-8 grid grid-cols-1 sm:grid-cols-2 gap-5 content-start">
+        <Link href="/orange"
+          className="group min-h-[220px] sm:min-h-[300px] rounded-3xl bg-pikud-orange hover:bg-pikud-orange-dark text-white shadow-md hover:shadow-xl transition-all p-8 flex flex-col justify-between focus:outline-none focus-visible:ring-4 focus-visible:ring-pikud-orange/40">
+          <span className="text-5xl sm:text-6xl font-black leading-none">כתום</span>
+          <span className="inline-flex items-center gap-2 text-lg font-bold">
+            כניסה <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
+          </span>
+        </Link>
+        <Link href="/green"
+          className="group min-h-[220px] sm:min-h-[300px] rounded-3xl bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-xl transition-all p-8 flex flex-col justify-between focus:outline-none focus-visible:ring-4 focus-visible:ring-green-600/40">
+          <span className="text-5xl sm:text-6xl font-black leading-none">ירוק</span>
+          <span className="inline-flex items-center gap-2 text-lg font-bold">
+            כניסה <ArrowLeft className="w-6 h-6 transition-transform group-hover:-translate-x-1" />
+          </span>
+        </Link>
       </section>
     </div>
   );

@@ -57,7 +57,7 @@ export const TOOLS: ToolDef[] = [
 ];
 
 /** Paths that never need a session, beyond the public tools. */
-const PUBLIC_PATHS = ["/", "/login"];
+const PUBLIC_PATHS = ["/", "/login", "/orange", "/green"];
 
 export function isProtectedPath(pathname: string): boolean {
   if (PUBLIC_PATHS.includes(pathname)) return false;
