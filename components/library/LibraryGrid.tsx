@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Download, Eye, X, FileText, File, Image as ImageIcon, ExternalLink } from "lucide-react";
+import Link from "next/link";
+import { Download, Eye, X, FileText, File, Image as ImageIcon, ExternalLink, Lock, LogIn } from "lucide-react";
 import type { ToolTone } from "@/lib/tools";
-import { LIBRARY_CATEGORIES, categoryLabel, fileKindLabel, formatSize, previewKind, type LibraryItem } from "@/lib/library/types";
+import { LIBRARY_CATEGORIES, categoryLabel, fileKindLabel, formatSize, previewKind, type LibraryCategory, type LibraryItem } from "@/lib/library/types";
 
 const ACCENT: Record<ToolTone, { chip: string; btn: string; ring: string; line: string }> = {
   orange: { chip: "bg-pikud-orange/10 text-pikud-orange-dark", btn: "bg-pikud-orange hover:bg-pikud-orange-dark", ring: "focus-visible:ring-pikud-orange/40", line: "border-pikud-orange/30 hover:border-pikud-orange/60" },
@@ -15,7 +16,15 @@ function officeViewer(url: string) {
 }
 
 /** Cards grouped by category with a preview lightbox and direct download. */
-export default function LibraryGrid({ items, space }: { items: LibraryItem[]; space: ToolTone }) {
+interface Props {
+  items: LibraryItem[];
+  space: ToolTone;
+  /** items per category a visitor cannot see yet */
+  lockedCounts?: Partial<Record<LibraryCategory, number>>;
+  loginHref?: string;
+}
+
+export default function LibraryGrid({ items, space, lockedCounts = {}, loginHref = "/login" }: Props) {
   const [open, setOpen] = useState<LibraryItem | null>(null);
   const a = ACCENT[space];
 
@@ -27,9 +36,10 @@ export default function LibraryGrid({ items, space }: { items: LibraryItem[]; sp
     return () => { window.removeEventListener("keydown", onKey); document.body.style.overflow = ""; };
   }, [open]);
 
-  const groups = LIBRARY_CATEGORIES.map((c) => ({ ...c, items: items.filter((i) => i.category === c.value) })).filter((g) => g.items.length);
+  const groups = LIBRARY_CATEGORIES.map((c) => ({ ...c, items: items.filter((i) => i.category === c.value), locked: lockedCounts[c.value] ?? 0 }))
+    .filter((g) => g.items.length || g.locked);
 
-  if (items.length === 0) {
+  if (groups.length === 0) {
     return (
       <div className="bg-surface rounded-2xl border border-line px-6 py-14 text-center">
         <File className="w-12 h-12 text-ink-muted mx-auto mb-4" />
@@ -45,8 +55,19 @@ export default function LibraryGrid({ items, space }: { items: LibraryItem[]; sp
         {groups.map((g) => (
           <section key={g.value} aria-labelledby={`lib-${g.value}`}>
             <h2 id={`lib-${g.value}`} className="text-ink font-black text-xl mb-3 flex items-center gap-2">
-              {g.label} <span className="text-sm font-semibold text-ink-muted">({g.items.length})</span>
+              {g.label} <span className="text-sm font-semibold text-ink-muted">({g.items.length || g.locked})</span>
+              {g.locked > 0 && <Lock className="w-4 h-4 text-ink-muted" aria-label="דורש כניסה" />}
             </h2>
+            {g.locked > 0 && (
+              <div className="bg-surface rounded-2xl border border-dashed border-line px-6 py-8 text-center">
+                <Lock className="w-8 h-8 text-ink-muted mx-auto mb-3" />
+                <p className="text-ink font-bold">{g.locked} קבצים ב{g.label} זמינים לגדודים מחוברים</p>
+                <p className="text-ink-muted text-sm mt-1 mb-4">הכניסה עם פרטי הגדוד פותחת אותם להורדה ולתצוגה.</p>
+                <Link href={loginHref} className={`inline-flex items-center gap-1.5 h-10 px-4 rounded-lg text-sm font-bold text-white ${a.btn}`}>
+                  <LogIn className="w-4 h-4" /> כניסה
+                </Link>
+              </div>
+            )}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {g.items.map((item) => {
                 const kind = previewKind(item.mime, item.fileName);

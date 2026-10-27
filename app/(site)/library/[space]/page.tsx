@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { loadLibrary } from "@/lib/library/content";
+import { loadSession } from "@/lib/auth/session";
 import { SPACE_LABELS } from "@/lib/library/types";
 import type { ToolTone } from "@/lib/tools";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -30,7 +31,8 @@ export default async function LibraryPage({ params }: { params: Promise<{ space:
   if (space !== "orange" && space !== "green") notFound();
   const tone  = space as ToolTone;
   const s     = SPACES[tone];
-  const items = await loadLibrary(tone);
+  const session = await loadSession();
+  const { items, lockedCounts } = await loadLibrary(tone, Boolean(session));
 
   return (
     <div className={`min-h-[calc(100vh-64px)] ${s.page}`}>
@@ -43,12 +45,12 @@ export default async function LibraryPage({ params }: { params: Promise<{ space:
             <BookOpen className="w-8 h-8 opacity-90" />
             ספריית ידע ב{SPACE_LABELS[tone]}
           </h1>
-          <p className="text-white/60 mt-3 max-w-2xl">טפסים להורדה והדפסה וחומרי הדרכה. לחץ על קובץ לתצוגה מקדימה, או הורד ישירות.</p>
+          <p className="text-white/60 mt-3 max-w-2xl">חומרי הדרכה פתוחים לכולם. טפסים ושאר הקבצים דורשים כניסה עם פרטי הגדוד.</p>
         </div>
       </section>
 
       <section className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-        <LibraryGrid items={items} space={tone} />
+        <LibraryGrid items={items} space={tone} lockedCounts={lockedCounts} loginHref={`/login?next=${encodeURIComponent(`/library/${tone}`)}`} />
       </section>
     </div>
   );
